@@ -9,7 +9,7 @@ from conftest import need_to_install_package_err
 import pytest
 
 try:
-    import esptool  # noqa: F401
+    import pesptool  # noqa: F401
 except ImportError:
     need_to_install_package_err()
 
@@ -34,7 +34,7 @@ class TestImageInfo:
         cmd = [
             sys.executable,
             "-m",
-            "esptool",
+            "pesptool",
             "--chip",
             chip,
             "image-info",
@@ -176,7 +176,7 @@ class TestImageInfo:
                 [
                     sys.executable,
                     "-m",
-                    "esptool",
+                    "pesptool",
                     "--chip",
                     "esp32c3",
                     "merge-bin",

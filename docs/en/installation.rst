@@ -9,47 +9,47 @@ How to Install
 Global Installation
 ^^^^^^^^^^^^^^^^^^^
 
-You will need `Python 3.10 or newer <https://www.python.org/downloads/>`_ installed on your system to use the latest version of ``esptool``.
-If your use case requires Python 3.7, 3.8, or 3.9, please use ``esptool`` v4.x. For Python 2.7, 3.4, 3.5, or 3.6, please use ``esptool`` v3.3.* instead.
+You will need `Python 3.10 or newer <https://www.python.org/downloads/>`_ installed on your system to use the latest version of ``pesptool``.
+If your use case requires Python 3.7, 3.8, or 3.9, please use ``pesptool`` v4.x. For Python 2.7, 3.4, 3.5, or 3.6, please use ``pesptool`` v3.3.* instead.
 
-The latest stable esptool release can be installed from `PyPI <https://pypi.org/project/esptool/>`_ via pip:
+The latest stable pesptool release can be installed from `PyPI <https://pypi.org/project/pesptool/>`_ via pip:
 
 ::
 
-   $ pip install esptool
+   $ pip install pesptool
 
-With some Python installations this may not work and you'll receive an error, try ``python -m pip install esptool`` or ``pip3 install esptool``, or consult your `Python installation manual <https://pip.pypa.io/en/stable/installation/>`_ for information about how to access pip.
+With some Python installations this may not work and you'll receive an error, try ``python -m pip install pesptool`` or ``pip3 install pesptool``, or consult your `Python installation manual <https://pip.pypa.io/en/stable/installation/>`_ for information about how to access pip.
 
 `Setuptools <https://setuptools.pypa.io/en/latest/userguide/quickstart.html>`_ is also a requirement which is not available on all systems by default. You can install it by a package manager of your operating system, or by ``pip install setuptools``.
 
-After installing, you will have ``esptool`` installed into the default Python executables directory and you should be able to run it with the command ``esptool`` or ``python -m esptool``. Please note that probably only ``python -m esptool`` will work for Pythons installed from Windows Store.
+After installing, you will have ``pesptool`` installed into the default Python executables directory and you should be able to run it with the command ``pesptool`` or ``python -m pesptool``. Please note that probably only ``python -m pesptool`` will work for Pythons installed from Windows Store.
 
 .. note::
 
-   If you actually plan to do development work with esptool itself, see :ref:`development-setup` for more information.
+   If you actually plan to do development work with pesptool itself, see :ref:`development-setup` for more information.
 
 Virtual Environment Installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To ensure that ``esptool`` is used in isolation, and any changes made during its usage won't affect other Python environments or SDK installations, it is advised to install it in a virtual environment and use it directly if possible (more information in the :ref:`flashing` article).
+To ensure that ``pesptool`` is used in isolation, and any changes made during its usage won't affect other Python environments or SDK installations, it is advised to install it in a virtual environment and use it directly if possible (more information in the :ref:`flashing` article).
 
 Creating a virtual environment (venv) is a good practice. This is particularly helpful for users who may be concerned about interfering with existing installations (e.g. in an environment of a development-setup framework). Here's a quick guide:
 
-- Create a virtual environment and choose its name, e.g. 'esptoolenv': ``python -m venv esptoolenv``
+- Create a virtual environment and choose its name, e.g. 'pesptoolenv': ``python -m venv pesptoolenv``
 - Activate the virtual environment:
 
-   - On Windows: ``esptoolenv\Scripts\activate``
-   - On Linux or macOS: ``source esptoolenv/bin/activate``
+   - On Windows: ``pesptoolenv\Scripts\activate``
+   - On Linux or macOS: ``source pesptoolenv/bin/activate``
 
-- Install the latest ``esptool`` version within the active virtual environment: ``pip install esptool``
-- You can now use it within this virtual environment without affecting your system-wide installations: ``esptool <command>``
-- When you're done using ``esptool``, deactivate the virtual environment: ``deactivate``. The environment can be reused by activating it again.
-- If you no longer need the virtual environment, you can remove it by deleting the ``esptoolenv`` directory.
+- Install the latest ``pesptool`` version within the active virtual environment: ``pip install pesptool``
+- You can now use it within this virtual environment without affecting your system-wide installations: ``pesptool <command>``
+- When you're done using ``pesptool``, deactivate the virtual environment: ``deactivate``. The environment can be reused by activating it again.
+- If you no longer need the virtual environment, you can remove it by deleting the ``pesptoolenv`` directory.
 
 Binary Releases
 ^^^^^^^^^^^^^^^^
 
-If you do not want to install Python and all the dependencies, you can use the pre-built binaries from the `GitHub Releases <https://github.com/espressif/esptool/releases>`_.
+If you do not want to install Python and all the dependencies, you can use the pre-built binaries from the `GitHub Releases <https://github.com/espressif/pesptool/releases>`_.
 
 Please note that the binaries might have some limitations:
 
@@ -71,22 +71,22 @@ How to Update
 Standalone
 ^^^^^^^^^^
 
-If you are using ``esptool`` as a standalone tool (as a global installation or in a virtual environment), updating to the latest version released on the `PyPI <https://pypi.org/project/esptool/>`_ index is simple:
+If you are using ``pesptool`` as a standalone tool (as a global installation or in a virtual environment), updating to the latest version released on the `PyPI <https://pypi.org/project/pesptool/>`_ index is simple:
 
 ::
 
-   $ pip install --upgrade esptool
+   $ pip install --upgrade pesptool
 
 As a Part of SDK/Framework
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If ``esptool`` is installed as a part of a development SDK/framework (e.g. `ESP-IDF <https://docs.espressif.com/projects/esp-idf/>`_, `Arduino <https://docs.espressif.com/projects/arduino-esp32/>`_, or `PlatformIO <https://docs.platformio.org/en/latest/platforms/espressif32.html>`_), it is advised to follow the update guide of used framework for instructions and not to update the tool directly.
+If ``pesptool`` is installed as a part of a development SDK/framework (e.g. `ESP-IDF <https://docs.espressif.com/projects/esp-idf/>`_, `Arduino <https://docs.espressif.com/projects/arduino-esp32/>`_, or `PlatformIO <https://docs.platformio.org/en/latest/platforms/espressif32.html>`_), it is advised to follow the update guide of used framework for instructions and not to update the tool directly.
 
-If updating directly is unavoidable, make sure you update to a compatible version by staying on the same MAJOR version number (explained in the :ref:`versions` article). For instance, if your currently installed ``esptool`` is ``v3.3.1``, only update to ``v3.*.*``. You risk introducing incompatible changes by updating to ``v4.*.*`` or higher.
+If updating directly is unavoidable, make sure you update to a compatible version by staying on the same MAJOR version number (explained in the :ref:`versions` article). For instance, if your currently installed ``pesptool`` is ``v3.3.1``, only update to ``v3.*.*``. You risk introducing incompatible changes by updating to ``v4.*.*`` or higher.
 
 ::
 
-   $ pip install "esptool<4"
+   $ pip install "pesptool<4"
 
 .. _shell-completion:
 
@@ -103,7 +103,7 @@ You will likely have to restart or re-login for the autocompletion to start work
 
          .. code-block:: bash
 
-               eval "$(_ESPTOOL_PY_COMPLETE=bash_source esptool)"
+               eval "$(_pesptool_PY_COMPLETE=bash_source pesptool)"
                eval "$(_ESPSECURE_PY_COMPLETE=bash_source espsecure)"
                eval "$(_ESPEFUSE_PY_COMPLETE=bash_source espefuse)"
 
@@ -118,12 +118,12 @@ You will likely have to restart or re-login for the autocompletion to start work
          autoload -U compinit
          compinit
 
-      Afterwards you can enable completions for esptool, espsecure and espefuse:
+      Afterwards you can enable completions for pesptool, espsecure and espefuse:
 
 
       .. code-block:: bash
 
-         eval "$(_ESPTOOL_PY_COMPLETE=zsh_source esptool)"
+         eval "$(_pesptool_PY_COMPLETE=zsh_source pesptool)"
          eval "$(_ESPSECURE_PY_COMPLETE=zsh_source espsecure)"
          eval "$(_ESPEFUSE_PY_COMPLETE=zsh_source espefuse)"
 
@@ -132,7 +132,7 @@ You will likely have to restart or re-login for the autocompletion to start work
 
       .. code-block:: bash
 
-         _ESPTOOL_PY_COMPLETE=fish_source esptool | source
+         _pesptool_PY_COMPLETE=fish_source pesptool | source
          _ESPSECURE_PY_COMPLETE=fish_source espsecure | source
          _ESPEFUSE_PY_COMPLETE=fish_source espefuse | source
 

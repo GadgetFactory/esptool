@@ -65,7 +65,7 @@ class TemplateLogger(ABC):
         pass
 
 
-class EsptoolLogger(TemplateLogger):
+class pesptoolLogger(TemplateLogger):
     ansi_red: str = ""
     ansi_yellow: str = ""
     ansi_blue: str = ""
@@ -270,4 +270,4 @@ class EsptoolLogger(TemplateLogger):
             raise ValueError(f"Invalid verbosity level: {verbosity}")
 
 
-log = EsptoolLogger()
+log = pesptoolLogger()

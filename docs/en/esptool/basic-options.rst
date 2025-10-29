@@ -3,9 +3,9 @@
 Basic Options
 =============
 
-These are the basic/fundamental esptool options needed to define the communication with an ESP target. For advanced configuration options, see the :ref:`advanced-options` page.
+These are the basic/fundamental pesptool options needed to define the communication with an ESP target. For advanced configuration options, see the :ref:`advanced-options` page.
 
-Esptool has global and command-specific options. Global options have to be specified after ``esptool``. They are used to configure the serial port, baud rate, and chip type.
+pesptool has global and command-specific options. Global options have to be specified after ``pesptool``. They are used to configure the serial port, baud rate, and chip type.
 Command-specific options are specified after the command and are used to configure the command itself. For more information about commands and their options, see :ref:`commands` or see help in the command line.
 
 .. _chip-type:
@@ -13,9 +13,9 @@ Command-specific options are specified after the command and are used to configu
 Chip Type: ``--chip``, ``-c``
 -----------------------------
 
-* The target chip type can be selected using the ``--chip``/ ``-c`` option, e.g. ``esptool --chip {IDF_TARGET_PATH_NAME} <command>``.
-* A default chip type can be specified by setting the ``ESPTOOL_CHIP`` environment variable.
-* If no ``-c`` option or ``ESPTOOL_CHIP`` value is specified, ``esptool`` automatically detects the chip type when connecting.
+* The target chip type can be selected using the ``--chip``/ ``-c`` option, e.g. ``pesptool --chip {IDF_TARGET_PATH_NAME} <command>``.
+* A default chip type can be specified by setting the ``pesptool_CHIP`` environment variable.
+* If no ``-c`` option or ``pesptool_CHIP`` value is specified, ``pesptool`` automatically detects the chip type when connecting.
 * Binary image generation commands, such as :ref:`elf2image <elf-2-image>` or :ref:`merge-bin <merge-bin>`, require the chip type to be specified.
 
 .. _serial-port:
@@ -24,8 +24,8 @@ Serial Port: ``--port``, ``-p``
 -------------------------------
 
 *  The serial port is selected using the ``-p`` option, like ``-p /dev/ttyUSB0`` (Linux and macOS) or ``-p COM1`` (Windows).
-*  A default serial port can be specified by setting the ``ESPTOOL_PORT`` environment variable.
-*  If no ``-p`` option or ``ESPTOOL_PORT`` value is specified, ``esptool`` will enumerate all connected serial ports and try each one until it finds an Espressif device connected.
+*  A default serial port can be specified by setting the ``pesptool_PORT`` environment variable.
+*  If no ``-p`` option or ``pesptool_PORT`` value is specified, ``pesptool`` will enumerate all connected serial ports and try each one until it finds an Espressif device connected.
 
 .. note::
 
@@ -44,9 +44,9 @@ Check your Linux distribution's documentation for more information.
 Baud Rate: ``--baud``, ``-b``
 -----------------------------
 
-The default esptool baud rate is 115200bps. Different rates may be set using ``-b 921600`` (or another baud rate of your choice). A default baud rate can also be specified using the ``ESPTOOL_BAUD`` environment variable. This can speed up ``write-flash`` and ``read-flash`` operations.
+The default pesptool baud rate is 115200bps. Different rates may be set using ``-b 921600`` (or another baud rate of your choice). A default baud rate can also be specified using the ``pesptool_BAUD`` environment variable. This can speed up ``write-flash`` and ``read-flash`` operations.
 
-The baud rate is limited to 115200 when esptool establishes the initial connection, higher speeds are only used for data transfers.
+The baud rate is limited to 115200 when pesptool establishes the initial connection, higher speeds are only used for data transfers.
 
 Most hardware configurations will work with ``-b 230400``, some with ``-b 460800``, ``-b 921600`` and/or ``-b 1500000`` or higher.
 

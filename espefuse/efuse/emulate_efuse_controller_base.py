@@ -7,7 +7,7 @@
 import re
 
 from bitstring import BitStream
-from esptool.logger import log
+from pesptool.logger import log
 
 
 class EmulateEfuseControllerBase:
@@ -41,7 +41,7 @@ class EmulateEfuseControllerBase:
             self.mem = BitStream(self.REGS.EFUSE_MEM_SIZE * 8)
             self.mem.set(0)
 
-    """ esptool method start >> """
+    """ pesptool method start >> """
 
     def get_chip_description(self):
         major_rev = self.get_major_chip_version()
@@ -80,7 +80,7 @@ class EmulateEfuseControllerBase:
     def _get_pid(self):
         return -1
 
-    """ << esptool method end """
+    """ << pesptool method end """
 
     def handle_writing_event(self, addr, value):
         self.save_to_file()

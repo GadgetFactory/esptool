@@ -5,7 +5,7 @@
 import hashlib
 import struct
 
-from esptool.util import div_roundup
+from pesptool.util import div_roundup
 
 
 class UF2Writer:

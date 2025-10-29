@@ -18,11 +18,11 @@ idf_targets = [
 ]
 
 # link roles config
-github_repo = "espressif/esptool"
+github_repo = "espressif/pesptool"
 
 # context used by sphinx_idf_theme
 html_context["github_user"] = "espressif"
-html_context["github_repo"] = "esptool"
+html_context["github_repo"] = "pesptool"
 
 html_static_path = ["../_static"]
 
@@ -60,10 +60,10 @@ conditional_include_dict = {
 }
 
 # Extra options required by sphinx_idf_theme
-project_slug = "esptool"
+project_slug = "pesptool"
 
-versions_url = "./_static/esptool_versions.js"
+versions_url = "./_static/pesptool_versions.js"
 
 
 def conf_setup(app, config):
-    config.html_baseurl = f"https://docs.espressif.com/projects/esptool/{config.language}/stable/{config.idf_target}/"
+    config.html_baseurl = f"https://docs.espressif.com/projects/pesptool/{config.language}/stable/{config.idf_target}/"

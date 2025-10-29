@@ -18,7 +18,7 @@ except ImportError:
     from conf_common import *  # noqa: F403,F401
 
 # General information about the project.
-project = "esptool"
+project = "pesptool"
 copyright = "2016 - {}, Espressif Systems (Shanghai) Co., Ltd".format(
     datetime.datetime.now().year
 )

@@ -49,18 +49,18 @@ except ImportError:
     raise
 
 # check 'serial' is 'pyserial' and not 'serial'
-# ref. https://github.com/espressif/esptool/issues/269
+# ref. https://github.com/espressif/pesptool/issues/269
 try:
     if "serialization" in serial.__doc__ and "deserialization" in serial.__doc__:
         raise ImportError(
-            "esptool depends on pySerial, but there is a conflict with a currently "
+            "pesptool depends on pySerial, but there is a conflict with a currently "
             "installed package named 'serial'.\n"
             "You may work around this by 'pip uninstall serial; pip install pyserial' "
             "but this may break other installed Python software "
             "that depends on 'serial'.\n"
             "There is no good fix for this right now, "
             "apart from configuring virtualenvs. "
-            "See https://github.com/espressif/esptool/issues/269#issuecomment-385298196"
+            "See https://github.com/espressif/pesptool/issues/269#issuecomment-385298196"
             " for discussion of the underlying issue(s)."
         )
 except TypeError:
@@ -71,21 +71,21 @@ try:
 except ImportError:
     log.error(
         f"The installed version ({serial.VERSION}) of pySerial appears to be too old "
-        f"for esptool (Python interpreter {sys.executable}). "
+        f"for pesptool (Python interpreter {sys.executable}). "
         "Check the documentation for installation instructions."
     )
     raise
 except Exception:
     if sys.platform == "darwin":
         # swallow the exception, this is a known issue in pySerial+macOS Big Sur preview
-        # ref https://github.com/espressif/esptool/issues/540
+        # ref https://github.com/espressif/pesptool/issues/540
         list_ports = None
     else:
         raise
 
 
 cfg, _ = load_config_file()
-cfg = cfg["esptool"]
+cfg = cfg["pesptool"]
 
 # Timeout for most flash operations
 DEFAULT_TIMEOUT = cfg.getfloat("timeout", 3)
@@ -305,7 +305,7 @@ class ESPLoader:
     # Device PIDs
     USB_JTAG_SERIAL_PID = 0x1001
 
-    # Chip IDs that are no longer supported by esptool
+    # Chip IDs that are no longer supported by pesptool
     UNSUPPORTED_CHIPS = {
         4: "ESP32-S3(beta2)",
         6: "ESP32-S3(beta3)",
@@ -335,9 +335,9 @@ class ESPLoader:
         with ones which throw NotImplementedInROMError().
 
         """
-        # True if esptool detects the ROM is in Secure Download Mode
+        # True if pesptool detects the ROM is in Secure Download Mode
         self.secure_download_mode = False
-        # True if esptool detects conditions which require the stub to be disabled
+        # True if pesptool detects conditions which require the stub to be disabled
         self.stub_is_disabled = False
 
         # Device-and-runtime-specific cache
@@ -397,10 +397,10 @@ class ESPLoader:
         # setting baud rate in a separate step is a workaround for
         # CH341 driver on some Linux versions (this opens at 9600 then
         # sets), shouldn't matter for other platforms/drivers. See
-        # https://github.com/espressif/esptool/issues/44#issuecomment-107094446
+        # https://github.com/espressif/pesptool/issues/44#issuecomment-107094446
         self._set_port_baudrate(baud)
         self._trace_enabled = trace_enabled
-        # set write timeout, to prevent esptool blocked at write forever.
+        # set write timeout, to prevent pesptool blocked at write forever.
         try:
             self._port.write_timeout = DEFAULT_SERIAL_WRITE_TIMEOUT
         except NotImplementedError:
@@ -604,7 +604,7 @@ class ESPLoader:
 
         # ROM bootloaders send some non-zero "val" response. The flasher stub sends 0.
         # If we receive 0 then it probably indicates that the chip wasn't or couldn't be
-        # reset properly and esptool is talking to the flasher stub.
+        # reset properly and pesptool is talking to the flasher stub.
         self.sync_stub_detected = val == 0
 
         for _ in range(7):
@@ -733,7 +733,7 @@ class ESPLoader:
         # This FPGA delay is for Espressif internal use
         if (
             self.CHIP_NAME == "ESP32"
-            and os.environ.get("ESPTOOL_ENV_FPGA", "").strip() == "1"
+            and os.environ.get("pesptool_ENV_FPGA", "").strip() == "1"
         ):
             delay = extra_delay = 7
 
@@ -806,7 +806,7 @@ class ESPLoader:
                 "Failed to connect to {}: {}"
                 f"{additional_msg}"
                 "\nFor troubleshooting steps visit: "
-                "https://docs.espressif.com/projects/esptool/en/latest/troubleshooting.html".format(  # noqa E501
+                "https://docs.espressif.com/projects/pesptool/en/latest/troubleshooting.html".format(  # noqa E501
                     self.CHIP_NAME, last_error
                 )
             )
@@ -876,7 +876,7 @@ class ESPLoader:
                     log.warning(
                         f"This chip doesn't appear to be an {self.CHIP_NAME} "
                         f"{specifier}. Probably it is unsupported by this version "
-                        "of esptool. Will attempt to continue anyway."
+                        "of pesptool. Will attempt to continue anyway."
                     )
                 else:
                     chip_type = (
@@ -1329,7 +1329,7 @@ class ESPLoader:
             raise FatalError(
                 "Failed to start stub flasher. There was no response."
                 "\nTry increasing timeouts, for more information see: "
-                "https://docs.espressif.com/projects/esptool/en/latest/esptool/configuration-file.html"  # noqa E501
+                "https://docs.espressif.com/projects/pesptool/en/latest/pesptool/configuration-file.html"  # noqa E501
             )
 
         if p != b"OHAI":
@@ -1523,7 +1523,7 @@ class ESPLoader:
         arg = struct.pack("<I", hspi_arg)
         if not self.IS_STUB:
             # ESP32 ROM loader takes additional 'is legacy' arg, which is not
-            # currently supported in the stub loader or esptool
+            # currently supported in the stub loader or pesptool
             # (as it's not usually needed.)
             is_legacy = 0
             arg += struct.pack("BBBB", is_legacy, 0, 0, 0)
@@ -1726,7 +1726,7 @@ class ESPLoader:
 
         Not all flash supports the additional commands to write the
         second and third byte of the status register. When writing 2
-        bytes, esptool also sends a 16-byte WRSR command (as some
+        bytes, pesptool also sends a 16-byte WRSR command (as some
         flash types use this instead of WRSR2.)
 
         If the set_non_volatile flag is set, non-volatile bits will

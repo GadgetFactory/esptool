@@ -24,7 +24,7 @@ class EmulateEfuseController(EmulateEfuseControllerBase):
         super().__init__(efuse_file, debug)
         self.write_reg(self.REGS.EFUSE_CMD_REG, 0)
 
-    """ esptool method start >>"""
+    """ pesptool method start >>"""
 
     def get_major_chip_version(self):
         return 0
@@ -44,7 +44,7 @@ class EmulateEfuseController(EmulateEfuseControllerBase):
             "api_version": 0,
         }
 
-    """ << esptool method end """
+    """ << pesptool method end """
 
     def handle_writing_event(self, addr, value):
         if addr == self.REGS.EFUSE_CMD_REG:

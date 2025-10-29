@@ -17,8 +17,8 @@ import rich_click as click
 
 from bitstring import BitStream
 
-import esptool
-from esptool.logger import log
+import pesptool
+from pesptool.logger import log
 
 from . import base_fields
 from . import util
@@ -199,7 +199,7 @@ class BaseCommands:
     CHIP_NAME = "auto"
     efuse_lib: type[base_fields.EspEfusesBase] | None = None
     efuses: base_fields.EspEfusesBase
-    esp: esptool.ESPLoader | EmulateEfuseControllerBase
+    esp: pesptool.ESPLoader | EmulateEfuseControllerBase
     external_esp: bool = False
 
     def get_efuses(
@@ -210,15 +210,15 @@ class BaseCommands:
         extend_efuse_table=None,
     ):
         if self.esp is None:
-            raise esptool.FatalError("get_efuses: esp is not set")
+            raise pesptool.FatalError("get_efuses: esp is not set")
         if self.CHIP_NAME == self.esp.CHIP_NAME:
             if self.efuse_lib is None:
-                raise esptool.FatalError("get_efuses: efuse_lib is not set")
+                raise pesptool.FatalError("get_efuses: efuse_lib is not set")
             self.efuses = self.efuse_lib(
                 self.esp, skip_connect, debug_mode, do_not_confirm, extend_efuse_table
             )
         else:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "get_efuses: Mismatch chip name "
                 f"({self.CHIP_NAME} != {self.esp.CHIP_NAME})"
             )
@@ -230,7 +230,7 @@ class BaseCommands:
         if (
             self.esp is not None
             and not self.external_esp
-            and isinstance(self.esp, esptool.ESPLoader)
+            and isinstance(self.esp, pesptool.ESPLoader)
         ):
             self.esp._port.close()
 
@@ -241,7 +241,7 @@ class BaseCommands:
 
         if self.efuses is None:
             # This should never happen, but just in case someone calls it from API
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "To initialize the CLI commands, you need to call get_efuses() first."
             )
 
@@ -568,7 +568,7 @@ class BaseCommands:
 
         # Check that the number of blocks, datafiles, and keypurposes is equal
         if len(block_names) != len(datafiles) or len(block_names) != len(keypurposes):
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"The number of blocks ({len(block_names)}), "
                 f"datafile ({len(datafiles)}) and keypurpose ({len(keypurposes)}) "
                 "should be the same."
@@ -596,14 +596,14 @@ class BaseCommands:
 
         data = datafile_list[i].read()
         if len(data) != 64:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"Incorrect key file size {len(data)}, {base_keypurpose} "
                 "should be 64 bytes"
             )
 
         key_block_2 = self._get_next_key_block(block, block_name_list)
         if not key_block_2:
-            raise esptool.FatalError(f"{base_keypurpose} requires two free keyblocks")
+            raise pesptool.FatalError(f"{base_keypurpose} requires two free keyblocks")
 
         postfix = (
             ["_1", "_2"] if base_keypurpose.startswith("XTS_AES_256") else ["_H", "_L"]
@@ -643,7 +643,7 @@ class BaseCommands:
         human_output = format in ["summary", "value_only"]
         value_only = format == "value_only"
         if value_only and len(efuses_to_show) != 1:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "The 'value_only' format can be used exactly for one eFuse."
             )
         do_filtering = bool(efuses_to_show)
@@ -888,7 +888,7 @@ class BaseCommands:
             )
             log.print("                               espefuse will not work.")
             log.print(
-                "                               esptool can read/write only flash."
+                "                               pesptool can read/write only flash."
             )
 
         if "DIS_DOWNLOAD_MODE" in efuse_name_list:
@@ -897,7 +897,7 @@ class BaseCommands:
                 "because this mode disables any communication with the chip."
             )
             log.print(
-                "                        espefuse/esptool will not work because "
+                "                        espefuse/pesptool will not work because "
                 "they will not be able to connect to the chip."
             )
 
@@ -910,13 +910,13 @@ class BaseCommands:
                 "UART_DOWNLOAD_DIS -> 1: eFuses will be read for confirmation, "
                 "but after that connection to the chip will become impossible."
             )
-            log.print("                        espefuse/esptool will not work.")
+            log.print("                        espefuse/pesptool will not work.")
 
         if self.efuses.is_efuses_incompatible_for_burn():
             if force:
                 log.print("Ignore incompatible eFuse settings.")
             else:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     "Incompatible eFuse settings detected, abort. "
                     "(use --force flag to skip it)."
                 )
@@ -946,7 +946,7 @@ class BaseCommands:
                     )
                     raise_error = True
         if raise_error:
-            raise esptool.FatalError("The burn was not successful.")
+            raise pesptool.FatalError("The burn was not successful.")
         else:
             log.print("Successful.")
 
@@ -971,7 +971,7 @@ class BaseCommands:
                         and self.esp.get_chip_revision() >= 300
                     ):
                         if self.efuses["ABS_DONE_1"].get():
-                            raise esptool.FatalError(
+                            raise pesptool.FatalError(
                                 "Secure Boot V2 is on (ABS_DONE_1 = True), "
                                 "BLOCK2 must be readable, stop this operation!"
                             )
@@ -990,7 +990,7 @@ class BaseCommands:
                         "BLOCK_KEY0_HI_128",
                     ]
                     if error:
-                        raise esptool.FatalError(
+                        raise pesptool.FatalError(
                             f"{efuse_name} must be readable, stop this operation!"
                         )
                 else:
@@ -1000,7 +1000,7 @@ class BaseCommands:
                             if not self.efuses[block.key_purpose].need_rd_protect(
                                 self.efuses[block.key_purpose].get()
                             ):
-                                raise esptool.FatalError(
+                                raise pesptool.FatalError(
                                     f"{efuse_name} must be readable, "
                                     f"stop this operation!"
                                 )
@@ -1030,7 +1030,7 @@ class BaseCommands:
                 log.print(f"Efuse {efuse.name} is not read-protected.")
                 raise_error = True
         if raise_error:
-            raise esptool.FatalError("The burn was not successful.")
+            raise pesptool.FatalError("The burn was not successful.")
         else:
             log.print("Successful.")
 
@@ -1072,7 +1072,7 @@ class BaseCommands:
                 log.print(f"Efuse {efuse.name} is not write-protected.")
                 raise_error = True
         if raise_error:
-            raise esptool.FatalError("The burn was not successful.")
+            raise pesptool.FatalError("The burn was not successful.")
         else:
             log.print("Successful.")
 
@@ -1102,7 +1102,7 @@ class BaseCommands:
 
         util.check_duplicate_name_in_list(block_name_list)
         if offset and len(block_name_list) > 1:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "The 'offset' option is not applicable when a few blocks are passed. "
                 "With 'offset', should only one block be used."
             )
@@ -1112,12 +1112,12 @@ class BaseCommands:
                 block: base_fields.EfuseBlockBase = self.efuses.blocks[num_block]
                 num_bytes = block.get_block_len()
                 if offset >= num_bytes:
-                    raise esptool.FatalError(
+                    raise pesptool.FatalError(
                         f"Invalid offset: the block{block.id} only holds "
                         f"{num_bytes} bytes."
                     )
         if len(block_name_list) != len(datafile_list):
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"The number of block_name ({len(block_name_list)}) and "
                 f"datafile ({len(datafile_list)}) should be the same."
             )
@@ -1131,7 +1131,7 @@ class BaseCommands:
                 data = (b"\x00" * offset) + data
                 data = data + (b"\x00" * (num_bytes - len(data)))
             if len(data) != num_bytes:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     f"Data does not fit: the block{block.id} size is "
                     f"{num_bytes} bytes, data file is {len(data)} bytes, "
                     f"offset {offset}."
@@ -1162,7 +1162,7 @@ class BaseCommands:
         try:
             data_block.set(True, bit_number)
         except IndexError:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"{block} has bit_number in [0..{data_block.len - 1}]"
             )
         data_block.reverse()
@@ -1235,7 +1235,7 @@ class BaseCommands:
                 self.efuses.update_efuses()
             error_in_blocks = self.get_error_summary()
         if error_in_blocks:
-            raise esptool.FatalError("Error(s) were detected in eFuses.")
+            raise pesptool.FatalError("Error(s) were detected in eFuses.")
         log.print("No errors detected.")
 
     def burn_custom_mac(self, mac: str | bytes):
@@ -1265,7 +1265,7 @@ class BaseCommands:
         Args:
             voltage: Voltage to set. Available options are: "1.8V", "3.3V", "OFF"
         """
-        raise esptool.FatalError("set_flash_voltage is not supported for this chip")
+        raise pesptool.FatalError("set_flash_voltage is not supported for this chip")
 
     def adc_info(self):
         """Display information about ADC calibration data stored in eFuse."""

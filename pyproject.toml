@@ -3,7 +3,7 @@
     build-backend = "setuptools.build_meta"
 
 [project]
-    name = "esptool"
+    name = "pesptool"
     authors = [
         {name = "Fredrik Ahlberg (themadinventor)"},
         {name = "Angus Gratton (projectgus)"},
@@ -37,16 +37,16 @@
         "reedsolo>=1.5.3,<1.8",
         "PyYAML>=5.1",
         "intelhex",
-        "rich_click<1.9.0",  # ESPTOOL-1192
+        "rich_click<1.9.0",  # pesptool-1192
         "click<9",
     ]
 
 [project.urls]
-    Homepage = "https://github.com/espressif/esptool/"
-    Documentation = "https://docs.espressif.com/projects/esptool/"
-    Source = "https://github.com/espressif/esptool/"
-    Tracker = "https://github.com/espressif/esptool/issues/"
-    Changelog = "https://github.com/espressif/esptool/blob/master/CHANGELOG.md"
+    Homepage = "https://github.com/espressif/pesptool/"
+    Documentation = "https://docs.espressif.com/projects/pesptool/"
+    Source = "https://github.com/espressif/pesptool/"
+    Tracker = "https://github.com/espressif/pesptool/issues/"
+    Changelog = "https://github.com/espressif/pesptool/blob/master/CHANGELOG.md"
 
 [project.optional-dependencies]
     dev = [
@@ -68,13 +68,13 @@
     include-package-data = true
 
 [tool.setuptools.package-data]
-    "*" = ["esptool/targets/stub_flasher/1/*", "esptool/targets/stub_flasher/2/*"]
+    "*" = ["pesptool/targets/stub_flasher/1/*", "pesptool/targets/stub_flasher/2/*"]
 
 [tool.setuptools.packages]
     find = {exclude = ["ci*", "test*", "docs*"]}
 
 [tool.setuptools.dynamic]
-    version = {attr = "esptool.__init__.__version__"}
+    version = {attr = "pesptool.__init__.__version__"}
 
 [tool.commitizen]
     name = "czespressif"
@@ -86,7 +86,7 @@
     annotated_tag = true
     bump_message = "change: Update version to $new_version"
     version_files = [
-        "esptool/__init__.py:__version__"
+        "pesptool/__init__.py:__version__"
     ]
 
 

@@ -8,7 +8,7 @@
 # This executable script is a thin wrapper around the main functionality
 # in the esp_rfc2217_server Python package
 
-# When updating this script, please also update esptool.py, espefuse.py and espsecure.py
+# When updating this script, please also update pesptool.py, espefuse.py and espsecure.py
 
 ###################################################################################
 # Redirect data from a TCP/IP connection to a serial port and vice versa using RFC 2217.
@@ -23,10 +23,10 @@
 #
 #   python esp_rfc2217_server.py -p 4000 /dev/ttyUSB1
 #
-# Esptool can connect to the ESP device through that server as it is
+# pesptool can connect to the ESP device through that server as it is
 # demonstrated in the following example:
 #
-#   esptool --port rfc2217://localhost:4000?ign_set_control flash-id
+#   pesptool --port rfc2217://localhost:4000?ign_set_control flash-id
 #
 
 import contextlib

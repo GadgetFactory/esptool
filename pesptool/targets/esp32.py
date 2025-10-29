@@ -149,7 +149,7 @@ class ESP32ROM(ESPLoader):
     def get_flash_crypt_config(self):
         """For flash encryption related commands we need to make sure
         user has programmed all the relevant efuse correctly so before
-        writing encrypted write_flash_encrypt esptool will verify the values
+        writing encrypted write_flash_encrypt pesptool will verify the values
         of flash_crypt_config to be non zero if they are not read
         protected. If the values are zero a warning will be printed
 
@@ -365,7 +365,7 @@ class ESP32ROM(ESPLoader):
                 )
             )
         # RTC_CNTL_SDIO_TIEH is not used here, setting TIEH=1 would set 3.3V output,
-        # not safe for esptool to do
+        # not safe for pesptool to do
 
         reg_val = self.RTC_CNTL_SDIO_FORCE  # override efuse setting
         reg_val |= self.RTC_CNTL_SDIO_PD_EN

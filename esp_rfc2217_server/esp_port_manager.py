@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 import os
 import threading
-from esptool.reset import (
+from pesptool.reset import (
     ClassicReset,
     CustomReset,
     DEFAULT_RESET_DELAY,
@@ -22,10 +22,10 @@ from serial.rfc2217 import (
     SET_CONTROL_RTS_ON,
 )
 
-from esptool.config import load_config_file
+from pesptool.config import load_config_file
 
 cfg, _ = load_config_file(verbose=True)
-cfg = cfg["esptool"]
+cfg = cfg["pesptool"]
 
 
 class EspPortManager(serial.rfc2217.PortManager):
@@ -82,7 +82,7 @@ class EspPortManager(serial.rfc2217.PortManager):
 
     def _reset_thread(self):
         """
-        The reset logic is used from esptool because the RTS and DTR signals
+        The reset logic is used from pesptool because the RTS and DTR signals
         cannot be retransmitted through RFC 2217 with proper timing.
         """
         if self.logger:

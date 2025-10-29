@@ -10,8 +10,8 @@ import click
 
 import espsecure
 
-import esptool
-from esptool.logger import log
+import pesptool
+from pesptool.logger import log
 
 from . import fields
 from .. import util
@@ -175,7 +175,7 @@ class ESP32C3Commands(BaseCommands):
                 if block_name == blk.name or block_name in blk.alias:
                     efuse = self.efuses[blk.name]
             if efuse is None:
-                raise esptool.FatalError(f"Unknown block name - {block_name}.")
+                raise pesptool.FatalError(f"Unknown block name - {block_name}.")
             num_bytes = efuse.bit_len // 8
 
             block_num = self.efuses.get_index_block_by_name(block_name)
@@ -202,7 +202,7 @@ class ESP32C3Commands(BaseCommands):
             if revers_msg:
                 log.print(revers_msg)
             if len(data) != num_bytes:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     f"Incorrect key file size {len(data)}. Key file must be {num_bytes} "
                     f"bytes ({num_bytes * 8} bits) of raw binary key data."
                 )
@@ -226,7 +226,7 @@ class ESP32C3Commands(BaseCommands):
                     self.efuses[block.key_purpose_name].save(keypurpose)
                     disable_wr_protect_key_purpose = True
                 else:
-                    raise esptool.FatalError(
+                    raise pesptool.FatalError(
                         f"It is not possible to change '{block.key_purpose_name}' "
                         f"to '{keypurpose}' because write protection bit is set."
                     )
@@ -288,11 +288,11 @@ class ESP32C3Commands(BaseCommands):
                 if block_name == block.name or block_name in block.alias:
                     efuse = self.efuses[block.name]
             if efuse is None:
-                raise esptool.FatalError(f"Unknown block name - {block_name}.")
+                raise pesptool.FatalError(f"Unknown block name - {block_name}.")
             num_bytes = efuse.bit_len // 8
             digest = espsecure._digest_sbv2_public_key(datafile)
             if len(digest) != num_bytes:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     "Incorrect digest size {}. Digest must be {} bytes ({} bits) "
                     "of raw binary key data.".format(
                         len(digest), num_bytes, num_bytes * 8

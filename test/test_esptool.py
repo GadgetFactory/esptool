@@ -1,4 +1,4 @@
-# Unit tests (really integration tests) for esptool using the pytest framework
+# Unit tests (really integration tests) for pesptool using the pytest framework
 # Uses a device connected to the serial port.
 #
 # RUNNING THIS WILL MESS UP THE DEVICE'S SPI FLASH CONTENTS
@@ -6,15 +6,15 @@
 # How to use:
 #
 # Run with a physical connection to a chip:
-#  - `pytest test_esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200`
+#  - `pytest test_pesptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200`
 #
-# where  - --port       - a serial port for esptool operation
+# where  - --port       - a serial port for pesptool operation
 #        - --chip       - ESP chip name
 #        - --baud       - baud rate
 #        - --with-trace - trace all interactions (True or False)
 #
 # To run the tests in USB-OTG mode, ground the boot mode straping pin
-# and set ESPTOOL_TEST_USB_OTG environment variable to any value.
+# and set pesptool_TEST_USB_OTG environment variable to any value.
 #
 # To run the tests in USB-Serial/JTAG mode, set both --port and --preload-port
 # options. The --preload-port needs to be connected to a USB-to-UART bridge,
@@ -48,9 +48,9 @@ from conftest import (
 import pytest
 
 try:
-    import esptool
+    import pesptool
     import espefuse
-    from esptool.cmds import (
+    from pesptool.cmds import (
         detect_chip,
         erase_flash,
         attach_flash,
@@ -73,7 +73,7 @@ import serial
 
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 
-print("Running esptool tests...")
+print("Running pesptool tests...")
 
 
 class ESPRFC2217Server:
@@ -137,7 +137,7 @@ class ESPRFC2217Server:
 
 # Re-run all tests at least once if failure happens in USB-JTAG/Serial
 @pytest.mark.flaky(reruns=1, condition=arg_preload_port is not False)
-class EsptoolTestCase:
+class pesptoolTestCase:
     def run_espsecure(self, args):
         cmd = [sys.executable, "-m", "espsecure"] + args.split(" ")
         print("\nExecuting {}...".format(" ".join(cmd)))
@@ -152,11 +152,11 @@ class EsptoolTestCase:
             print(e.output)
             raise e
 
-    def run_esptool(
+    def run_pesptool(
         self, args, baud=arg_baud, chip=arg_chip, port=arg_port, preload=True
     ):
         """
-        Run esptool with the specified arguments. --chip, --port and --baud
+        Run pesptool with the specified arguments. --chip, --port and --baud
         are filled in automatically from the command line.
         (These can be overridden with their respective params.)
 
@@ -166,11 +166,11 @@ class EsptoolTestCase:
         This is needed in USB-JTAG/Serial mode to disable the
         RTC watchdog, which causes the port to periodically disappear.
 
-        Returns output from esptool as a string if there is any.
-        Raises an exception if esptool fails.
+        Returns output from pesptool as a string if there is any.
+        Raises an exception if pesptool fails.
         """
 
-        def run_esptool_process(cmd):
+        def run_pesptool_process(cmd):
             print("Executing {}...".format(" ".join(cmd)))
             try:
                 output = subprocess.check_output(
@@ -185,12 +185,12 @@ class EsptoolTestCase:
 
         try:
             # Used for flasher_stub/run_tests_with_stub.sh
-            esptool = [os.environ["ESPTOOL_PY"]]
+            pesptool = [os.environ["pesptool_PY"]]
         except KeyError:
-            # Run the installed esptool module
-            esptool = ["-m", "esptool"]
+            # Run the installed pesptool module
+            pesptool = ["-m", "pesptool"]
         trace_arg = ["--trace"] if arg_trace else []
-        base_cmd = [sys.executable] + esptool + trace_arg
+        base_cmd = [sys.executable] + pesptool + trace_arg
         if chip and chip != "auto":
             base_cmd += ["--chip", chip]
         if port:
@@ -199,7 +199,7 @@ class EsptoolTestCase:
             base_cmd += ["--baud", str(baud)]
         usb_jtag_serial_reset = ["--before", "usb-reset"] if arg_preload_port else []
         usb_otg_dont_reset = (
-            ["--after", "no-reset-stub"] if "ESPTOOL_TEST_USB_OTG" in os.environ else []
+            ["--after", "no-reset-stub"] if "pesptool_TEST_USB_OTG" in os.environ else []
         )
         full_cmd = (
             base_cmd + usb_jtag_serial_reset + usb_otg_dont_reset + args.split(" ")
@@ -229,29 +229,29 @@ class EsptoolTestCase:
                 f"{TEST_DIR}/images/ram_helloworld/helloworld-{arg_chip}.bin",
             ]
             print("\nPreloading dummy binary to disable RTC watchdog...")
-            run_esptool_process(preload_cmd)
+            run_pesptool_process(preload_cmd)
             print("Dummy binary preloaded successfully.")
             sleep(0.3)  # Wait for the app to run and port to appear
 
         # Run the command
         print(f'\nRunning the "{args}" command...')
-        output = run_esptool_process(full_cmd)
+        output = run_pesptool_process(full_cmd)
         print(output)  # for more complete stdout logs on failure
 
-        if "ESPTOOL_TEST_USB_OTG" in os.environ:
+        if "pesptool_TEST_USB_OTG" in os.environ:
             sleep(0.5)  # Wait for the port to enumerate between tests
 
         return output
 
-    def run_esptool_error(self, args, baud=arg_baud, chip=arg_chip, port=arg_port):
+    def run_pesptool_error(self, args, baud=arg_baud, chip=arg_chip, port=arg_port):
         """
-        Run esptool similar to run_esptool, but expect an error.
+        Run pesptool similar to run_pesptool, but expect an error.
 
         Verifies the error is an expected error not an unhandled exception,
-        and returns the output from esptool as a string.
+        and returns the output from pesptool as a string.
         """
         with pytest.raises(subprocess.CalledProcessError) as fail:
-            self.run_esptool(args, baud, chip, port)
+            self.run_pesptool(args, baud, chip, port)
         failure = fail.value
         assert failure.returncode in [1, 2]  # UnsupportedCmdError and FatalError codes
         return failure.output.decode("utf-8")
@@ -278,7 +278,7 @@ class EsptoolTestCase:
             )
             if spi_connection:
                 cmd += f" --spi-connection {spi_connection}"
-            self.run_esptool(cmd)
+            self.run_pesptool(cmd)
             with open(dump_file.name, "rb") as f:
                 rb = f.read()
 
@@ -332,10 +332,10 @@ class EsptoolTestCase:
 
 
 @pytest.mark.skipif(arg_chip != "esp32", reason="ESP32 only")
-class TestFlashEncryption(EsptoolTestCase):
+class TestFlashEncryption(pesptoolTestCase):
     def valid_key_present(self):
         try:
-            esp = esptool.ESP32ROM(arg_port)
+            esp = pesptool.ESP32ROM(arg_port)
             esp.connect()
             efuse_cls = espefuse.init_commands(esp=esp)
             blk1_rd_en = efuse_cls.efuses["BLOCK1"].is_readable()
@@ -350,12 +350,12 @@ class TestFlashEncryption(EsptoolTestCase):
         if self.valid_key_present() is True:
             pytest.skip("Valid encryption key already programmed, aborting the test")
 
-        self.run_esptool(
+        self.run_pesptool(
             "write-flash 0x1000 images/bootloader_esp32.bin "
             "0x8000 images/partitions_singleapp.bin "
             "0x10000 images/ram_helloworld/helloworld-esp32.bin"
         )
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "write-flash --encrypt 0x10000 images/ram_helloworld/helloworld-esp32.bin"
         )
         assert "Flash encryption key is not programmed".lower() in output.lower()
@@ -371,11 +371,11 @@ class TestFlashEncryption(EsptoolTestCase):
         if self.valid_key_present() is True:
             pytest.skip("Valid encryption key already programmed, aborting the test")
 
-        self.run_esptool(
+        self.run_pesptool(
             "write-flash --encrypt --ignore-flash-enc-efuse "
             "0x10000 images/ram_helloworld/helloworld-esp32.bin"
         )
-        self.run_esptool("read-flash 0x10000 192 images/read_encrypted_flash.bin")
+        self.run_pesptool("read-flash 0x10000 192 images/read_encrypted_flash.bin")
         self.run_espsecure(
             "encrypt-flash-data --address 0x10000 --keyfile images/aes_key.bin "
             "--flash-crypt-conf 0 --output images/local_enc.bin "
@@ -410,11 +410,11 @@ class TestFlashEncryption(EsptoolTestCase):
         if self.valid_key_present() is True:
             pytest.skip("Valid encryption key already programmed, aborting the test")
 
-        self.run_esptool(
+        self.run_pesptool(
             "write-flash --encrypt --ignore-flash-enc-efuse "
             "0x10000 images/ram_helloworld/helloworld-esp32_edit.bin"
         )
-        self.run_esptool("read-flash 0x10000 192 images/read_encrypted_flash.bin")
+        self.run_pesptool("read-flash 0x10000 192 images/read_encrypted_flash.bin")
         self.run_espsecure(
             "encrypt-flash-data --address 0x10000 --keyfile images/aes_key.bin "
             "--flash-crypt-conf 0 --output images/local_enc.bin "
@@ -436,15 +436,15 @@ class TestFlashEncryption(EsptoolTestCase):
             os.remove("images/local_enc.bin")
 
 
-class TestFlashing(EsptoolTestCase):
+class TestFlashing(pesptoolTestCase):
     @pytest.mark.quick_test
     def test_short_flash(self):
-        self.run_esptool("write-flash 0x0 images/one_kb.bin")
+        self.run_pesptool("write-flash 0x0 images/one_kb.bin")
         self.verify_readback(0, 1024, "images/one_kb.bin")
 
     @pytest.mark.skipif(arg_chip != "esp32", reason="Don't need to test multiple times")
     def test_short_flash_deprecated(self):
-        out = self.run_esptool(
+        out = self.run_pesptool(
             "--before default_reset write_flash 0x0 images/one_kb.bin "
             "--flash_size keep --flash_mode=keep"
         )
@@ -468,21 +468,21 @@ class TestFlashing(EsptoolTestCase):
 
     @pytest.mark.quick_test
     def test_highspeed_flash(self):
-        self.run_esptool("write-flash 0x0 images/fifty_kb.bin", baud=921600)
+        self.run_pesptool("write-flash 0x0 images/fifty_kb.bin", baud=921600)
         self.verify_readback(0, 50 * 1024, "images/fifty_kb.bin")
 
     def test_adjacent_flash(self):
-        self.run_esptool("write-flash 0x0 images/sector.bin 0x1000 images/fifty_kb.bin")
+        self.run_pesptool("write-flash 0x0 images/sector.bin 0x1000 images/fifty_kb.bin")
         self.verify_readback(0, 4096, "images/sector.bin")
         self.verify_readback(4096, 50 * 1024, "images/fifty_kb.bin")
 
     def test_short_flash_hex(self):
         fd, f = tempfile.mkstemp(suffix=".hex")
         try:
-            self.run_esptool(f"merge-bin --format hex 0x0 images/one_kb.bin -o {f}")
+            self.run_pesptool(f"merge-bin --format hex 0x0 images/one_kb.bin -o {f}")
             # make sure file is closed before running next command (mainly for Windows)
             os.close(fd)
-            self.run_esptool(f"write-flash 0x0 {f}")
+            self.run_pesptool(f"write-flash 0x0 {f}")
             self.verify_readback(0, 1024, "images/one_kb.bin")
         finally:
             os.unlink(f)
@@ -491,14 +491,14 @@ class TestFlashing(EsptoolTestCase):
         fd1, f1 = tempfile.mkstemp(suffix=".hex")
         fd2, f2 = tempfile.mkstemp(suffix=".hex")
         try:
-            self.run_esptool(f"merge-bin --format hex 0x0 images/sector.bin -o {f1}")
+            self.run_pesptool(f"merge-bin --format hex 0x0 images/sector.bin -o {f1}")
             # make sure file is closed before running next command (mainly for Windows)
             os.close(fd1)
-            self.run_esptool(
+            self.run_pesptool(
                 f"merge-bin --format hex 0x1000 images/fifty_kb.bin -o {f2}"
             )
             os.close(fd2)
-            self.run_esptool(f"write-flash 0x0 {f1} 0x1000 {f2}")
+            self.run_pesptool(f"write-flash 0x0 {f1} 0x1000 {f2}")
             self.verify_readback(0, 4096, "images/sector.bin")
             self.verify_readback(4096, 50 * 1024, "images/fifty_kb.bin")
         finally:
@@ -508,53 +508,53 @@ class TestFlashing(EsptoolTestCase):
     def test_adjacent_flash_mixed(self):
         fd, f = tempfile.mkstemp(suffix=".hex")
         try:
-            self.run_esptool(
+            self.run_pesptool(
                 f"merge-bin --format hex 0x1000 images/fifty_kb.bin -o {f}"
             )
             # make sure file is closed before running next command (mainly for Windows)
             os.close(fd)
-            self.run_esptool(f"write-flash 0x0 images/sector.bin 0x1000 {f}")
+            self.run_pesptool(f"write-flash 0x0 images/sector.bin 0x1000 {f}")
             self.verify_readback(0, 4096, "images/sector.bin")
             self.verify_readback(4096, 50 * 1024, "images/fifty_kb.bin")
         finally:
             os.unlink(f)
 
     def test_adjacent_independent_flash(self):
-        self.run_esptool("write-flash 0x0 images/sector.bin")
+        self.run_pesptool("write-flash 0x0 images/sector.bin")
         self.verify_readback(0, 4096, "images/sector.bin")
-        self.run_esptool("write-flash 0x1000 images/fifty_kb.bin")
+        self.run_pesptool("write-flash 0x1000 images/fifty_kb.bin")
         self.verify_readback(4096, 50 * 1024, "images/fifty_kb.bin")
         # writing flash the second time shouldn't have corrupted the first time
         self.verify_readback(0, 4096, "images/sector.bin")
 
     @pytest.mark.skipif(
-        int(os.getenv("ESPTOOL_TEST_FLASH_SIZE", "0")) < 32, reason="needs 32MB flash"
+        int(os.getenv("pesptool_TEST_FLASH_SIZE", "0")) < 32, reason="needs 32MB flash"
     )
     def test_last_bytes_of_32M_flash(self):
         flash_size = 32 * 1024 * 1024
         image_size = 1024
         offset = flash_size - image_size
-        self.run_esptool("write-flash {} images/one_kb.bin".format(hex(offset)))
+        self.run_pesptool("write-flash {} images/one_kb.bin".format(hex(offset)))
         # Some of the functions cannot handle 32-bit addresses - i.e. addresses
         # accessing the higher 16MB will manipulate with the lower 16MB flash area.
         offset2 = offset & 0xFFFFFF
-        self.run_esptool("write-flash {} images/one_kb_all_ef.bin".format(hex(offset2)))
+        self.run_pesptool("write-flash {} images/one_kb_all_ef.bin".format(hex(offset2)))
         self.verify_readback(offset, image_size, "images/one_kb.bin")
 
     @pytest.mark.skipif(
-        int(os.getenv("ESPTOOL_TEST_FLASH_SIZE", "0")) < 32, reason="needs 32MB flash"
+        int(os.getenv("pesptool_TEST_FLASH_SIZE", "0")) < 32, reason="needs 32MB flash"
     )
     def test_write_larger_area_to_32M_flash(self):
         offset = 18 * 1024 * 1024
-        self.run_esptool("write-flash {} images/one_mb.bin".format(hex(offset)))
+        self.run_pesptool("write-flash {} images/one_mb.bin".format(hex(offset)))
         # Some of the functions cannot handle 32-bit addresses - i.e. addresses
         # accessing the higher 16MB will manipulate with the lower 16MB flash area.
         offset2 = offset & 0xFFFFFF
-        self.run_esptool("write-flash {} images/one_kb_all_ef.bin".format(hex(offset2)))
+        self.run_pesptool("write-flash {} images/one_kb_all_ef.bin".format(hex(offset2)))
         self.verify_readback(offset, 1 * 1024 * 1024, "images/one_mb.bin")
 
     @pytest.mark.skipif(
-        int(os.getenv("ESPTOOL_TEST_FLASH_SIZE", "0")) < 32, reason="needs 32MB flash"
+        int(os.getenv("pesptool_TEST_FLASH_SIZE", "0")) < 32, reason="needs 32MB flash"
     )
     def test_verify_erase_between_32M_flash(self):
         """
@@ -574,10 +574,10 @@ class TestFlashing(EsptoolTestCase):
             binary1.close()
             binary2.close()
 
-            output1 = self.run_esptool(f"write-flash {BASE_OFFSET} {binary1.name}")
+            output1 = self.run_pesptool(f"write-flash {BASE_OFFSET} {binary1.name}")
             assert "Hash of data verified" in output1
 
-            output2 = self.run_esptool(f"write-flash {BASE_OFFSET} {binary2.name}")
+            output2 = self.run_pesptool(f"write-flash {BASE_OFFSET} {binary2.name}")
             assert "Hash of data verified" in output2
 
         finally:
@@ -586,7 +586,7 @@ class TestFlashing(EsptoolTestCase):
 
     def test_correct_offset(self):
         """Verify writing at an offset actually writes to that offset."""
-        self.run_esptool("write-flash 0x2000 images/sector.bin")
+        self.run_pesptool("write-flash 0x2000 images/sector.bin")
         sleep(0.1)
         three_sectors = self.readback(0, 0x3000)
         last_sector = three_sectors[0x2000:]
@@ -596,7 +596,7 @@ class TestFlashing(EsptoolTestCase):
 
     @pytest.mark.quick_test
     def test_no_compression_flash(self):
-        self.run_esptool(
+        self.run_pesptool(
             "write-flash -u 0x0 images/sector.bin 0x1000 images/fifty_kb.bin"
         )
         self.verify_readback(0, 4096, "images/sector.bin")
@@ -605,16 +605,16 @@ class TestFlashing(EsptoolTestCase):
     @pytest.mark.quick_test
     @pytest.mark.skipif(arg_chip == "esp8266", reason="Added in ESP32")
     def test_compressed_nostub_flash(self):
-        self.run_esptool(
+        self.run_pesptool(
             "--no-stub write-flash -z 0x0 images/sector.bin 0x1000 images/fifty_kb.bin"
         )
         self.verify_readback(0, 4096, "images/sector.bin")
         self.verify_readback(4096, 50 * 1024, "images/fifty_kb.bin")
 
     def _test_partition_table_then_bootloader(self, args):
-        self.run_esptool(args + " 0x4000 images/partitions_singleapp.bin")
+        self.run_pesptool(args + " 0x4000 images/partitions_singleapp.bin")
         self.verify_readback(0x4000, 96, "images/partitions_singleapp.bin")
-        self.run_esptool(args + " 0x1000 images/bootloader_esp32.bin")
+        self.run_pesptool(args + " 0x1000 images/bootloader_esp32.bin")
         self.verify_readback(0x1000, 7888, "images/bootloader_esp32.bin", True)
         self.verify_readback(0x4000, 96, "images/partitions_singleapp.bin")
 
@@ -633,15 +633,15 @@ class TestFlashing(EsptoolTestCase):
     # test_compressed_nostub_flash() instead.
 
     def test_length_not_aligned_4bytes(self):
-        self.run_esptool("write-flash 0x0 images/not_4_byte_aligned.bin")
+        self.run_pesptool("write-flash 0x0 images/not_4_byte_aligned.bin")
 
     def test_length_not_aligned_4bytes_no_compression(self):
-        self.run_esptool("write-flash -u 0x0 images/not_4_byte_aligned.bin")
+        self.run_pesptool("write-flash -u 0x0 images/not_4_byte_aligned.bin")
 
     @pytest.mark.quick_test
     @pytest.mark.host_test
     def test_write_overlap(self):
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "write-flash 0x0 images/bootloader_esp32.bin 0x1000 images/one_kb.bin"
         )
         assert "Detected overlap at address: 0x1000 " in output
@@ -649,7 +649,7 @@ class TestFlashing(EsptoolTestCase):
     @pytest.mark.quick_test
     @pytest.mark.host_test
     def test_repeated_address(self):
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "write-flash 0x0 images/one_kb.bin 0x0 images/one_kb.bin"
         )
         assert "Detected overlap at address: 0x0 " in output
@@ -659,13 +659,13 @@ class TestFlashing(EsptoolTestCase):
     def test_write_sector_overlap(self):
         # These two 1KB files don't overlap,
         # but they do both touch sector at 0x1000 so should fail
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "write-flash 0xd00 images/one_kb.bin 0x1d00 images/one_kb.bin"
         )
         assert "Detected overlap at address: 0x1d00" in output
 
     def test_write_no_overlap(self):
-        output = self.run_esptool(
+        output = self.run_pesptool(
             "write-flash 0x0 images/one_kb.bin 0x2000 images/one_kb.bin"
         )
         assert "Detected overlap at address" not in output
@@ -676,7 +676,7 @@ class TestFlashing(EsptoolTestCase):
             file_size = 1024 * 1024
             input_file.write(b"\x00" * file_size)
             input_file.close()
-            self.run_esptool(f"write-flash 0x10000 {input_file.name}")
+            self.run_pesptool(f"write-flash 0x10000 {input_file.name}")
         finally:
             os.unlink(input_file.name)
 
@@ -690,14 +690,14 @@ class TestFlashing(EsptoolTestCase):
                     struct.pack("B", random.randrange(0, 1 << 8)) * same_bytes
                 )
             input_file.close()
-            self.run_esptool(f"write-flash 0x10000 {input_file.name}")
+            self.run_pesptool(f"write-flash 0x10000 {input_file.name}")
         finally:
             os.unlink(input_file.name)
 
     @pytest.mark.quick_test
     def test_zero_length(self):
         # Zero length files are skipped with a warning
-        output = self.run_esptool(
+        output = self.run_pesptool(
             "write-flash 0x10000 images/one_kb.bin 0x11000 images/zerolength.bin"
         )
         self.verify_readback(0x10000, 1024, "images/one_kb.bin")
@@ -705,11 +705,11 @@ class TestFlashing(EsptoolTestCase):
 
     @pytest.mark.quick_test
     def test_single_byte(self):
-        self.run_esptool("write-flash 0x0 images/onebyte.bin")
+        self.run_pesptool("write-flash 0x0 images/onebyte.bin")
         self.verify_readback(0x0, 1, "images/onebyte.bin")
 
     def test_erase_range_messages(self):
-        output = self.run_esptool(
+        output = self.run_pesptool(
             "write-flash 0x1000 images/sector.bin 0x0FC00 images/one_kb.bin"
         )
         assert "Flash will be erased from 0x00001000 to 0x00001fff..." in output
@@ -727,7 +727,7 @@ class TestFlashing(EsptoolTestCase):
         arg_chip == "esp32s3", reason="This is a valid ESP32-S3 image, would pass"
     )
     def test_write_image_for_another_target(self):
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "write-flash 0x0 images/esp32s3_header.bin 0x1000 images/one_kb.bin"
         )
         assert "Unexpected chip ID in image." in output
@@ -742,7 +742,7 @@ class TestFlashing(EsptoolTestCase):
         arg_chip != "esp32s3", reason="This check happens only on a valid image"
     )
     def test_write_image_for_another_revision(self):
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "write-flash 0x0 images/one_kb.bin 0x1000 images/esp32s3_header.bin"
         )
         assert "'images/esp32s3_header.bin' requires chip revision 10" in output
@@ -754,7 +754,7 @@ class TestFlashing(EsptoolTestCase):
     )
     def test_flash_with_min_max_rev(self):
         """Use min/max_rev_full field to specify chip revision"""
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "write-flash 0x0 images/one_kb.bin 0x1000 images/esp32c3_header_min_rev.bin"
         )
         assert (
@@ -765,18 +765,18 @@ class TestFlashing(EsptoolTestCase):
 
     @pytest.mark.quick_test
     def test_erase_before_write(self):
-        output = self.run_esptool("write-flash --erase-all 0x0 images/one_kb.bin")
+        output = self.run_pesptool("write-flash --erase-all 0x0 images/one_kb.bin")
         assert "Flash memory erased successfully" in output
         assert "Hash of data verified" in output
 
     @pytest.mark.quick_test
     def test_flash_not_aligned_nostub(self):
-        output = self.run_esptool("--no-stub write-flash 0x1 images/one_kb.bin")
+        output = self.run_pesptool("--no-stub write-flash 0x1 images/one_kb.bin")
         assert (
             "Flash address 0x00000001 is not aligned to a 0x1000 byte flash sector. "
             "0x1 bytes before this address will be erased." in output
         )
-        if "ESPTOOL_TEST_USB_OTG" not in os.environ:
+        if "pesptool_TEST_USB_OTG" not in os.environ:
             assert "Hard resetting" in output
 
     @pytest.mark.skipif(arg_preload_port is False, reason="USB-JTAG/Serial only")
@@ -791,13 +791,13 @@ class TestFlashing(EsptoolTestCase):
         SYSTEM_SOC_CLK_SEL_S = 10
         SYSTEM_SOC_CLK_MAX = 1
 
-        output = self.run_esptool(
+        output = self.run_pesptool(
             "--after no-reset-stub write-flash 0x0 images/one_mb.bin", preload=False
         )
         faster = re.search(r"(\d+(\.\d+)?)\s+seconds", output)
         assert faster, "Duration summary not found in the output"
 
-        with esptool.cmds.detect_chip(
+        with pesptool.cmds.detect_chip(
             port=arg_port, connect_mode="no-reset"
         ) as reg_mod:
             reg_mod.write_reg(
@@ -812,7 +812,7 @@ class TestFlashing(EsptoolTestCase):
                 mask=(SYSTEM_CPUPERIOD_MAX << SYSTEM_CPUPERIOD_SEL_S),
             )
 
-        output = self.run_esptool(
+        output = self.run_pesptool(
             "--before no-reset write-flash 0x0 images/one_mb.bin", preload=False
         )
         slower = re.search(r"(\d+(\.\d+)?)\s+seconds", output)
@@ -826,7 +826,7 @@ class TestFlashing(EsptoolTestCase):
     def test_flash_watchdogs(self):
         RTC_WDT_ENABLE = 0xC927FA00  # Valid only for ESP32-C3
 
-        with esptool.cmds.detect_chip(port=arg_port) as reg_mod:
+        with pesptool.cmds.detect_chip(port=arg_port) as reg_mod:
             # Enable RTC WDT
             reg_mod.write_reg(
                 reg_mod.RTC_CNTL_WDTWPROTECT_REG, reg_mod.RTC_CNTL_WDT_WKEY
@@ -846,14 +846,14 @@ class TestFlashing(EsptoolTestCase):
             reg_mod.sync_stub_detected = False
             reg_mod.run_stub()
 
-        output = self.run_esptool(
+        output = self.run_pesptool(
             "--before no-reset --after no-reset-stub flash-id", preload=False
         )
         assert "Stub flasher is already running. No upload is necessary." in output
 
         sleep(10)  # Wait if RTC WDT triggers
 
-        with esptool.cmds.detect_chip(
+        with pesptool.cmds.detect_chip(
             port=arg_port, connect_mode="no-reset"
         ) as reg_mod:
             output = reg_mod.read_reg(reg_mod.RTC_CNTL_WDTCONFIG0_REG)
@@ -868,16 +868,16 @@ class TestFlashing(EsptoolTestCase):
     arg_chip in ["esp8266", "esp32"],
     reason="get-security-info command is supported on ESP32S2 and later",
 )
-class TestSecurityInfo(EsptoolTestCase):
+class TestSecurityInfo(pesptoolTestCase):
     def test_show_security_info(self):
-        res = self.run_esptool("get-security-info")
+        res = self.run_pesptool("get-security-info")
         assert "Flags" in res
         assert "Crypt Count" in res
         if arg_chip != "esp32c2":
             assert "Key Purposes" in res
         if arg_chip != "esp32s2":
             try:
-                esp = esptool.get_default_connected_device(
+                esp = pesptool.get_default_connected_device(
                     [arg_port], arg_port, 10, 115200, arg_chip
                 )
                 assert f"Chip ID: {esp.IMAGE_CHIP_ID}" in res
@@ -888,30 +888,30 @@ class TestSecurityInfo(EsptoolTestCase):
         assert "Flash Encryption" in res
 
 
-class TestFlashSizes(EsptoolTestCase):
+class TestFlashSizes(pesptoolTestCase):
     def test_high_offset(self):
-        self.run_esptool("write-flash -fs 4MB 0x300000 images/one_kb.bin")
+        self.run_pesptool("write-flash -fs 4MB 0x300000 images/one_kb.bin")
         self.verify_readback(0x300000, 1024, "images/one_kb.bin")
 
     def test_high_offset_no_compression(self):
-        self.run_esptool("write-flash -u -fs 4MB 0x300000 images/one_kb.bin")
+        self.run_pesptool("write-flash -u -fs 4MB 0x300000 images/one_kb.bin")
         self.verify_readback(0x300000, 1024, "images/one_kb.bin")
 
     def test_large_image(self):
-        self.run_esptool("write-flash -fs 4MB 0x280000 images/one_mb.bin")
+        self.run_pesptool("write-flash -fs 4MB 0x280000 images/one_mb.bin")
         self.verify_readback(0x280000, 0x100000, "images/one_mb.bin")
 
     def test_large_no_compression(self):
-        self.run_esptool("write-flash -u -fs 4MB 0x280000 images/one_mb.bin")
+        self.run_pesptool("write-flash -u -fs 4MB 0x280000 images/one_mb.bin")
         self.verify_readback(0x280000, 0x100000, "images/one_mb.bin")
 
     @pytest.mark.quick_test
     @pytest.mark.host_test
     def test_invalid_size_arg(self):
-        self.run_esptool_error("write-flash -fs 10MB 0x6000 images/one_kb.bin")
+        self.run_pesptool_error("write-flash -fs 10MB 0x6000 images/one_kb.bin")
 
     def test_write_past_end_fails(self):
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "write-flash -fs 1MB 0x280000 images/one_kb.bin"
         )
         assert "File 'images/one_kb.bin'" in output
@@ -919,13 +919,13 @@ class TestFlashSizes(EsptoolTestCase):
 
     @pytest.mark.skipif(arg_chip != "esp32", reason="Don't need to test multiple times")
     def test_read_past_end_fails(self):
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "read-flash 0xffffff 1 out.bin"
         )  # 0xffffff is well past the end of the flash in most cases (16MB)
         assert "Can't access flash regions larger than detected flash size" in output
 
     def test_write_no_compression_past_end_fails(self):
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "write-flash -u -fs 1MB 0x280000 images/one_kb.bin"
         )
         assert "File 'images/one_kb.bin'" in output
@@ -945,7 +945,7 @@ class TestFlashSizes(EsptoolTestCase):
         with open(image, "rb") as f:
             f.seek(0, 2)
             image_len = f.tell()
-        self.run_esptool(f"write-flash -fs keep {offset} {image}")
+        self.run_pesptool(f"write-flash -fs keep {offset} {image}")
         # header should be the same as in the .bin file
         self.verify_readback(offset, image_len, image)
 
@@ -955,11 +955,11 @@ class TestFlashSizes(EsptoolTestCase):
     def test_read_nostub_high_offset(self):
         offset = 0x300000
         length = 1024
-        self.run_esptool(f"write-flash -fs detect {offset} images/one_kb.bin")
+        self.run_pesptool(f"write-flash -fs detect {offset} images/one_kb.bin")
         dump_file = tempfile.NamedTemporaryFile(delete=False)
         # readback with no-stub and flash-size set
         try:
-            self.run_esptool(
+            self.run_pesptool(
                 f"--no-stub read-flash -fs detect {offset} 1k {dump_file.name}"
             )
             with open(dump_file.name, "rb") as f:
@@ -977,11 +977,11 @@ class TestFlashSizes(EsptoolTestCase):
         self.diff(rb, ct)
 
 
-class TestFlashDetection(EsptoolTestCase):
+class TestFlashDetection(pesptoolTestCase):
     @pytest.mark.quick_test
     def test_flash_id(self):
         """Test manufacturer and device response of flash detection."""
-        res = self.run_esptool("flash-id")
+        res = self.run_pesptool("flash-id")
         assert "Manufacturer:" in res
         assert "Device:" in res
 
@@ -994,7 +994,7 @@ class TestFlashDetection(EsptoolTestCase):
             arg_file = tempfile.NamedTemporaryFile(delete=False)
             arg_file.write(b"flash-id\n")
             arg_file.close()
-            res = self.run_esptool(f"@{arg_file.name}")
+            res = self.run_pesptool(f"@{arg_file.name}")
             assert "Manufacturer:" in res
             assert "Device:" in res
         finally:
@@ -1003,7 +1003,7 @@ class TestFlashDetection(EsptoolTestCase):
     @pytest.mark.quick_test
     def test_flash_id_trace(self):
         """Test trace functionality on flash detection, running without stub"""
-        res = self.run_esptool("--trace flash-id")
+        res = self.run_pesptool("--trace flash-id")
         # read register command
         assert (
             re.search(r"TRACE \+\d.\d{3}   --- Cmd READ_REG \(0x0a\) .*", res)
@@ -1038,7 +1038,7 @@ class TestFlashDetection(EsptoolTestCase):
         # but it does not have the same amount of efuse blocks
         # the methods are overwritten
         # in case anything changes this test will fail to remind us
-        res = self.run_esptool("flash-id")
+        res = self.run_pesptool("flash-id")
         lines = res.splitlines()
         for line in lines:
             assert "embedded flash" not in line.lower()
@@ -1046,22 +1046,22 @@ class TestFlashDetection(EsptoolTestCase):
     @pytest.mark.quick_test
     def test_flash_sfdp(self):
         """Test manufacturer and device response of flash detection."""
-        res = self.run_esptool("read-flash-sfdp 0 4")
+        res = self.run_pesptool("read-flash-sfdp 0 4")
         assert "SFDP[0..3]: 0x53 0x46 0x44 0x50" in res
-        res = self.run_esptool("read-flash-sfdp 1 3")
+        res = self.run_pesptool("read-flash-sfdp 1 3")
         assert "SFDP[1..3]: 0x46 0x44 0x50" in res
 
 
 @pytest.mark.skipif(
-    os.getenv("ESPTOOL_TEST_SPI_CONN") is None, reason="Needs external flash"
+    os.getenv("pesptool_TEST_SPI_CONN") is None, reason="Needs external flash"
 )
-class TestExternalFlash(EsptoolTestCase):
-    conn = os.getenv("ESPTOOL_TEST_SPI_CONN")
+class TestExternalFlash(pesptoolTestCase):
+    conn = os.getenv("pesptool_TEST_SPI_CONN")
 
     def test_short_flash_to_external_stub(self):
         # First flash internal flash, then external
-        self.run_esptool("write-flash 0x0 images/one_kb.bin")
-        self.run_esptool(
+        self.run_pesptool("write-flash 0x0 images/one_kb.bin")
+        self.run_pesptool(
             f"write-flash --spi-connection {self.conn} 0x0 images/sector.bin"
         )
 
@@ -1069,18 +1069,18 @@ class TestExternalFlash(EsptoolTestCase):
         self.verify_readback(0, 1024, "images/sector.bin", spi_connection=self.conn)
 
         # First flash external flash, then internal
-        self.run_esptool(
+        self.run_pesptool(
             f"write-flash --spi-connection {self.conn} 0x0 images/one_kb.bin"
         )
-        self.run_esptool("write-flash 0x0 images/sector.bin")
+        self.run_pesptool("write-flash 0x0 images/sector.bin")
 
         self.verify_readback(0, 1024, "images/sector.bin")
         self.verify_readback(0, 1024, "images/one_kb.bin", spi_connection=self.conn)
 
     def test_short_flash_to_external_ROM(self):
         # First flash internal flash, then external
-        self.run_esptool("--no-stub write-flash 0x0 images/one_kb.bin")
-        self.run_esptool(
+        self.run_pesptool("--no-stub write-flash 0x0 images/one_kb.bin")
+        self.run_pesptool(
             f"--no-stub write-flash --spi-connection {self.conn} 0x0 images/sector.bin"
         )
 
@@ -1088,27 +1088,27 @@ class TestExternalFlash(EsptoolTestCase):
         self.verify_readback(0, 1024, "images/sector.bin", spi_connection=self.conn)
 
         # First flash external flash, then internal
-        self.run_esptool(
+        self.run_pesptool(
             f"--no-stub write-flash --spi-connection {self.conn} 0x0 images/one_kb.bin"
         )
-        self.run_esptool("--no-stub write-flash 0x0 images/sector.bin")
+        self.run_pesptool("--no-stub write-flash 0x0 images/sector.bin")
 
         self.verify_readback(0, 1024, "images/sector.bin")
         self.verify_readback(0, 1024, "images/one_kb.bin", spi_connection=self.conn)
 
 
 @pytest.mark.skipif(
-    "ESPTOOL_TEST_USB_OTG" in os.environ,
+    "pesptool_TEST_USB_OTG" in os.environ,
     reason="USB-OTG tests require --after no-reset for stability.",
 )
-class TestStubReuse(EsptoolTestCase):
+class TestStubReuse(pesptoolTestCase):
     def test_stub_reuse_with_synchronization(self):
         """Keep the flasher stub running and reuse it the next time."""
-        res = self.run_esptool(
+        res = self.run_pesptool(
             "--after no-reset-stub flash-id"
         )  # flasher stub keeps running after this
         assert "Manufacturer:" in res
-        res = self.run_esptool(
+        res = self.run_pesptool(
             "--before no-reset flash-id",
             preload=False,
         )  # do sync before (without reset it talks to the flasher stub)
@@ -1119,92 +1119,92 @@ class TestStubReuse(EsptoolTestCase):
         Keep the flasher stub running and reuse it the next time
         without synchronization.
         """
-        res = self.run_esptool("--after no-reset-stub flash-id")
+        res = self.run_pesptool("--after no-reset-stub flash-id")
         assert "Manufacturer:" in res
-        res = self.run_esptool("--before no-reset-no-sync flash-id", preload=False)
+        res = self.run_pesptool("--before no-reset-no-sync flash-id", preload=False)
         assert "Manufacturer:" in res
 
 
-class TestErase(EsptoolTestCase):
+class TestErase(pesptoolTestCase):
     @pytest.mark.quick_test
     def test_chip_erase(self):
-        self.run_esptool("write-flash 0x10000 images/one_kb.bin")
+        self.run_pesptool("write-flash 0x10000 images/one_kb.bin")
         self.verify_readback(0x10000, 0x400, "images/one_kb.bin")
-        self.run_esptool("erase-flash")
+        self.run_pesptool("erase-flash")
         empty = self.readback(0x10000, 0x400)
         assert empty == b"\xff" * 0x400
 
     def test_region_erase(self):
-        self.run_esptool("write-flash 0x10000 images/one_kb.bin")
-        self.run_esptool("write-flash 0x11000 images/sector.bin")
+        self.run_pesptool("write-flash 0x10000 images/one_kb.bin")
+        self.run_pesptool("write-flash 0x11000 images/sector.bin")
         self.verify_readback(0x10000, 0x400, "images/one_kb.bin")
         self.verify_readback(0x11000, 0x1000, "images/sector.bin")
         # erase only the flash sector containing one_kb.bin
-        self.run_esptool("erase-region 0x10000 0x1000")
+        self.run_pesptool("erase-region 0x10000 0x1000")
         self.verify_readback(0x11000, 0x1000, "images/sector.bin")
         empty = self.readback(0x10000, 0x1000)
         assert empty == b"\xff" * 0x1000
 
     def test_region_erase_all(self):
-        res = self.run_esptool("erase-region 0x0 ALL")
+        res = self.run_pesptool("erase-region 0x0 ALL")
         assert re.search(r"Detected flash size: \d+[KM]B", res) is not None
 
     def test_large_region_erase(self):
         # verifies that erasing a large region doesn't time out
-        self.run_esptool("erase-region 0x0 0x100000")
+        self.run_pesptool("erase-region 0x0 0x100000")
 
     @pytest.mark.skipif(arg_chip == "esp8266", reason="Not supported on ESP8266")
     def test_region_erase_no_stub(self):
-        self.run_esptool("write-flash 0x10000 images/one_kb.bin")
-        self.run_esptool("write-flash 0x11000 images/sector.bin")
+        self.run_pesptool("write-flash 0x10000 images/one_kb.bin")
+        self.run_pesptool("write-flash 0x11000 images/sector.bin")
         self.verify_readback(0x10000, 0x400, "images/one_kb.bin")
         self.verify_readback(0x11000, 0x1000, "images/sector.bin")
         # erase only the flash sector containing one_kb.bin
-        self.run_esptool("--no-stub erase-region 0x10000 0x1000")
+        self.run_pesptool("--no-stub erase-region 0x10000 0x1000")
         self.verify_readback(0x11000, 0x1000, "images/sector.bin")
         empty = self.readback(0x10000, 0x1000)
         assert empty == b"\xff" * 0x1000
 
 
-class TestSectorBoundaries(EsptoolTestCase):
+class TestSectorBoundaries(pesptoolTestCase):
     def test_end_sector(self):
-        self.run_esptool("write-flash 0x10000 images/sector.bin")
-        self.run_esptool("write-flash 0x0FC00 images/one_kb.bin")
+        self.run_pesptool("write-flash 0x10000 images/sector.bin")
+        self.run_pesptool("write-flash 0x0FC00 images/one_kb.bin")
         self.verify_readback(0x0FC00, 0x400, "images/one_kb.bin")
         self.verify_readback(0x10000, 0x1000, "images/sector.bin")
 
     def test_end_sector_uncompressed(self):
-        self.run_esptool("write-flash -u 0x10000 images/sector.bin")
-        self.run_esptool("write-flash -u 0x0FC00 images/one_kb.bin")
+        self.run_pesptool("write-flash -u 0x10000 images/sector.bin")
+        self.run_pesptool("write-flash -u 0x0FC00 images/one_kb.bin")
         self.verify_readback(0x0FC00, 0x400, "images/one_kb.bin")
         self.verify_readback(0x10000, 0x1000, "images/sector.bin")
 
     def test_overlap(self):
-        self.run_esptool("write-flash 0x20800 images/sector.bin")
+        self.run_pesptool("write-flash 0x20800 images/sector.bin")
         self.verify_readback(0x20800, 0x1000, "images/sector.bin")
 
 
-class TestVerifyCommand(EsptoolTestCase):
+class TestVerifyCommand(pesptoolTestCase):
     @pytest.mark.quick_test
     def test_verify_success(self):
-        self.run_esptool("write-flash 0x5000 images/one_kb.bin")
-        self.run_esptool("verify-flash 0x5000 images/one_kb.bin")
+        self.run_pesptool("write-flash 0x5000 images/one_kb.bin")
+        self.run_pesptool("verify-flash 0x5000 images/one_kb.bin")
 
     def test_verify_failure(self):
-        self.run_esptool("write-flash 0x6000 images/sector.bin")
-        output = self.run_esptool_error("verify-flash --diff 0x6000 images/one_kb.bin")
+        self.run_pesptool("write-flash 0x6000 images/sector.bin")
+        output = self.run_pesptool_error("verify-flash --diff 0x6000 images/one_kb.bin")
         assert "Verification failed:" in output
         assert "first at 0x00006000:" in output
 
     def test_verify_unaligned_length(self):
-        self.run_esptool("write-flash 0x0 images/not_4_byte_aligned.bin")
-        self.run_esptool("verify-flash 0x0 images/not_4_byte_aligned.bin")
+        self.run_pesptool("write-flash 0x0 images/not_4_byte_aligned.bin")
+        self.run_pesptool("verify-flash 0x0 images/not_4_byte_aligned.bin")
 
 
-class TestReadIdentityValues(EsptoolTestCase):
+class TestReadIdentityValues(pesptoolTestCase):
     @pytest.mark.quick_test
     def test_read_mac(self):
-        output = self.run_esptool("read-mac")
+        output = self.run_pesptool("read-mac")
         mac = re.search(r"[0-9a-f:]{17}", output)
         assert mac is not None
         mac = mac.group(0)
@@ -1213,7 +1213,7 @@ class TestReadIdentityValues(EsptoolTestCase):
 
     @pytest.mark.skipif(arg_chip != "esp8266", reason="ESP8266 only")
     def test_read_chip_id(self):
-        output = self.run_esptool("chip-id")
+        output = self.run_pesptool("chip-id")
         idstr = re.search("Chip ID: 0x([0-9a-f]+)", output)
         assert idstr is not None
         idstr = idstr.group(1)
@@ -1221,10 +1221,10 @@ class TestReadIdentityValues(EsptoolTestCase):
         assert idstr != "f" * 8
 
 
-class TestMemoryOperations(EsptoolTestCase):
+class TestMemoryOperations(pesptoolTestCase):
     @pytest.mark.quick_test
     def test_memory_dump(self):
-        output = self.run_esptool("dump-mem 0x50000000 128 memout.bin")
+        output = self.run_pesptool("dump-mem 0x50000000 128 memout.bin")
         assert "Dumped 128 bytes from 0x50000000" in output
         assert "to 'memout.bin'" in output
         os.remove("memout.bin")
@@ -1239,24 +1239,24 @@ class TestMemoryOperations(EsptoolTestCase):
         return 0x4FF90000 if arg_chip == "esp32p4" else 0x400C0000
 
     def test_memory_write(self, test_address):
-        output = self.run_esptool(f"write-mem {test_address:#X} 0xabad1dea 0x0000ffff")
+        output = self.run_pesptool(f"write-mem {test_address:#X} 0xabad1dea 0x0000ffff")
         assert "Wrote 0xabad1dea" in output
         assert "mask 0x0000ffff" in output
         assert f"to {test_address:#x}" in output
 
     def test_memory_read(self, test_address):
-        output = self.run_esptool(f"read-mem {test_address:#X}")
+        output = self.run_pesptool(f"read-mem {test_address:#X}")
         assert f"{test_address:#x} =" in output
 
 
-class TestKeepImageSettings(EsptoolTestCase):
+class TestKeepImageSettings(pesptoolTestCase):
     """Tests for the -fm keep, -ff keep options for write-flash"""
 
     @classmethod
     def setup_class(self):
         super().setup_class()
         self.BL_IMAGE = f"images/bootloader_{arg_chip}.bin"
-        self.flash_offset = esptool.CHIP_DEFS[arg_chip].BOOTLOADER_FLASH_OFFSET
+        self.flash_offset = pesptool.CHIP_DEFS[arg_chip].BOOTLOADER_FLASH_OFFSET
         with open(self.BL_IMAGE, "rb") as f:
             self.header = f.read(8)
 
@@ -1266,16 +1266,16 @@ class TestKeepImageSettings(EsptoolTestCase):
     )
     def test_keep_does_not_change_settings(self):
         # defaults should all be keep
-        self.run_esptool(f"write-flash -fs keep {self.flash_offset:#x} {self.BL_IMAGE}")
+        self.run_pesptool(f"write-flash -fs keep {self.flash_offset:#x} {self.BL_IMAGE}")
         self.verify_readback(self.flash_offset, 8, self.BL_IMAGE, False)
         # can also explicitly set all options
-        self.run_esptool(
+        self.run_pesptool(
             f"write-flash -fm keep -ff keep -fs keep "
             f"{self.flash_offset:#x} {self.BL_IMAGE}"
         )
         self.verify_readback(self.flash_offset, 8, self.BL_IMAGE, False)
         # verify-flash should also use 'keep'
-        self.run_esptool(
+        self.run_pesptool(
             f"verify-flash -fs keep {self.flash_offset:#x} {self.BL_IMAGE}"
         )
 
@@ -1285,7 +1285,7 @@ class TestKeepImageSettings(EsptoolTestCase):
     )
     @pytest.mark.quick_test
     def test_detect_size_changes_size(self):
-        self.run_esptool(
+        self.run_pesptool(
             f"write-flash -fs detect {self.flash_offset:#x} {self.BL_IMAGE}"
         )
         readback = self.readback(self.flash_offset, 8)
@@ -1298,7 +1298,7 @@ class TestKeepImageSettings(EsptoolTestCase):
         reason="Bootloader header needs to be modifiable - without sha256",
     )
     def test_explicit_set_size_freq_mode(self):
-        self.run_esptool(
+        self.run_pesptool(
             f"write-flash -fs 2MB -fm dout -ff 80m "
             f"{self.flash_offset:#x} {self.BL_IMAGE}"
         )
@@ -1315,18 +1315,18 @@ class TestKeepImageSettings(EsptoolTestCase):
         assert self.header[4:] == readback[4:]  # entrypoint address hasn't changed
 
         # verify-flash should pass if we match params, fail otherwise
-        self.run_esptool(
+        self.run_pesptool(
             f"verify-flash -fs 2MB -fm dout -ff 80m "
             f"{self.flash_offset:#x} {self.BL_IMAGE}"
         )
-        self.run_esptool_error(f"verify-flash {self.flash_offset:#x} {self.BL_IMAGE}")
+        self.run_pesptool_error(f"verify-flash {self.flash_offset:#x} {self.BL_IMAGE}")
 
 
 @pytest.mark.skipif(
     arg_chip in ["esp32s2", "esp32s3", "esp32p4"],
     reason="Not supported on targets with USB-CDC.",
 )
-class TestLoadRAM(EsptoolTestCase):
+class TestLoadRAM(pesptoolTestCase):
     # flashing an application not supporting USB-CDC will make
     # /dev/ttyACM0 disappear and USB-CDC tests will not work anymore
 
@@ -1351,7 +1351,7 @@ class TestLoadRAM(EsptoolTestCase):
         The "hello world" binary programs for each chip print
         "Hello world!\n" to the serial port.
         """
-        self.run_esptool(f"load-ram images/ram_helloworld/helloworld-{arg_chip}.bin")
+        self.run_pesptool(f"load-ram images/ram_helloworld/helloworld-{arg_chip}.bin")
         self.verify_output(
             [b"Hello world!", b'\xce?\x13\x05\x04\xd0\x97A\x11"\xc4\x06\xc67\x04']
         )
@@ -1364,13 +1364,13 @@ class TestLoadRAM(EsptoolTestCase):
         """
         fd, f = tempfile.mkstemp(suffix=".hex")
         try:
-            self.run_esptool(
+            self.run_pesptool(
                 f"merge-bin --format hex -o {f} 0x0 "
                 f"images/ram_helloworld/helloworld-{arg_chip}.bin"
             )
             # make sure file is closed before running next command (mainly for Windows)
             os.close(fd)
-            self.run_esptool(f"load-ram {f}")
+            self.run_pesptool(f"load-ram {f}")
             self.verify_output(
                 [b"Hello world!", b'\xce?\x13\x05\x04\xd0\x97A\x11"\xc4\x06\xc67\x04']
             )
@@ -1378,10 +1378,10 @@ class TestLoadRAM(EsptoolTestCase):
             os.unlink(f)
 
 
-class TestDeepSleepFlash(EsptoolTestCase):
+class TestDeepSleepFlash(pesptoolTestCase):
     @pytest.mark.skipif(arg_chip != "esp8266", reason="ESP8266 only")
     def test_deep_sleep_flash(self):
-        """Regression test for https://github.com/espressif/esptool/issues/351
+        """Regression test for https://github.com/espressif/pesptool/issues/351
 
         ESP8266 deep sleep can disable SPI flash chip,
         stub loader (or ROM loader) needs to re-enable it.
@@ -1392,25 +1392,25 @@ class TestDeepSleepFlash(EsptoolTestCase):
         # not even necessary to wake successfully from sleep,
         # going into deep sleep is enough
         # (so GPIO16, etc, config is not important for this test)
-        self.run_esptool("write-flash 0x0 images/esp8266_deepsleep.bin", baud=230400)
+        self.run_pesptool("write-flash 0x0 images/esp8266_deepsleep.bin", baud=230400)
 
         sleep(0.25)  # give ESP8266 time to enter deep sleep
 
-        self.run_esptool("write-flash 0x0 images/fifty_kb.bin", baud=230400)
+        self.run_pesptool("write-flash 0x0 images/fifty_kb.bin", baud=230400)
         self.verify_readback(0, 50 * 1024, "images/fifty_kb.bin")
 
 
-class TestBootloaderHeaderRewriteCases(EsptoolTestCase):
+class TestBootloaderHeaderRewriteCases(pesptoolTestCase):
     @pytest.mark.skipif(
         arg_chip not in ["esp8266", "esp32", "esp32c3"],
         reason="Don't run on every chip, so other bootloader images are not needed",
     )
     @pytest.mark.quick_test
     def test_flash_header_rewrite(self):
-        bl_offset = esptool.CHIP_DEFS[arg_chip].BOOTLOADER_FLASH_OFFSET
+        bl_offset = pesptool.CHIP_DEFS[arg_chip].BOOTLOADER_FLASH_OFFSET
         bl_image = f"images/bootloader_{arg_chip}.bin"
 
-        output = self.run_esptool(
+        output = self.run_pesptool(
             f"write-flash -fm dout -ff 20m {bl_offset:#x} {bl_image}"
         )
         if arg_chip in ["esp8266", "esp32"]:
@@ -1424,28 +1424,28 @@ class TestBootloaderHeaderRewriteCases(EsptoolTestCase):
     def test_flash_header_no_magic_no_rewrite(self):
         # first image doesn't start with magic byte, second image does
         # but neither are valid bootloader binary images for either chip
-        bl_offset = esptool.CHIP_DEFS[arg_chip].BOOTLOADER_FLASH_OFFSET
+        bl_offset = pesptool.CHIP_DEFS[arg_chip].BOOTLOADER_FLASH_OFFSET
         for image in ["images/one_kb.bin", "images/one_kb_all_ef.bin"]:
-            output = self.run_esptool(
+            output = self.run_pesptool(
                 f"write-flash -fm dout -ff 20m {bl_offset:#x} {image}"
             )
             "not changing any flash settings" in output
             self.verify_readback(bl_offset, 1024, image)
 
 
-class TestAutoDetect(EsptoolTestCase):
+class TestAutoDetect(pesptoolTestCase):
     def _check_output(self, output):
-        expected_chip_name = esptool.util.expand_chip_name(arg_chip)
+        expected_chip_name = pesptool.util.expand_chip_name(arg_chip)
         assert f"Detecting chip type... {expected_chip_name}" in output
         assert f"{'Chip type:':<20}{expected_chip_name}" in output
 
     @pytest.mark.quick_test
     def test_auto_detect(self):
-        output = self.run_esptool("chip-id", chip="auto")
+        output = self.run_pesptool("chip-id", chip="auto")
         self._check_output(output)
 
 
-class TestChipDetectionValidation(EsptoolTestCase):
+class TestChipDetectionValidation(pesptoolTestCase):
     """Test the chip detection validation logic in ESPLoader.connect() method.
 
     This tests the section that validates if the connected chip matches the
@@ -1467,36 +1467,36 @@ class TestChipDetectionValidation(EsptoolTestCase):
         Returns:
             The name of the different chip.
         """
-        for chip in esptool.CHIP_DEFS:
+        for chip in pesptool.CHIP_DEFS:
             if chip != chip_name and chip != "esp32s2":
                 if (
                     detection_method == "chip_id"
-                    and not esptool.CHIP_DEFS[chip].USES_MAGIC_VALUE
+                    and not pesptool.CHIP_DEFS[chip].USES_MAGIC_VALUE
                 ):
                     if (
-                        esptool.CHIP_DEFS[chip].IMAGE_CHIP_ID
-                        != esptool.CHIP_DEFS[chip_name].IMAGE_CHIP_ID
+                        pesptool.CHIP_DEFS[chip].IMAGE_CHIP_ID
+                        != pesptool.CHIP_DEFS[chip_name].IMAGE_CHIP_ID
                     ):
                         return chip
                 elif (
                     detection_method == "magic_value"
-                    and esptool.CHIP_DEFS[chip].USES_MAGIC_VALUE
+                    and pesptool.CHIP_DEFS[chip].USES_MAGIC_VALUE
                 ):
                     if (
-                        esptool.CHIP_DEFS[chip].MAGIC_VALUE
-                        != esptool.CHIP_DEFS[chip_name].MAGIC_VALUE
+                        pesptool.CHIP_DEFS[chip].MAGIC_VALUE
+                        != pesptool.CHIP_DEFS[chip_name].MAGIC_VALUE
                     ):
                         return chip
 
     @pytest.mark.quick_test
     def test_chips_with_chip_id_detection(self):
         # First verify the correct chip works
-        output = self.run_esptool(f"--chip {arg_chip} flash-id")
+        output = self.run_pesptool(f"--chip {arg_chip} flash-id")
         assert "Stub flasher running." in output
 
         # Find a different chip with different chip ID to test mismatch detection
         different_chip_id = self._find_different_chip(arg_chip, "chip_id")
-        error_output = self.run_esptool_error(f"--chip {different_chip_id} flash-id")
+        error_output = self.run_pesptool_error(f"--chip {different_chip_id} flash-id")
         assert (
             f"This chip is {arg_chip.upper()}, not {different_chip_id.upper()}."
             in error_output
@@ -1505,7 +1505,7 @@ class TestChipDetectionValidation(EsptoolTestCase):
 
         # Find a different chip with different magic value to test mismatch detection
         different_chip_magic = self._find_different_chip(arg_chip, "magic_value")
-        error_output = self.run_esptool_error(f"--chip {different_chip_magic} flash-id")
+        error_output = self.run_pesptool_error(f"--chip {different_chip_magic} flash-id")
         assert (
             f"This chip is {arg_chip.upper()}, not {different_chip_magic.upper()}."
             in error_output
@@ -1514,20 +1514,20 @@ class TestChipDetectionValidation(EsptoolTestCase):
 
         if arg_chip != "esp32s2":
             # ESP32-S2 is special case that has security info, but not chip ID
-            error_output = self.run_esptool_error("--chip esp32s2 flash-id")
+            error_output = self.run_pesptool_error("--chip esp32s2 flash-id")
             assert (
                 f"This chip is {arg_chip.upper()}, not ESP32-S2." in error_output
                 or "Wrong chip argument?" in error_output
             )
 
 
-class TestUSBMode(EsptoolTestCase):
+class TestUSBMode(pesptoolTestCase):
     @pytest.mark.quick_test
     def test_usb_mode(self):
-        output = self.run_esptool("chip-id")
+        output = self.run_pesptool("chip-id")
         expected_usb_mode = (
             "USB-OTG"
-            if os.environ.get("ESPTOOL_TEST_USB_OTG") == "1"
+            if os.environ.get("pesptool_TEST_USB_OTG") == "1"
             else "USB-Serial/JTAG"
             if arg_preload_port
             else None
@@ -1544,7 +1544,7 @@ class TestUSBMode(EsptoolTestCase):
 class TestVirtualPort(TestAutoDetect):
     def test_auto_detect_virtual_port(self):
         with ESPRFC2217Server() as server:
-            output = self.run_esptool(
+            output = self.run_pesptool(
                 "chip-id",
                 chip="auto",
                 port=f"rfc2217://localhost:{str(server.port)}?ign_set_control",
@@ -1554,7 +1554,7 @@ class TestVirtualPort(TestAutoDetect):
     def test_highspeed_flash_virtual_port(self):
         with ESPRFC2217Server() as server:
             rfc2217_port = f"rfc2217://localhost:{str(server.port)}?ign_set_control"
-            self.run_esptool(
+            self.run_pesptool(
                 "write-flash 0x0 images/fifty_kb.bin",
                 baud=921600,
                 port=rfc2217_port,
@@ -1572,7 +1572,7 @@ class TestVirtualPort(TestAutoDetect):
 
     @pytest.mark.host_test
     def test_pty_port(self, pty_port):
-        cmd = [sys.executable, "-m", "esptool", "--port", pty_port, "chip-id"]
+        cmd = [sys.executable, "-m", "pesptool", "--port", pty_port, "chip-id"]
         output = subprocess.run(
             cmd,
             cwd=TEST_DIR,
@@ -1587,7 +1587,7 @@ class TestVirtualPort(TestAutoDetect):
 
 
 @pytest.mark.quick_test
-class TestReadWriteMemory(EsptoolTestCase):
+class TestReadWriteMemory(pesptoolTestCase):
     def _test_read_write(self, esp):
         # find the start of one of these named memory regions
         test_addr = None
@@ -1628,7 +1628,7 @@ class TestReadWriteMemory(EsptoolTestCase):
 
     def test_read_write_memory_rom(self):
         try:
-            esp = esptool.get_default_connected_device(
+            esp = pesptool.get_default_connected_device(
                 [arg_port], arg_port, 10, 115200, arg_chip
             )
             self._test_read_write(esp)
@@ -1637,7 +1637,7 @@ class TestReadWriteMemory(EsptoolTestCase):
 
     def test_read_write_memory_stub(self):
         try:
-            esp = esptool.get_default_connected_device(
+            esp = pesptool.get_default_connected_device(
                 [arg_port], arg_port, 10, 115200, arg_chip
             )
             esp = esp.run_stub()
@@ -1650,17 +1650,17 @@ class TestReadWriteMemory(EsptoolTestCase):
     )
     def test_read_write_flash_status(self):
         """Read flash status and write back the same status"""
-        res = self.run_esptool("read-flash-status")
+        res = self.run_pesptool("read-flash-status")
         match = re.search(r"Flash memory status: (0x[\d|a-f]*)", res)
         assert match is not None
-        res = self.run_esptool(f"write-flash-status {match.group(1)}")
+        res = self.run_pesptool(f"write-flash-status {match.group(1)}")
         assert f"Initial flash memory status: {match.group(1)}" in res
         assert f"Setting flash memory status: {match.group(1)}" in res
         assert f"After flash memory status:   {match.group(1)}" in res
 
     def test_read_chip_description(self):
         try:
-            esp = esptool.get_default_connected_device(
+            esp = pesptool.get_default_connected_device(
                 [arg_port], arg_port, 10, 115200, arg_chip
             )
             chip = esp.get_chip_description()
@@ -1670,7 +1670,7 @@ class TestReadWriteMemory(EsptoolTestCase):
 
     def test_read_get_chip_features(self):
         try:
-            esp = esptool.get_default_connected_device(
+            esp = pesptool.get_default_connected_device(
                 [arg_port], arg_port, 10, 115200, arg_chip
             )
 
@@ -1687,14 +1687,14 @@ class TestReadWriteMemory(EsptoolTestCase):
 
 
 @pytest.mark.skipif(
-    "ESPTOOL_TEST_USB_OTG" in os.environ or arg_preload_port is not False,
+    "pesptool_TEST_USB_OTG" in os.environ or arg_preload_port is not False,
     reason="Boot mode strapping pin pulled constantly low, "
     "can't reset out of bootloader",
 )
-class TestReset(EsptoolTestCase):
+class TestReset(pesptoolTestCase):
     def test_watchdog_reset(self):
         # Erase the bootloader to get "invalid header" output + test watchdog reset
-        res = self.run_esptool("--after watchdog-reset erase-region 0x0 0x4000")
+        res = self.run_pesptool("--after watchdog-reset erase-region 0x0 0x4000")
         if arg_chip in ["esp8266", "esp32", "esp32h2", "esp32c6"]:
             assert "Watchdog hard reset is not supported" in res
             assert "Hard resetting via RTS pin..." in res
@@ -1709,7 +1709,7 @@ class TestReset(EsptoolTestCase):
 
 @pytest.mark.skipif(arg_chip != "esp32", reason="Don't need to test multiple times")
 @pytest.mark.quick_test
-class TestConfigFile(EsptoolTestCase):
+class TestConfigFile(pesptoolTestCase):
     class ConfigFile:
         """
         A class-based context manager to create
@@ -1730,15 +1730,15 @@ class TestConfigFile(EsptoolTestCase):
             assert not os.path.exists(self.file_path)
 
     dummy_config = (
-        "[esptool]\nconnect_attempts = 5\nreset_delay = 1\nserial_write_timeout = 12"
+        "[pesptool]\nconnect_attempts = 5\nreset_delay = 1\nserial_write_timeout = 12"
     )
 
     @pytest.mark.host_test
     def test_load_config_file(self):
         # Test a valid file is loaded
-        config_file_path = os.path.join(os.getcwd(), "esptool.cfg")
+        config_file_path = os.path.join(os.getcwd(), "pesptool.cfg")
         with self.ConfigFile(config_file_path, self.dummy_config):
-            output = self.run_esptool("version")
+            output = self.run_pesptool("version")
             assert f"Loaded custom configuration from {config_file_path}" in output
             assert "Ignoring unknown config file option" not in output
             assert "Ignoring invalid config file" not in output
@@ -1746,29 +1746,29 @@ class TestConfigFile(EsptoolTestCase):
         # Test invalid files are ignored
         # Wrong section header, no config gets loaded
         with self.ConfigFile(config_file_path, "[wrong section name]"):
-            output = self.run_esptool("version")
+            output = self.run_pesptool("version")
             assert f"Loaded custom configuration from {config_file_path}" not in output
 
         # Correct header, but options are unparsable
-        faulty_config = "[esptool]\nconnect_attempts = 5\nconnect_attempts = 9\n"
+        faulty_config = "[pesptool]\nconnect_attempts = 5\nconnect_attempts = 9\n"
         with self.ConfigFile(config_file_path, faulty_config):
-            output = self.run_esptool("version")
+            output = self.run_pesptool("version")
             assert f"Ignoring invalid config file {config_file_path}" in output
             assert (
-                "option 'connect_attempts' in section 'esptool' already exists"
+                "option 'connect_attempts' in section 'pesptool' already exists"
                 in output
             )
 
         # Correct header, unknown option (or a typo)
-        faulty_config = "[esptool]\nconnect_attempts = 9\ntimoout = 2\nbits = 2"
+        faulty_config = "[pesptool]\nconnect_attempts = 9\ntimoout = 2\nbits = 2"
         with self.ConfigFile(config_file_path, faulty_config):
-            output = self.run_esptool("version")
+            output = self.run_pesptool("version")
             assert "Ignoring unknown config file options: bits, timoout" in output
 
         # Test other config files (setup.cfg, tox.ini) are loaded
         config_file_path = os.path.join(os.getcwd(), "tox.ini")
         with self.ConfigFile(config_file_path, self.dummy_config):
-            output = self.run_esptool("version")
+            output = self.run_pesptool("version")
             assert f"Loaded custom configuration from {config_file_path}" in output
 
     @pytest.mark.host_test
@@ -1776,34 +1776,34 @@ class TestConfigFile(EsptoolTestCase):
         config_file_path = os.path.join(TEST_DIR, "custom_file.ini")
         with self.ConfigFile(config_file_path, self.dummy_config):
             # Try first without setting the env var, check that no config gets loaded
-            output = self.run_esptool("version")
+            output = self.run_pesptool("version")
             assert f"Loaded custom configuration from {config_file_path}" not in output
 
             # Set the env var and try again, check that config was loaded
-            tmp = os.environ.get("ESPTOOL_CFGFILE")  # Save the env var if it is set
+            tmp = os.environ.get("pesptool_CFGFILE")  # Save the env var if it is set
 
-            os.environ["ESPTOOL_CFGFILE"] = config_file_path
-            output = self.run_esptool("version")
+            os.environ["pesptool_CFGFILE"] = config_file_path
+            output = self.run_pesptool("version")
             assert f"Loaded custom configuration from {config_file_path}" in output
-            assert "(set with ESPTOOL_CFGFILE)" in output
+            assert "(set with pesptool_CFGFILE)" in output
 
             if tmp is not None:  # Restore the env var or unset it
-                os.environ["ESPTOOL_CFGFILE"] = tmp
+                os.environ["pesptool_CFGFILE"] = tmp
             else:
-                os.environ.pop("ESPTOOL_CFGFILE", None)
+                os.environ.pop("pesptool_CFGFILE", None)
 
     def test_custom_reset_sequence(self):
         # This reset sequence will fail to reset the chip to bootloader,
         # the flash-id operation should therefore fail.
         # Also tests the number of connection attempts.
         reset_seq_config = (
-            "[esptool]\n"
+            "[pesptool]\n"
             "custom_reset_sequence = D0|W0.1|R1|R0|W0.1|R1|R0\n"
             "connect_attempts = 1\n"
         )
-        config_file_path = os.path.join(os.getcwd(), "esptool.cfg")
+        config_file_path = os.path.join(os.getcwd(), "pesptool.cfg")
         with self.ConfigFile(config_file_path, reset_seq_config):
-            output = self.run_esptool_error("flash-id")
+            output = self.run_pesptool_error("flash-id")
             assert f"Loaded custom configuration from {config_file_path}" in output
             assert "A fatal error occurred: Failed to connect to" in output
             # Connection attempts are represented with dots,
@@ -1811,9 +1811,9 @@ class TestConfigFile(EsptoolTestCase):
             assert "Connecting............." not in output
 
         # Test invalid custom_reset_sequence format is not accepted
-        invalid_reset_seq_config = "[esptool]\ncustom_reset_sequence = F0|R1|C0|A5\n"
+        invalid_reset_seq_config = "[pesptool]\ncustom_reset_sequence = F0|R1|C0|A5\n"
         with self.ConfigFile(config_file_path, invalid_reset_seq_config):
-            output = self.run_esptool_error("flash-id")
+            output = self.run_pesptool_error("flash-id")
             assert f"Loaded custom configuration from {config_file_path}" in output
             assert "Invalid custom reset sequence option format:" in output
 
@@ -1821,14 +1821,14 @@ class TestConfigFile(EsptoolTestCase):
         # Test that the open_port_attempts option is loaded correctly
         connect_attempts = 5
         config = (
-            "[esptool]\n"
+            "[pesptool]\n"
             f"open_port_attempts = {connect_attempts}\n"
             "connect_attempts = 1\n"
             "custom_reset_sequence = D0\n"
         )  # Invalid reset sequence to make sure connection fails
-        config_file_path = os.path.join(os.getcwd(), "esptool.cfg")
+        config_file_path = os.path.join(os.getcwd(), "pesptool.cfg")
         with self.ConfigFile(config_file_path, config):
-            output = self.run_esptool_error("flash-id")
+            output = self.run_pesptool_error("flash-id")
             assert f"Loaded custom configuration from {config_file_path}" in output
             assert "Retrying failed connection" in output
             for _ in range(connect_attempts):
@@ -1836,10 +1836,10 @@ class TestConfigFile(EsptoolTestCase):
 
 
 @pytest.mark.skipif(
-    "ESPTOOL_TEST_USB_OTG" in os.environ,
+    "pesptool_TEST_USB_OTG" in os.environ,
     reason="May cause port disappearing in USB-OTG mode on CI.",
 )
-class TestESPObjectOperations(EsptoolTestCase):
+class TestESPObjectOperations(pesptoolTestCase):
     def capture_stdout(test_function):
         """Decorator to capture stdout."""
 
@@ -1856,7 +1856,7 @@ class TestESPObjectOperations(EsptoolTestCase):
     @pytest.mark.quick_test
     @capture_stdout
     def test_attach_flash(self, fake_out):
-        with esptool.CHIP_DEFS[arg_chip](port=arg_port) as esp:
+        with pesptool.CHIP_DEFS[arg_chip](port=arg_port) as esp:
             # Try communicating with the flash chip without attaching it
             esp.connect()
             flash_id(esp)
@@ -1884,7 +1884,7 @@ class TestESPObjectOperations(EsptoolTestCase):
     @pytest.mark.quick_test
     @capture_stdout
     def test_stub_run(self, fake_out):
-        with esptool.CHIP_DEFS[arg_chip](port=arg_port) as esp:
+        with pesptool.CHIP_DEFS[arg_chip](port=arg_port) as esp:
             esp.connect()
             esp = esp.run_stub()
             read_mac(esp)
@@ -1933,15 +1933,15 @@ class TestESPObjectOperations(EsptoolTestCase):
         assert "Detected image type: ESP32" in output
         assert "Checksum: 0x83 (valid)" in output
         assert "Wrote 0x2400 bytes to file 'output.bin'" in output
-        assert esptool.__version__ in output
+        assert pesptool.__version__ in output
 
 
 @pytest.mark.host_test
 class TestOldScripts:
-    def test_esptool_py(self):
-        output = subprocess.check_output(["esptool.py", "-h"])
+    def test_pesptool_py(self):
+        output = subprocess.check_output(["pesptool.py", "-h"])
         decoded = output.decode("utf-8")
-        assert "esptool.py" in decoded
+        assert "pesptool.py" in decoded
         assert "DEPRECATED" in decoded
 
     def test_espefuse_py(self):
@@ -1964,10 +1964,10 @@ class TestOldScripts:
 
 
 @pytest.mark.host_test
-class TestPortFilter(EsptoolTestCase):
+class TestPortFilter(pesptoolTestCase):
     def test_port_filter_name(self):
         """Test CLI with --port-filter non-existent name option"""
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "--port-filter name=NonExistentChip flash-id", port=None
         )
         # The command should fail due to no device found, not due to parsing error
@@ -1977,12 +1977,12 @@ class TestPortFilter(EsptoolTestCase):
 
     def test_port_filter_invalid_key_error(self):
         """Test CLI with invalid --port-filter key still shows correct error"""
-        output = self.run_esptool_error(
+        output = self.run_pesptool_error(
             "--port-filter invalidkey=123 flash-id", port=None
         )
         assert "Option --port-filter argument key not recognized" in output
 
     def test_port_filter_missing_equal_sign(self):
         """Test CLI with missing equal sign in --port-filter option"""
-        output = self.run_esptool_error("--port-filter name123 flash-id", port=None)
+        output = self.run_pesptool_error("--port-filter name123 flash-id", port=None)
         assert "Option --port-filter argument must consist of key=value." in output

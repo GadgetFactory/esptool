@@ -18,7 +18,7 @@ import sys
 import serial
 
 from esp_rfc2217_server.redirector import Redirector
-from esptool.util import check_deprecated_py_suffix
+from pesptool.util import check_deprecated_py_suffix
 
 
 def main():

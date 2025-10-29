@@ -1,7 +1,7 @@
 Advanced Topics
 ===============
 
-This sections contains advanced topics and technical documentation useful if you're developing ``esptool`` or hacking system internals:
+This sections contains advanced topics and technical documentation useful if you're developing ``pesptool`` or hacking system internals:
 
 .. toctree::
    :maxdepth: 1

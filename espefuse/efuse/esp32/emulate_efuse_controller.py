@@ -8,7 +8,7 @@ import time
 
 from .mem_definition import EfuseDefineBlocks, EfuseDefineFields, EfuseDefineRegisters
 from ..emulate_efuse_controller_base import EmulateEfuseControllerBase, FatalError
-from esptool.logger import log
+from pesptool.logger import log
 
 
 class EmulateEfuseController(EmulateEfuseControllerBase):
@@ -24,7 +24,7 @@ class EmulateEfuseController(EmulateEfuseControllerBase):
         self.REGS = EfuseDefineRegisters
         super().__init__(efuse_file, debug)
 
-    """ esptool method start >> """
+    """ pesptool method start >> """
 
     def get_major_chip_version(self):
         return 3
@@ -41,7 +41,7 @@ class EmulateEfuseController(EmulateEfuseControllerBase):
         else:
             return super().read_reg(addr)
 
-    """ << esptool method end """
+    """ << pesptool method end """
 
     def send_burn_cmd(self):
         def wait_idle():

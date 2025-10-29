@@ -11,7 +11,7 @@ espefuse
 
 For more details about Espressif chips eFuse features, see the `{IDF_TARGET_NAME} Technical Reference Manual <{IDF_TARGET_TRM_EN_URL}>`__.
 
-``espefuse`` is installed alongside ``esptool``, so if ``esptool`` (v2.0 or newer) is available on the PATH then ``espefuse`` should be as well.
+``espefuse`` is installed alongside ``pesptool``, so if ``pesptool`` (v2.0 or newer) is available on the PATH then ``espefuse`` should be as well.
 
 Initial State of eFuses
 -----------------------
@@ -48,7 +48,7 @@ Optional General Arguments Of Commands
 
 - ``-h``, ``--help`` - Show help message and exit. Use ``-h`` to see a summary of all available commands and command line options. To see all options for a particular chip and command, add ``-c {IDF_TARGET_NAME}`` and ``-h`` to the command name, i.e. ``espefuse -c {IDF_TARGET_NAME} burn-key -h``.
 - ``--chip``, ``-c`` - Target chip type. If this argument is omitted, the tool automatically detects the chip type when connected. But if the command has a help option, the chip is not connected, and the default chip is ``esp32``, please specify the specific type of chip to get the correct help. Example of usage: ``-c esp32``, ``-c esp32c3``, ``-c esp32s2`` and others.
-- ``--baud``, ``-b`` - Serial port baud rate, the same as for esptool.
+- ``--baud``, ``-b`` - Serial port baud rate, the same as for pesptool.
 - ``--port``, ``-p`` - Serial port device, for example: ``-p /dev/ttyUSB0`` (Linux and macOS) or ``-p COM1`` (Windows).
 - ``--before`` -  What to do before connecting to the chip: ``default-reset``, ``no-reset``, ``esp32r1``, ``no-reset-no-sync``.
 - ``--debug``, ``-d`` - Show debugging information.

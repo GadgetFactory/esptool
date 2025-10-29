@@ -5,11 +5,11 @@
 Serial Protocol
 ===============
 
-This is technical documentation for the serial protocol used by the UART bootloader in the {IDF_TARGET_NAME} ROM and the esptool :ref:`stub loader <stub>` program.
+This is technical documentation for the serial protocol used by the UART bootloader in the {IDF_TARGET_NAME} ROM and the pesptool :ref:`stub loader <stub>` program.
 
 The UART bootloader runs on chip reset if certain strapping pins are set. See :ref:`entering-the-bootloader` for details of this process.
 
-By default, esptool uploads a stub "software loader" to the IRAM of the chip. The stub loader then replaces the ROM loader for all future interactions. This standardizes much of the behavior. Pass ``--no-stub`` to esptool in order to disable the stub loader. See :ref:`stub` for more information.
+By default, pesptool uploads a stub "software loader" to the IRAM of the chip. The stub loader then replaces the ROM loader for all future interactions. This standardizes much of the behavior. Pass ``--no-stub`` to pesptool in order to disable the stub loader. See :ref:`stub` for more information.
 
 .. note::
 
@@ -172,7 +172,7 @@ Stub Loader Status & Error
 If the stub loader is used:
 
 -  The status response is always 2 bytes regardless of chip type.
--  Stub loader error codes are entirely different to the ROM loader codes. They all take the form ``0xC*``, or ``0xFF`` for "unimplemented command". (`Full list here <https://github.com/espressif/esptool/blob/master/flasher_stub/include/stub_flasher.h#L95>`_).
+-  Stub loader error codes are entirely different to the ROM loader codes. They all take the form ``0xC*``, or ``0xFF`` for "unimplemented command". (`Full list here <https://github.com/espressif/pesptool/blob/master/flasher_stub/include/stub_flasher.h#L95>`_).
 
 After sending a command, the host should continue to read response packets until one is received where the Command field matches the request's Command field, or a timeout is exceeded.
 
@@ -368,12 +368,12 @@ Initialization
     :not esp8266: *  The ESP chip is reset into UART bootloader mode. The host starts by sending SYNC commands. These commands have a large data payload which is also used by the ESP chip to detect the configured baud rate. {IDF_TARGET_NAME} always initialises at 115200bps. However the sync packets can be sent at any baud rate, and the UART peripheral will detect this.
     *  The host should wait until it sees a valid response to a SYNC command, indicating the ESP chip is correctly communicating.
     *  Chip type detection then uses various methods to identify chip type, subtype, revision, etc. See below.
-    *  Esptool then (by default) uses the "RAM Download" sequence to upload :ref:`stub loader <stub>` code to IRAM of the chip. The MEM_END command contains the entry-point address to run the stub loader.
+    *  pesptool then (by default) uses the "RAM Download" sequence to upload :ref:`stub loader <stub>` code to IRAM of the chip. The MEM_END command contains the entry-point address to run the stub loader.
        The stub loader then sends a custom SLIP packet of the sequence OHAI (``0xC0 0x4F 0x48 0x41 0x49 0xC0``), indicating that it is now running. This is the only unsolicited packet ever sent by the ESP.
-       If the ``--no-stub`` argument is supplied to esptool, this entire step is skipped.
+       If the ``--no-stub`` argument is supplied to pesptool, this entire step is skipped.
     :not esp8266: *  For commands which need to use the flash, the {IDF_TARGET_NAME} ROM an stub loader requires the SPI_ATTACH and SPI_SET_PARAMS commands. See `SPI Configuration Commands`_.
-    :esp8266: *  For stub loader, the host can send a CHANGE_BAUD command to set the baud rate to an explicit value. Compared to auto-detecting during the SYNC pulse, this can be more reliable for setting very high baud rate. Esptool tries to sync at (maximum) 115200bps and then sends this command to go to a higher baud rate, if requested.
-    :not esp8266: *  For stub loader and/or {IDF_TARGET_NAME} ROM loader, the host can send a CHANGE_BAUD command to set the baud rate to an explicit value. Compared to auto-detecting during the SYNC pulse, this can be more reliable for setting very high baud rate. Esptool tries to sync at (maximum) 115200bps and then sends this command to go to a higher baud rate, if requested.
+    :esp8266: *  For stub loader, the host can send a CHANGE_BAUD command to set the baud rate to an explicit value. Compared to auto-detecting during the SYNC pulse, this can be more reliable for setting very high baud rate. pesptool tries to sync at (maximum) 115200bps and then sends this command to go to a higher baud rate, if requested.
+    :not esp8266: *  For stub loader and/or {IDF_TARGET_NAME} ROM loader, the host can send a CHANGE_BAUD command to set the baud rate to an explicit value. Compared to auto-detecting during the SYNC pulse, this can be more reliable for setting very high baud rate. pesptool tries to sync at (maximum) 115200bps and then sends this command to go to a higher baud rate, if requested.
 
 Initialization - Chip Type Detection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -385,7 +385,7 @@ Initialization - Chip Type Detection
 
 .. only:: esp32s2
 
-    {IDF_TARGET_NAME} supports the **GET_SECURITY_INFO (0x14)** command, but the output lacks the **chip-id**. Therefore, esptool uses the **magic register** as a fallback for this chip as well.
+    {IDF_TARGET_NAME} supports the **GET_SECURITY_INFO (0x14)** command, but the output lacks the **chip-id**. Therefore, pesptool uses the **magic register** as a fallback for this chip as well.
     If reading the register also fails, it indicates the chip is in **secure download** mode.
 
 .. only:: not esp8266 and not esp32 and not esp32s2
@@ -399,12 +399,12 @@ Overview of Detection for All Chips
     :caption: All chips detection flow chart
     :align: center
 
-On older devices that do not support the **GET_SECURITY_INFO (0x14)** command (which provides the **chip-id**), esptool falls back to reading a **magic register** to determine the chip type.
+On older devices that do not support the **GET_SECURITY_INFO (0x14)** command (which provides the **chip-id**), pesptool falls back to reading a **magic register** to determine the chip type.
 
-The main exception is the **ESP32-S2**: although it supports the **GET_SECURITY_INFO (0x14)** command, the output lacks the **chip-id**. Therefore, esptool uses the **magic register** as a fallback for this chip as well.
+The main exception is the **ESP32-S2**: although it supports the **GET_SECURITY_INFO (0x14)** command, the output lacks the **chip-id**. Therefore, pesptool uses the **magic register** as a fallback for this chip as well.
 If reading the register also fails, it indicates the chip is in **secure download** mode.
 
-For details see: `esptool chip detection code <https://github.com/espressif/esptool/blob/v5.0.2/esptool/cmds.py#L101>`__
+For details see: `pesptool chip detection code <https://github.com/espressif/pesptool/blob/v5.0.2/pesptool/cmds.py#L101>`__
 
 Writing Data
 ^^^^^^^^^^^^
@@ -428,14 +428,14 @@ All three of these sequences follow a similar pattern:
 It's not necessary to send flash erase commands before sending commands to write to flash, etc. The ROM loaders erase the to-be-written region in response to the FLASH_BEGIN command.
 The stub loader does just-in-time erasing as it writes data, to maximize overall flashing performance (each block of data is read into RAM via serial while the previous block is simultaneously being written to flash, and 4KB and 64KB erases are done as needed before writing to flash).
 
-The block size chosen should be small enough to fit into RAM of the device. Esptool uses 16KB which gives good performance when used with the stub loader.
+The block size chosen should be small enough to fit into RAM of the device. pesptool uses 16KB which gives good performance when used with the stub loader.
 
 .. only:: esp8266
 
     Erase Size Bug
     """"""""""""""
 
-    On ESP8266 ROM loader only (not stub loader), there is a bug in the interpretation of the FLASH_BEGIN "erase size" parameter. Consult the ``ESP8266ROM.get_erase_size()`` function in esptool for the algorithm which works around this bug and provides the correct erase size parameter to send to the ESP8266.
+    On ESP8266 ROM loader only (not stub loader), there is a bug in the interpretation of the FLASH_BEGIN "erase size" parameter. Consult the ``ESP8266ROM.get_erase_size()`` function in pesptool for the algorithm which works around this bug and provides the correct erase size parameter to send to the ESP8266.
 
     This workaround is not needed if the ESP8266 is running the stub loader.
 
@@ -511,14 +511,14 @@ The SPI_SET_PARAMS command sets some parameters of the attached SPI flash chip (
 
     This command is not supported by the ESP8266 ROM loader.
 
-All the values which are passed except total size are hardcoded, and most are not used when writing to flash. See `flash_set_parameters function <https://github.com/espressif/esptool/blob/da31d9d7a1bb496995f8e30a6be259689948e43e/esptool.py#L655>`__ in esptool for the values which it sends.
+All the values which are passed except total size are hardcoded, and most are not used when writing to flash. See `flash_set_parameters function <https://github.com/espressif/pesptool/blob/da31d9d7a1bb496995f8e30a6be259689948e43e/pesptool.py#L655>`__ in pesptool for the values which it sends.
 
 32-Bit Read/Write
 ^^^^^^^^^^^^^^^^^
 
 The 32-bit read/write commands (READ_REG, WRITE_REG) allow word-oriented reading and writing of memory and register data.
 
-These commands can be used to manipulate peripherals in arbitrary ways. For example, the esptool "flash id" functionality is implemented by manipulating the SPI peripheral registers to send a JEDEC flash ID command to the flash chip and read the response.
+These commands can be used to manipulate peripherals in arbitrary ways. For example, the pesptool "flash id" functionality is implemented by manipulating the SPI peripheral registers to send a JEDEC flash ID command to the flash chip and read the response.
 
 Reading Flash
 ^^^^^^^^^^^^^
@@ -538,10 +538,10 @@ The ROM loader read flash command is more normal but also much slower to read da
 
 .. _tracing-communications:
 
-Tracing Esptool Serial Communications
+Tracing pesptool Serial Communications
 -------------------------------------
 
-esptool has a ``--trace`` option which can be supplied in the first group of arguments (before the command). This will dump all traffic sent and received via the serial port to the console.
+pesptool has a ``--trace`` option which can be supplied in the first group of arguments (before the command). This will dump all traffic sent and received via the serial port to the console.
 
 Here is a sample extract, showing a READ_REG command and response:
 
@@ -579,6 +579,6 @@ Here is a second example showing part of the initial synchronization sequence (l
 
 .. important::
 
-    If you don't plan to use the esptool stub loader, pass ``--no-stub --trace`` to see interactions with the chip's built-in ROM loader only. Otherwise, the trace will show the full binary upload of the loader.
+    If you don't plan to use the pesptool stub loader, pass ``--no-stub --trace`` to see interactions with the chip's built-in ROM loader only. Otherwise, the trace will show the full binary upload of the loader.
 
 In addition to this trace feature, most operating systems have "system call trace" or "port trace" features which can be used to dump serial interactions.

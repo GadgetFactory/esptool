@@ -17,9 +17,9 @@ from conftest import need_to_install_package_err
 import pytest
 
 try:
-    from esptool.util import byte
-    from esptool.uf2_writer import UF2Writer
-    from esptool.targets import CHIP_DEFS
+    from pesptool.util import byte
+    from pesptool.uf2_writer import UF2Writer
+    from pesptool.targets import CHIP_DEFS
 except ImportError:
     need_to_install_package_err()
 
@@ -46,7 +46,7 @@ class TestMergeBin:
             cmd = [
                 sys.executable,
                 "-m",
-                "esptool",
+                "pesptool",
                 "--chip",
                 chip,
                 "merge-bin",
@@ -353,7 +353,7 @@ class TestUF2:
         com_args = [
             sys.executable,
             "-m",
-            "esptool",
+            "pesptool",
             "--chip",
             chip_id,
             "merge-bin",

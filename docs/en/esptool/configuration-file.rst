@@ -3,28 +3,28 @@
 Configuration File
 ==================
 
-``esptool`` relies on serial communication when connecting to, reading from, or writing to an ESP chip.
-To ensure this two-way serial connection works properly, ``esptool`` is tuned with several pre-defined
+``pesptool`` relies on serial communication when connecting to, reading from, or writing to an ESP chip.
+To ensure this two-way serial connection works properly, ``pesptool`` is tuned with several pre-defined
 variables describing the timings and other nuances when sending or receiving data.
 These variables have been finely tuned to work in absolute majority of environments.
 However, it is impossible to cover all of the existing combinations of hardware, OS, and drivers.
 Sometimes little tweaking is necessary to cover even the most extreme edge cases.
 
 These options can be specified in a configuration file. This makes it easy to run
-``esptool`` with custom settings, and also allows for specification of options
+``pesptool`` with custom settings, and also allows for specification of options
 that are otherwise not available to a user without having to tamper with the source code.
 
 File Location
 -------------
 
-The default name for a configuration file is ``esptool.cfg``. First, the same
-directory ``esptool`` is being run in is inspected.
+The default name for a configuration file is ``pesptool.cfg``. First, the same
+directory ``pesptool`` is being run in is inspected.
 
 If a configuration file is not found here, the current user's OS configuration directory is inspected next:
 
- - Linux: ``/home/<user>/.config/esptool/``
- - macOS ``/Users/<user>/.config/esptool/``
- - Windows: ``c:\Users\<user>\AppData\Local\esptool\``
+ - Linux: ``/home/<user>/.config/pesptool/``
+ - macOS ``/Users/<user>/.config/pesptool/``
+ - Windows: ``c:\Users\<user>\AppData\Local\pesptool\``
 
 If a configuration file is still not found, the last inspected location is the home directory:
 
@@ -35,26 +35,26 @@ If a configuration file is still not found, the last inspected location is the h
 On Windows, the home directory can be set with the ``HOME`` or ``USERPROFILE`` environment variables.
 Therefore, the Windows configuration directory location also depends on these.
 
-A different location for the configuration file can be specified with the ``ESPTOOL_CFGFILE``
-environment variable, e.g. ``ESPTOOL_CFGFILE = ~/custom_config.cfg``.
+A different location for the configuration file can be specified with the ``pesptool_CFGFILE``
+environment variable, e.g. ``pesptool_CFGFILE = ~/custom_config.cfg``.
 This overrides the search priorities described above.
 
-``esptool`` will read settings from other usual configuration files if no other
+``pesptool`` will read settings from other usual configuration files if no other
 configuration file is used. It will automatically read from ``setup.cfg`` or
 ``tox.ini`` if they exist.
 
 As a result, the order of priority of inspected configuration files is:
 
-#. a file specified with the ``ESPTOOL_CFGFILE`` environment variable
-#. ``esptool.cfg``
+#. a file specified with the ``pesptool_CFGFILE`` environment variable
+#. ``pesptool.cfg``
 #. ``setup.cfg``
 #. ``tox.ini``
 
 Syntax
 ------
 
-An ``esptool`` configuration file is in .ini file format: it must be
-introduced by an ``[esptool]`` header to be recognized as valid.
+An ``pesptool`` configuration file is in .ini file format: it must be
+introduced by an ``[pesptool]`` header to be recognized as valid.
 This section then contains ``name = value`` entries.
 Lines beginning with ``#`` or ``;`` are ignored as comments.
 
@@ -65,8 +65,8 @@ Sample configuration file:
 
 .. code-block:: text
 
-    # esptool.cfg file to configure internal settings of esptool
-    [esptool]
+    # pesptool.cfg file to configure internal settings of pesptool
+    [pesptool]
     chip_erase_timeout = 140
     serial_write_timeout = 8.5
     connect_attempts = 7

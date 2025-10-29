@@ -8,7 +8,7 @@
 # This executable script is a thin wrapper around the main functionality
 # in the espsecure Python package
 
-# When updating this script, please also update esptool.py and espefuse.py
+# When updating this script, please also update pesptool.py and espefuse.py
 
 import contextlib
 import os

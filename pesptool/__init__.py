@@ -41,7 +41,7 @@ import traceback
 import rich_click as click
 import typing as t
 
-from esptool.cmds import (
+from pesptool.cmds import (
     chip_id,
     detect_chip,
     detect_flash_size,
@@ -69,17 +69,17 @@ from esptool.cmds import (
     write_flash_status,
     write_mem,
 )
-from esptool.config import load_config_file
-from esptool.loader import (
+from pesptool.config import load_config_file
+from pesptool.loader import (
     DEFAULT_CONNECT_ATTEMPTS,
     DEFAULT_OPEN_PORT_ATTEMPTS,
     StubFlasher,
     ESPLoader,
     list_ports,
 )
-from esptool.logger import log
-from esptool.targets import CHIP_DEFS, CHIP_LIST, ESP32ROM
-from esptool.util import (
+from pesptool.logger import log
+from pesptool.targets import CHIP_DEFS, CHIP_LIST, ESP32ROM
+from pesptool.util import (
     FatalError,
     NotImplementedInROMError,
     check_deprecated_py_suffix,
@@ -89,7 +89,7 @@ from itertools import chain, cycle, repeat
 
 import serial
 
-from esptool.cli_util import (
+from pesptool.cli_util import (
     AutoSizeType,
     Group,
     AddrFilenameArg,
@@ -227,14 +227,14 @@ def add_spi_flash_options(
                         "12m",
                     ]
                 ),
-                default=os.environ.get("ESPTOOL_FF", "keep" if allow_keep else None),
+                default=os.environ.get("pesptool_FF", "keep" if allow_keep else None),
             )(function)
             function = click.option(
                 "--flash-mode",
                 "-fm",
                 help="SPI flash memory mode.",
                 type=click.Choice(extra_keep_args + ["qio", "qout", "dio", "dout"]),
-                default=os.environ.get("ESPTOOL_FM", "keep" if allow_keep else "qio"),
+                default=os.environ.get("pesptool_FM", "keep" if allow_keep else "qio"),
             )(function)
 
         function = click.option(
@@ -259,7 +259,7 @@ def add_spi_flash_options(
                     "128MB",
                 ]
             ),
-            default=os.environ.get("ESPTOOL_FS", "keep" if allow_keep else "1MB"),
+            default=os.environ.get("pesptool_FS", "keep" if allow_keep else "1MB"),
         )(function)
         return function
 
@@ -298,28 +298,28 @@ def check_flash_size(esp: ESPLoader, address: int, size: int) -> None:
     cls=Group,
     no_args_is_help=True,
     context_settings=dict(help_option_names=["-h", "--help"], max_content_width=120),
-    help=f"esptool v{__version__} - serial utility for flashing, provisioning, "
+    help=f"pesptool v{__version__} - serial utility for flashing, provisioning, "
     "and interacting with Espressif SoCs.",
 )
 @click.option(
     "--chip",
     "-c",
     type=ChipType(["auto"] + CHIP_LIST),
-    default=os.environ.get("ESPTOOL_CHIP", "auto"),
+    default=os.environ.get("pesptool_CHIP", "auto"),
     help="Target chip type.",
 )
 @click.option(
     "--port",
     "-p",
     type=click.Path(),
-    default=os.environ.get("ESPTOOL_PORT", None),
+    default=os.environ.get("pesptool_PORT", None),
     help="Serial port device.",
 )
 @click.option(
     "--baud",
     "-b",
     type=AnyIntType(),
-    default=os.environ.get("ESPTOOL_BAUD", ESPLoader.ESP_ROM_BAUD),
+    default=os.environ.get("pesptool_BAUD", ESPLoader.ESP_ROM_BAUD),
     help="Serial port baud rate used when flashing/reading.",
 )
 @click.option(
@@ -333,7 +333,7 @@ def check_flash_size(esp: ESPLoader, address: int, size: int) -> None:
 @click.option(
     "--before",
     type=ResetModeType(["default-reset", "usb-reset", "no-reset", "no-reset-no-sync"]),
-    default=os.environ.get("ESPTOOL_BEFORE", "default-reset"),
+    default=os.environ.get("pesptool_BEFORE", "default-reset"),
     help="Which reset to perform before connecting to the chip.",
 )
 @click.option(
@@ -342,7 +342,7 @@ def check_flash_size(esp: ESPLoader, address: int, size: int) -> None:
     type=ResetModeType(
         ["hard-reset", "soft-reset", "no-reset", "no-reset-stub", "watchdog-reset"]
     ),
-    default=os.environ.get("ESPTOOL_AFTER", "hard-reset"),
+    default=os.environ.get("pesptool_AFTER", "hard-reset"),
     help="Which reset to perform after operation is finished.",
 )
 @click.option(
@@ -355,7 +355,7 @@ def check_flash_size(esp: ESPLoader, address: int, size: int) -> None:
 # is implied globally
 @click.option(
     "--stub-version",
-    default=os.environ.get("ESPTOOL_STUB_VERSION", "1"),
+    default=os.environ.get("pesptool_STUB_VERSION", "1"),
     type=click.Choice(["1", "2"]),
     # not a public option and is not subject to the semantic versioning policy
     hidden=True,
@@ -364,7 +364,7 @@ def check_flash_size(esp: ESPLoader, address: int, size: int) -> None:
     "--trace",
     "-t",
     is_flag=True,
-    help="Enable trace-level output of esptool interactions.",
+    help="Enable trace-level output of pesptool interactions.",
 )
 @click.option(
     "--verbose",
@@ -386,7 +386,7 @@ def check_flash_size(esp: ESPLoader, address: int, size: int) -> None:
 @click.option(
     "--connect-attempts",
     type=int,
-    default=os.environ.get("ESPTOOL_CONNECT_ATTEMPTS", DEFAULT_CONNECT_ATTEMPTS),
+    default=os.environ.get("pesptool_CONNECT_ATTEMPTS", DEFAULT_CONNECT_ATTEMPTS),
     help=f"Number of attempts to connect, negative or 0 for infinite. "
     f"Default: {DEFAULT_CONNECT_ATTEMPTS}.",
 )
@@ -411,7 +411,7 @@ def cli(
         log.set_verbosity("silent")
     ctx.obj["invoked_subcommand"] = ctx.invoked_subcommand
     ctx.obj["esp"] = getattr(ctx, "esp", None)
-    log.print(f"esptool v{__version__}")
+    log.print(f"pesptool v{__version__}")
     load_config_file(verbose=True)
 
 
@@ -442,19 +442,19 @@ def prepare_esp_object(ctx):
     else:
         ser_list = [ctx.obj["port"]]
     open_port_attempts = os.environ.get(
-        "ESPTOOL_OPEN_PORT_ATTEMPTS", DEFAULT_OPEN_PORT_ATTEMPTS
+        "pesptool_OPEN_PORT_ATTEMPTS", DEFAULT_OPEN_PORT_ATTEMPTS
     )
     try:
         open_port_attempts = int(open_port_attempts)
     except ValueError:
-        raise SystemExit("Invalid value for ESPTOOL_OPEN_PORT_ATTEMPTS.")
+        raise SystemExit("Invalid value for pesptool_OPEN_PORT_ATTEMPTS.")
 
     esp = ctx.obj.get("esp", None)
     ctx.obj["external_esp"] = esp is not None
     if open_port_attempts != 1:
         if ctx.obj["port"] is None or ctx.obj["chip"] == "auto":
             log.warning(
-                "The ESPTOOL_OPEN_PORT_ATTEMPTS (open_port_attempts) option "
+                "The pesptool_OPEN_PORT_ATTEMPTS (open_port_attempts) option "
                 "can only be used with --port and --chip arguments."
             )
         else:
@@ -1011,13 +1011,13 @@ def get_security_info_cli(ctx):
 
 @cli.command("version")
 def version_cli():
-    """Print esptool version."""
+    """Print pesptool version."""
     version()
 
 
 def main(argv: list[str] | None = None, esp: ESPLoader | None = None):
     """
-    Main function for esptool
+    Main function for pesptool
 
     argv - Optional override for default arguments parsing (that uses sys.argv),
     can be a list of custom arguments as strings. Arguments and their values
@@ -1044,7 +1044,7 @@ def get_port_list(
     if list_ports is None:
         raise FatalError(
             "Listing all serial ports is currently not available. "
-            "Please try to specify the port when running esptool or update "
+            "Please try to specify the port when running pesptool or update "
             "the pyserial package to the latest version."
         )
     ports = []
@@ -1132,7 +1132,7 @@ def expand_file_arguments(argv: list[str]) -> list[str]:
         else:
             new_args.append(arg)
     if expanded:
-        log.print(f"esptool {' '.join(new_args)}")
+        log.print(f"pesptool {' '.join(new_args)}")
         return new_args
     return argv
 
@@ -1222,12 +1222,12 @@ def _main():
         log.error(f"\nA serial exception error occurred: {e}")
         log.error(
             "Note: This error originates from pySerial. "
-            "It is likely not a problem with esptool, "
+            "It is likely not a problem with pesptool, "
             "but with the hardware connection or drivers."
         )
         log.error(
             "For troubleshooting steps visit: "
-            "https://docs.espressif.com/projects/esptool/en/latest/troubleshooting.html"
+            "https://docs.espressif.com/projects/pesptool/en/latest/troubleshooting.html"
         )
         sys.exit(1)
     except StopIteration:

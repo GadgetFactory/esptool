@@ -11,8 +11,8 @@ import time
 
 from bitstring import BitArray
 
-import esptool
-from esptool.logger import log
+import pesptool
+from pesptool.logger import log
 
 import reedsolo
 
@@ -71,14 +71,14 @@ class EspEfuses(base_fields.EspEfusesBase):
         self.BURN_BLOCK_DATA_NAMES = self.Blocks.get_burn_block_data_names()
         self.BLOCKS_FOR_KEYS = self.Blocks.get_blocks_for_keys()
         if esp.CHIP_NAME != "ESP32-C3":
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"Expected the 'esp' param for ESP32-C3 chip but got for '{esp.CHIP_NAME}'."
             )
         if not skip_connect:
             flags = self._esp.get_security_info()["flags"]
             GET_SECURITY_INFO_FLAG_SECURE_DOWNLOAD_ENABLE = 1 << 2
             if flags & GET_SECURITY_INFO_FLAG_SECURE_DOWNLOAD_ENABLE:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     "Secure Download Mode is enabled. The tool can not read eFuses."
                 )
         self.blocks = [
@@ -170,7 +170,7 @@ class EspEfuses(base_fields.EspEfusesBase):
                     # to make sure the efuse clock is normal.
                     # For PGM_CMD it is not necessary.
                     return
-        raise esptool.FatalError(
+        raise pesptool.FatalError(
             "Timed out waiting for eFuse controller command to complete."
         )
 
@@ -193,12 +193,12 @@ class EspEfuses(base_fields.EspEfusesBase):
                 self.REGS.EFUSE_CMD_REG, self.REGS.EFUSE_READ_CMD, delay_after_us=1000
             )
             self.wait_efuse_idle()
-        except esptool.FatalError:
+        except pesptool.FatalError:
             secure_download_mode_before = self._esp.secure_download_mode
 
             try:
                 self._esp = self.reconnect_chip(self._esp)
-            except esptool.FatalError:
+            except pesptool.FatalError:
                 log.print("Can not re-connect to the chip.")
                 if not self["DIS_DOWNLOAD_MODE"].get() and self[
                     "DIS_DOWNLOAD_MODE"
@@ -231,7 +231,7 @@ class EspEfuses(base_fields.EspEfusesBase):
         # Configure clock
         apb_freq = self.get_crystal_freq()
         if apb_freq != 40:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"The eFuse supports only xtal=40M (xtal was {apb_freq})."
             )
 
@@ -311,7 +311,7 @@ class EfuseWafer(EfuseField):
         return (hi_bits << 3) + lo_bits
 
     def save(self, new_value):
-        raise esptool.FatalError(f"Burning {self.name} is not supported.")
+        raise pesptool.FatalError(f"Burning {self.name} is not supported.")
 
 
 class EfuseTempSensor(EfuseField):
@@ -332,17 +332,17 @@ class EfuseAdcPointCalibration(EfuseField):
 class EfuseMacField(EfuseField):
     def check_format(self, new_value_str):
         if new_value_str is None:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "Required MAC Address in AA:CD:EF:01:02:03 format!"
             )
         if new_value_str.count(":") != 5:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "MAC Address needs to be a 6-byte hexadecimal format "
                 "separated by colons (:)!"
             )
         hexad = new_value_str.replace(":", "")
         if len(hexad) != 12:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "MAC Address needs to be a 6-byte hexadecimal number "
                 "(12 hexadecimal characters)!"
             )
@@ -350,8 +350,8 @@ class EfuseMacField(EfuseField):
         bindata = binascii.unhexlify(hexad)
         # unicast address check according to
         # https://tools.ietf.org/html/rfc7042#section-2.1
-        if esptool.util.byte(bindata, 0) & 0x01:
-            raise esptool.FatalError("Custom MAC must be a unicast MAC!")
+        if pesptool.util.byte(bindata, 0) & 0x01:
+            raise pesptool.FatalError("Custom MAC must be a unicast MAC!")
         return bindata
 
     def check(self):
@@ -382,7 +382,7 @@ class EfuseMacField(EfuseField):
         else:
             # Writing the BLOCK1 (MAC_SPI_8M_0) default MAC is not possible,
             # as it's written in the factory.
-            raise esptool.FatalError("Writing Factory MAC address is not supported")
+            raise pesptool.FatalError("Writing Factory MAC address is not supported")
 
 
 # fmt: off
@@ -413,9 +413,9 @@ class EfuseKeyPurposeField(EfuseField):
                 break
         if raw_val.isdigit():
             if int(raw_val) not in [p[1] for p in self.KEY_PURPOSES if p[1] > 0]:
-                raise esptool.FatalError(f"'{raw_val}' can not be set (value out of range)")
+                raise pesptool.FatalError(f"'{raw_val}' can not be set (value out of range)")
         else:
-            raise esptool.FatalError(f"'{raw_val}' unknown name")
+            raise pesptool.FatalError(f"'{raw_val}' unknown name")
         return raw_val
 
     def need_reverse(self, new_key_purpose):
@@ -444,5 +444,5 @@ class EfuseKeyPurposeField(EfuseField):
         str_new_value = self.get_name(raw_val)
         if self.name == "KEY_PURPOSE_5" and str_new_value.startswith("XTS_AES"):
             # see SOC_EFUSE_BLOCK9_KEY_PURPOSE_QUIRK in esp-idf
-            raise esptool.FatalError(f"{self.name} can not have {str_new_value} key due to a hardware bug (please see TRM for more details)")
+            raise pesptool.FatalError(f"{self.name} can not have {str_new_value} key due to a hardware bug (please see TRM for more details)")
         return super().save(raw_val)

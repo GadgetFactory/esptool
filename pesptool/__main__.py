@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import esptool
+import pesptool
 
 if __name__ == "__main__":
-    esptool._main()
+    pesptool._main()

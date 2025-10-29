@@ -5,10 +5,10 @@
 
 import rich_click as click
 
-from esptool.bin_image import ESPLoader, intel_hex_to_bin
-from esptool.cmds import detect_flash_size
-from esptool.util import FatalError, flash_size_bytes, strip_chip_name
-from esptool.logger import log
+from pesptool.bin_image import ESPLoader, intel_hex_to_bin
+from pesptool.cmds import detect_flash_size
+from pesptool.util import FatalError, flash_size_bytes, strip_chip_name
+from pesptool.logger import log
 from typing import IO, Any
 
 ################################ Custom types #################################

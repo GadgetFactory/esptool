@@ -13,8 +13,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: Esptool Version
-      description: The output of `git describe` if working with the sources, output of `esptool version` otherwise. If possible, consider [updating esptool](https://docs.espressif.com/projects/esptool/en/latest/installation.html#how-to-update).
+      label: pesptool Version
+      description: The output of `git describe` if working with the sources, output of `pesptool version` otherwise. If possible, consider [updating pesptool](https://docs.espressif.com/projects/pesptool/en/latest/installation.html#how-to-update).
       placeholder: ex. v4.0.1, commit v4.1-10-g2059335aa
     validations:
       required: true
@@ -29,13 +29,13 @@ body:
   - type: input
     id: command
     attributes:
-      label: Full Esptool Command Line that Was Run
-      description: Please input the full esptool command.
-      placeholder: ex. `esptool elf2image esp32-bootloader.elf`
+      label: Full pesptool Command Line that Was Run
+      description: Please input the full pesptool command.
+      placeholder: ex. `pesptool elf2image esp32-bootloader.elf`
   - type: textarea
     id: output
     attributes:
-      label: Esptool Output
+      label: pesptool Output
       description: Provide the full output log.
       placeholder: Copy and paste all lines of output here.
       render: shell

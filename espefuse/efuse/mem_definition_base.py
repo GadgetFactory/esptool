@@ -5,8 +5,8 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 from collections import Counter, namedtuple
-import esptool
-from esptool.logger import log
+import pesptool
+from pesptool.logger import log
 
 from .csv_table_parser import CSVFuseTable
 
@@ -200,7 +200,7 @@ class EfuseFieldsBase:
         duplicates = {name for name, count in name_counts.items() if count > 1}
         if duplicates:
             log.print("Names that are not unique: " + ", ".join(duplicates))
-            raise esptool.FatalError("Duplicate names found in eFuses")
+            raise pesptool.FatalError("Duplicate names found in eFuses")
 
     def extend_efuses(self, extend_efuse_table_file):
         if extend_efuse_table_file:

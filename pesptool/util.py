@@ -131,7 +131,7 @@ def get_key_from_value(dict, val):
 def check_deprecated_py_suffix(module_name: str) -> None:
     """Check if called with deprecated .py suffix"""
     import sys
-    from esptool import log
+    from pesptool import log
 
     script_name = sys.argv[0] if sys.argv else ""
     if script_name.endswith(module_name + ".py"):

@@ -3,9 +3,9 @@
 Entering the Bootloader
 =======================
 
-Espressif chips have to be reset in a certain way in order to launch the serial bootloader, only then can ``esptool`` communicate with the ESP chip.
+Espressif chips have to be reset in a certain way in order to launch the serial bootloader, only then can ``pesptool`` communicate with the ESP chip.
 
-On some development boards (including NodeMCU, WeMOS, HUZZAH Feather, Core Board, ESP32-WROVER-KIT), esptool can :ref:`automatically trigger a reset into the serial bootloader <automatic-bootloader>` - in which case you don't need to read this section.
+On some development boards (including NodeMCU, WeMOS, HUZZAH Feather, Core Board, ESP32-WROVER-KIT), pesptool can :ref:`automatically trigger a reset into the serial bootloader <automatic-bootloader>` - in which case you don't need to read this section.
 
 For everyone else, three things must happen to enter the serial bootloader (firmware download mode) - a reset, required pins set correctly, and a correct strapping pin pulled low. For more information, see the detailed :ref:`Boot Mode Selection<boot-mode>` guide.
 

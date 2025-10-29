@@ -20,7 +20,7 @@
 # where  - --port       - a port for espefuse operation
 #        - --reset-port - a port to clear efuses (connect RTS or DTR ->- J14 pin 39)
 #
-# Note: For FPGA with ESP32 image, you need to set an env variable ESPTOOL_ENV_FPGA to 1
+# Note: For FPGA with ESP32 image, you need to set an env variable pesptool_ENV_FPGA to 1
 #       to slow down the connection sequence
 #       because of a long delay (~6 seconds) after resetting the FPGA.
 #       This is not necessary when using other images than ESP32
@@ -128,7 +128,7 @@ class EfuseTestCase:
         reset_port.dtr = False
         reset_port.rts = False
 
-    def get_esptool(self):
+    def get_pesptool(self):
         import espefuse
 
         esp = espefuse.get_esp(
@@ -1570,7 +1570,7 @@ class TestBurnBlockDataCommands(EfuseTestCase):
 class TestBurnKeyDigestCommandsEsp32(EfuseTestCase):
     def test_burn_key_digest(self):
         self.espefuse_py("burn-key-digest -h")
-        esp = self.get_esptool()
+        esp = self.get_pesptool()
         if esp.get_chip_revision() >= 300:
             self.espefuse_py(
                 f"burn-key-digest {S_IMAGES_DIR}/rsa_secure_boot_signing_key.pem"

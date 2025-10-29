@@ -1,9 +1,9 @@
-name: Test esptool
+name: Test pesptool
 
 on: [push, pull_request]
 
 jobs:
-  test_esptool:
+  test_pesptool:
     runs-on: ubuntu-22.04
 
     strategy:
@@ -33,20 +33,20 @@ jobs:
         sudo chown -R $(whoami) /var/lib/softhsm
         ./ci/setup_softhsm2.sh || exit 1
 
-    - name: Install esptool and check if the installed versions can run
+    - name: Install pesptool and check if the installed versions can run
       run: |
         python setup.py build
         pip install --extra-index-url https://dl.espressif.com/pypi -e .[dev,hsm]
-        esptool.py --help
+        pesptool.py --help
         espefuse.py --help
         espsecure.py --help
         esp_rfc2217_server.py --help
-        esptool --help
+        pesptool --help
         espefuse --help
         espsecure --help
         esp_rfc2217_server --help
 
-    - name: Test esptool and components
+    - name: Test pesptool and components
       run: |
         pytest -m host_test
         pytest test/test_espsecure_hsm.py

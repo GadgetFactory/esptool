@@ -8,7 +8,7 @@ import os
 import re
 import sys
 
-from esptool.logger import log
+from pesptool.logger import log
 
 
 class CSVFuseTable(list):

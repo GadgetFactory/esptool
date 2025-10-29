@@ -8,8 +8,8 @@ import binascii
 import struct
 import time
 
-import esptool
-from esptool import log
+import pesptool
+from pesptool import log
 
 from .mem_definition import EfuseDefineBlocks, EfuseDefineFields, EfuseDefineRegisters
 from .. import base_fields
@@ -36,7 +36,7 @@ class EfuseBlock(base_fields.EfuseBlockBase):
             # Takes 24 byte sequence to be represented in 3/4 encoding,
             # returns 8 words suitable for writing "encoded" to an efuse block
             if len(data) != 24:
-                raise esptool.FatalError("Should take 24 bytes for 3/4 encoding.")
+                raise pesptool.FatalError("Should take 24 bytes for 3/4 encoding.")
             data = data[:24]
             outbits = b""
             while len(data) > 0:  # process in chunks of 6 bytes
@@ -81,7 +81,7 @@ class EspEfuses(base_fields.EspEfusesBase):
         self.BURN_BLOCK_DATA_NAMES = self.Blocks.get_burn_block_data_names()
         self.BLOCKS_FOR_KEYS = self.Blocks.get_blocks_for_keys()
         if esp.CHIP_NAME != "ESP32":
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"Expected the 'esp' param for ESP32 chip but got for '{esp.CHIP_NAME}'."
             )
         self.blocks = [
@@ -113,7 +113,7 @@ class EspEfuses(base_fields.EspEfusesBase):
                     for efuse in self.Fields.KEYBLOCKS_192
                 ]
             else:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     f"The coding scheme ({self.coding_scheme}) - is not supported"
                 )
             if self["MAC_VERSION"].get() == 1:
@@ -206,7 +206,7 @@ class EspEfuses(base_fields.EspEfusesBase):
         while time.time() < deadline:
             if self.read_reg(self.REGS.EFUSE_REG_CMD) == 0:
                 return
-        raise esptool.FatalError(
+        raise pesptool.FatalError(
             "Timed out waiting for eFuse controller command to complete"
         )
 
@@ -270,17 +270,17 @@ class EfuseMacField(EfuseField):
 
     def check_format(self, new_value_str: str | None):
         if new_value_str is None:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "Required MAC Address in AA:CD:EF:01:02:03 format!"
             )
         if new_value_str.count(":") != 5:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "MAC Address needs to be a 6-byte hexadecimal format "
                 "separated by colons (:)!"
             )
         hexad = new_value_str.replace(":", "")
         if len(hexad) != 12:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "MAC Address needs to be a 6-byte hexadecimal number "
                 "(12 hexadecimal characters)!"
             )
@@ -288,8 +288,8 @@ class EfuseMacField(EfuseField):
         bindata = binascii.unhexlify(hexad)
         # unicast address check according to
         # https://tools.ietf.org/html/rfc7042#section-2.1
-        if esptool.util.byte(bindata, 0) & 0x01:
-            raise esptool.FatalError("Custom MAC must be a unicast MAC!")
+        if pesptool.util.byte(bindata, 0) & 0x01:
+            raise pesptool.FatalError("Custom MAC must be a unicast MAC!")
         return bindata
 
     @staticmethod
@@ -348,7 +348,7 @@ class EfuseMacField(EfuseField):
             else:
                 if mac_version.get() != 1:
                     if not self.parent.force_write_always:
-                        raise esptool.FatalError(
+                        raise pesptool.FatalError(
                             f"MAC_VERSION = {mac_version.get()}, should be 0 or 1."
                         )
 
@@ -363,7 +363,7 @@ class EfuseMacField(EfuseField):
         else:
             # Writing the BLK0 default MAC is not possible,
             # as it's written in the factory.
-            raise esptool.FatalError("Writing Factory MAC address is not supported")
+            raise pesptool.FatalError("Writing Factory MAC address is not supported")
 
 
 class EfuseWafer(EfuseField):
@@ -387,7 +387,7 @@ class EfuseWafer(EfuseField):
         return revision
 
     def save(self, new_value):
-        raise esptool.FatalError(f"Burning {self.name} is not supported")
+        raise pesptool.FatalError(f"Burning {self.name} is not supported")
 
 
 class EfusePkg(EfuseField):
@@ -397,7 +397,7 @@ class EfusePkg(EfuseField):
         return (hi_bits << 3) + lo_bits
 
     def save(self, new_value):
-        raise esptool.FatalError(f"Burning {self.name} is not supported.")
+        raise pesptool.FatalError(f"Burning {self.name} is not supported.")
 
 
 class EfuseSpiPinField(EfuseField):
@@ -414,11 +414,11 @@ class EfuseSpiPinField(EfuseField):
         new_value_int = int(new_value_str, 0)
 
         if new_value_int in [30, 31]:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "IO pins 30 & 31 cannot be set for SPI flash. 0-29, 32 & 33 only."
             )
         elif new_value_int > 33:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"IO pin {new_value_int} cannot be set for SPI flash. 0-29, 32 & 33 only."
             )
         elif new_value_int in [32, 33]:
@@ -444,7 +444,7 @@ class EfuseVRefField(EfuseField):
         return self.VREF_OFFSET + val
 
     def save(self, new_value):
-        raise esptool.FatalError("Writing to VRef is not supported.")
+        raise pesptool.FatalError("Writing to VRef is not supported.")
 
 
 class EfuseAdcPointCalibration(EfuseField):

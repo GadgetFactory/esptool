@@ -48,7 +48,7 @@ class EfuseDefineRegisters(EfuseRegistersBase):
     EFUSE_CLK_SETTINGS = {
         # APB freq: clk_sel0, clk_sel1, dac_clk_div
         # Taken from TRM chapter "eFuse Controller": Timing Configuration
-        # 80 is here for completeness only as esptool never sets an 80MHz APB clock
+        # 80 is here for completeness only as pesptool never sets an 80MHz APB clock
         26: (250, 255, 52),
         40: (160, 255, 80),
         80: (80, 128, 100),

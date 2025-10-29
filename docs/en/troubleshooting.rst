@@ -18,7 +18,7 @@ If you see errors like "Failed to connect" then your chip is probably not enteri
 *  Check you have permissions to access the serial port, and other software (such as modem-manager on Linux) is not trying to interact with it. A common pitfall is leaving a serial terminal accessing this port open in another window and forgetting about it.
 *  Check the chip is receiving 3.3V from a stable power source (see `Insufficient Power`_ for more details.)
 *  Check that all pins are connected as described in :ref:`boot-mode`. Check the voltages at each pin with a multimeter, "high" pins should be close to 3.3V and "low" pins should be close to 0V.
-*  If you have connected other devices to GPIO pins, try removing them and see if esptool starts working.
+*  If you have connected other devices to GPIO pins, try removing them and see if pesptool starts working.
 *  Try using a slower baud rate (``-b 9600`` is a very slow value that you can use to verify it's not a baud rate problem).
 
 Writing to Flash Fails Part Way Through
@@ -31,7 +31,7 @@ Power stability problems may also cause this (see `Insufficient Power`_.)
 Writing to Flash Succeeds but Program Doesn't Run
 -------------------------------------------------
 
-If esptool can flash your module with ``write-flash`` but your program doesn't run, check the following:
+If pesptool can flash your module with ``write-flash`` but your program doesn't run, check the following:
 
 Wrong Flash Mode
 ^^^^^^^^^^^^^^^^
@@ -58,7 +58,7 @@ If you're using a pre-made development board or module then the built-in power r
 Power Supply Rating
 '''''''''''''''''''
 
-It is possible to have a power supply that supplies enough current for the serial bootloader stage with esptool, but not enough for normal firmware operation. You may see the 3.3V VCC voltage droop down if you measure it with a multimeter, but you can have problems even if this isn't happening.
+It is possible to have a power supply that supplies enough current for the serial bootloader stage with pesptool, but not enough for normal firmware operation. You may see the 3.3V VCC voltage droop down if you measure it with a multimeter, but you can have problems even if this isn't happening.
 
 Try swapping in a 3.3V supply with a higher current rating, add capacitors to the power line, and/or shorten any 3.3V power wires.
 
@@ -83,9 +83,9 @@ Missing Bootloader
 SPI Pins Which Must Be Disconnected
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Compared to the ROM bootloader that esptool talks to, a running firmware uses more of the chip's pins to access the SPI flash.
+Compared to the ROM bootloader that pesptool talks to, a running firmware uses more of the chip's pins to access the SPI flash.
 
-If you set "Quad I/O" mode (``-fm qio``, the esptool default) then GPIOs 7, 8, 9 & 10 are used for reading the SPI flash and must be otherwise disconnected.
+If you set "Quad I/O" mode (``-fm qio``, the pesptool default) then GPIOs 7, 8, 9 & 10 are used for reading the SPI flash and must be otherwise disconnected.
 
 If you set "Dual I/O" mode (``-fm dio``) then GPIOs 7 & 8 are used for reading the SPI flash and must be otherwise disconnected.
 
@@ -121,42 +121,42 @@ Early Stage Crash
 Serial Terminal Programs
 ------------------------
 
-There are many serial terminal programs suitable for debugging & serial interaction. The pySerial module (which is required for ``esptool``) includes one such command line terminal program - miniterm.py. For more details `see the related pySerial documentation <https://pyserial.readthedocs.io/en/latest/tools.html#module-serial.tools.miniterm>`_ or run ``miniterm -h``.
+There are many serial terminal programs suitable for debugging & serial interaction. The pySerial module (which is required for ``pesptool``) includes one such command line terminal program - miniterm.py. For more details `see the related pySerial documentation <https://pyserial.readthedocs.io/en/latest/tools.html#module-serial.tools.miniterm>`_ or run ``miniterm -h``.
 For exact serial port configuration values, see :ref:`serial-port-settings`.
 
 .. only:: esp8266
 
    Note that not every serial program supports the unusual ESP8266 74880bps "boot log" baud rate. Support is especially sparse on Linux. miniterm.py supports this baud rate on all platforms.
 
-Tracing Esptool Interactions
+Tracing pesptool Interactions
 ----------------------------
 
-Running ``esptool --trace`` will dump all serial interactions to the standard output (this is *a lot* of output). This can be helpful when debugging issues with the serial connection, or when providing information for bug reports.
+Running ``pesptool --trace`` will dump all serial interactions to the standard output (this is *a lot* of output). This can be helpful when debugging issues with the serial connection, or when providing information for bug reports.
 
 See :ref:`the related Advanced Topics page <tracing-communications>` for more information.
 
 Configuration File
 ------------------
 
-Although ``esptool`` has been tuned to work in the widest possible range of environments, an incompatible combination of hardware, OS, and drivers might cause it to fail. If you suspect this is the case, a custom configuration of internal variables might be necessary.
+Although ``pesptool`` has been tuned to work in the widest possible range of environments, an incompatible combination of hardware, OS, and drivers might cause it to fail. If you suspect this is the case, a custom configuration of internal variables might be necessary.
 
 These variables and options can be specified in a configuration file. See :ref:`the related Configuration File page <config>` for more information.
 
 Common Errors
 -------------
 
-This is a non-exhaustive list of the most common esptool errors together with explanations of possible causes and fixes. Before reading any error-specific advice, it is highly recommended to go through all of the `Troubleshooting`_ section first.
+This is a non-exhaustive list of the most common pesptool errors together with explanations of possible causes and fixes. Before reading any error-specific advice, it is highly recommended to go through all of the `Troubleshooting`_ section first.
 
 No serial data received.
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Esptool didn't receive any byte of data or a successful :ref:`slip packet <low-level-protocol>`. This error usually implies some kind of a hardware issue. This may be because the hardware is not working properly at all, the RX/TX serial lines are not connected, or because there is some problem with :ref:`resetting into the download mode <boot-mode>`.
+pesptool didn't receive any byte of data or a successful :ref:`slip packet <low-level-protocol>`. This error usually implies some kind of a hardware issue. This may be because the hardware is not working properly at all, the RX/TX serial lines are not connected, or because there is some problem with :ref:`resetting into the download mode <boot-mode>`.
 
 .. only:: esp8266
 
    .. attention::
 
-      There is a known issue regarding ESP8266 with the CH340 USB-to-serial converter (this includes NodeMCU and Wemos D1 mini devkits) on Linux. The regression affects only certain kernel versions. See `#653 <https://github.com/espressif/esptool/issues/653>`_ for details.
+      There is a known issue regarding ESP8266 with the CH340 USB-to-serial converter (this includes NodeMCU and Wemos D1 mini devkits) on Linux. The regression affects only certain kernel versions. See `#653 <https://github.com/espressif/pesptool/issues/653>`_ for details.
 
    On ESP8266, this error might be the result of a wrong boot mode. If your devkit supports this, try resetting into the download mode manually. See :ref:`manual-bootloader` for instructions.
 
@@ -172,7 +172,7 @@ Esptool didn't receive any byte of data or a successful :ref:`slip packet <low-l
    Download mode successfully detected, but getting no sync reply: The serial TX path seems to be down.
    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   The chip successfully resets into the download mode and sends data to the host computer, but doesn't receive any response sent by ``esptool``. This implies a problem with the TX line running from the host to the ESP device. Double-check your board or breadboard circuit for any problems.
+   The chip successfully resets into the download mode and sends data to the host computer, but doesn't receive any response sent by ``pesptool``. This implies a problem with the TX line running from the host to the ESP device. Double-check your board or breadboard circuit for any problems.
 
 Invalid head of packet (0xXX): Possible serial noise or corruption.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -190,16 +190,16 @@ Other things to try:
 
 .. list::
 
-   * Try to sync and communicate at a much lower baud rate, e.g. ``esptool --baud 9600 ...``.
-   * Try `tracing the interactions <Tracing Esptool Interactions>`_ running ``esptool --trace ...`` and see if anything is received back at all.
-   * Try skipping chip autodetection by specifying the chip type, run ``esptool --chip {IDF_TARGET_NAME} ...``.
+   * Try to sync and communicate at a much lower baud rate, e.g. ``pesptool --baud 9600 ...``.
+   * Try `tracing the interactions <Tracing pesptool Interactions>`_ running ``pesptool --trace ...`` and see if anything is received back at all.
+   * Try skipping chip autodetection by specifying the chip type, run ``pesptool --chip {IDF_TARGET_NAME} ...``.
 
-If none of the above mentioned fixes help and your problem persists, please `open a new issue <https://github.com/espressif/esptool/issues/new/choose>`_.
+If none of the above mentioned fixes help and your problem persists, please `open a new issue <https://github.com/espressif/pesptool/issues/new/choose>`_.
 
 A serial exception error occurred
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``esptool`` uses the `pySerial <https://pyserial.readthedocs.io/en/latest/>`_ Python module for accessing the serial port.
+``pesptool`` uses the `pySerial <https://pyserial.readthedocs.io/en/latest/>`_ Python module for accessing the serial port.
 If pySerial cannot operate normally, it raises an error and terminates.
 
 An example of a pySerial error:
@@ -208,7 +208,7 @@ An example of a pySerial error:
 
    A serial exception error occurred: read failed: [Errno 6] Device not configured
 
-Errors originating from pySerial are, therefore, not a problem with ``esptool``, but are usually caused by a problem with hardware or drivers.
+Errors originating from pySerial are, therefore, not a problem with ``pesptool``, but are usually caused by a problem with hardware or drivers.
 
 Some of the most common pySerial error causes are:
 

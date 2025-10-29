@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import esptool
+import pesptool
 
 
 def hexify(bitstring, separator=""):
@@ -20,7 +20,7 @@ def popcnt(b):
 def check_duplicate_name_in_list(name_list):
     duples_name = [name for i, name in enumerate(name_list) if name in name_list[:i]]
     if duples_name != []:
-        raise esptool.FatalError(f"Found repeated {duples_name} in the name list.")
+        raise pesptool.FatalError(f"Found repeated {duples_name} in the name list.")
 
 
 class SdkConfig:

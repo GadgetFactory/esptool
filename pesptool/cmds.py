@@ -201,7 +201,7 @@ def detect_chip(
 
     raise FatalError(
         f"{err_msg} Failed to autodetect chip type."
-        "\nProbably it is unsupported by this version of esptool."
+        "\nProbably it is unsupported by this version of pesptool."
     )
 
 
@@ -2143,7 +2143,7 @@ def merge_bin(
                 "Only one input file specified, output may include "
                 "additional padding if input file was previously merged. "
                 "Please refer to the documentation for more information: "
-                "https://docs.espressif.com/projects/esptool/en/latest/esptool/basic-commands.html#hex-output-format"  # noqa E501
+                "https://docs.espressif.com/projects/pesptool/en/latest/pesptool/basic-commands.html#hex-output-format"  # noqa E501
             )
         for addr, data in addr_data:
             ihex = IntelHex()
@@ -2338,7 +2338,7 @@ def elf2image(
 
 def version() -> None:
     """
-    Print the current esptool version.
+    Print the current pesptool version.
     """
     from . import __version__
 

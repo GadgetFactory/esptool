@@ -6,8 +6,8 @@ from typing import Any
 
 import rich_click as click
 from click.parser import OptionParser, ParsingState, _unpack_args
-from esptool.cli_util import Group as EsptoolGroup
-from esptool.logger import log
+from pesptool.cli_util import Group as pesptoolGroup
+from pesptool.logger import log
 
 from espefuse.efuse_interface import (
     DEPRECATED_COMMANDS,
@@ -146,7 +146,7 @@ class ChainingCommand(click.RichCommand, click.Command):
         return parser
 
 
-class Group(EsptoolGroup):
+class Group(pesptoolGroup):
     DEPRECATED_OPTIONS = {
         "--file_name": "--file-name",
     }
@@ -210,7 +210,7 @@ class Group(EsptoolGroup):
             else (args.index("-c") if "-c" in args else -1)
         )
         ctx.obj["chip"] = args[idx + 1] if idx != -1 and idx + 1 < len(args) else "auto"
-        # override the default behavior of EsptoolGroup, because we don't need
+        # override the default behavior of pesptoolGroup, because we don't need
         # support for parameters with nargs=-1
         args = self._replace_deprecated_args(args)
         cmd_groups, used_cmds = self._split_to_groups(args)

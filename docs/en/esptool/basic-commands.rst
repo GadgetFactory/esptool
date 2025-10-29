@@ -12,15 +12,15 @@ Binary data can be written to the ESP's flash chip via the serial ``write-flash`
 
 ::
 
-    esptool --port COM4 write-flash 0x1000 my_app-0x01000.bin
+    pesptool --port COM4 write-flash 0x1000 my_app-0x01000.bin
 
 Multiple flash addresses and file names can be given on the same command line:
 
 ::
 
-    esptool --port COM4 write-flash 0x00000 my_app.elf-0x00000.bin 0x40000 my_app.elf-0x40000.bin
+    pesptool --port COM4 write-flash 0x00000 my_app.elf-0x00000.bin 0x40000 my_app.elf-0x40000.bin
 
-The ``--chip`` argument is optional when writing to flash, esptool will detect the type of chip when it connects to the serial port.
+The ``--chip`` argument is optional when writing to flash, pesptool will detect the type of chip when it connects to the serial port.
 
 The ``--port`` argument is documented under :ref:`serial-port`.
 
@@ -44,9 +44,9 @@ You may also need to specify arguments for :ref:`flash mode and flash size <flas
 
 ::
 
-    esptool --port /dev/ttyUSB0 write-flash --flash-mode qio --flash-size 32m 0x0 bootloader.bin 0x1000 my_app.bin
+    pesptool --port /dev/ttyUSB0 write-flash --flash-mode qio --flash-size 32m 0x0 bootloader.bin 0x1000 my_app.bin
 
-Since esptool v2.0, these options are not often needed as the default is to keep the flash mode and size from the ``.bin`` image file. See the :ref:`flash-modes` section for more details.
+Since pesptool v2.0, these options are not often needed as the default is to keep the flash mode and size from the ``.bin`` image file. See the :ref:`flash-modes` section for more details.
 
 Compression
 ^^^^^^^^^^^
@@ -57,7 +57,7 @@ Erasing Flash Before Write
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To successfully write data into flash, all 4096-byte memory sectors (the smallest erasable unit) affected by the operation have to be erased first. As a result, when the flashing offset address or the data are not 4096-byte aligned, more memory is erased than actually needed.
-Esptool will display information about which flash memory sectors will be erased.
+pesptool will display information about which flash memory sectors will be erased.
 
 Use the ``-e/--erase-all`` option to erase all flash sectors (not just the write areas) before programming.
 
@@ -93,7 +93,7 @@ Use the ``-e/--erase-all`` option to erase all flash sectors (not just the write
     Flashing an Incompatible Image
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    ``esptool`` checks every binary before flashing. If a valid firmware image is detected, the ``Chip ID`` and ``Minimum chip revision`` fields in its :ref:`header <image-format>` are compared against the actually connected chip.
+    ``pesptool`` checks every binary before flashing. If a valid firmware image is detected, the ``Chip ID`` and ``Minimum chip revision`` fields in its :ref:`header <image-format>` are compared against the actually connected chip.
     If the image turns out to be incompatible with the chip in use or requires a newer chip revision, flashing is stopped.
 
     This behavior can be overridden with the ``--force`` option.
@@ -105,7 +105,7 @@ The read-flash command allows reading back the contents of flash. The arguments 
 
 ::
 
-    esptool -p PORT -b 460800 read-flash 0 0x200000 flash_contents.bin
+    pesptool -p PORT -b 460800 read-flash 0 0x200000 flash_contents.bin
 
 
 Size can be specified in bytes, or with suffixes like ``k`` and ``M``. So ``0x200000`` in example can be replaced with ``2M``.
@@ -114,7 +114,7 @@ It is also possible to autodetect flash size by using ``ALL`` as size. The above
 
 ::
 
-    esptool -p PORT -b 460800 read-flash 0 ALL flash_contents.bin
+    pesptool -p PORT -b 460800 read-flash 0 ALL flash_contents.bin
 
 
 .. note::
@@ -135,13 +135,13 @@ To erase the entire flash chip (all data replaced with 0xFF bytes):
 
 ::
 
-    esptool erase-flash
+    pesptool erase-flash
 
 To erase a region of the flash, starting at address 0x20000 with length 16 kB (0x4000 bytes):
 
 ::
 
-    esptool erase-region 0x20000 16k
+    pesptool erase-region 0x20000 16k
 
 The address and length must both be multiples of the SPI flash erase sector size. This is 0x1000 (4096) bytes for supported flash chips.
 
@@ -161,7 +161,7 @@ Read Built-in MAC Address: ``read-mac``
 
 ::
 
-    esptool read-mac
+    pesptool read-mac
 
 .. _read-spi-flash-id:
 
@@ -170,7 +170,7 @@ Read SPI Flash ID: ``flash-id``
 
 ::
 
-    esptool flash-id
+    pesptool flash-id
 
 Example output:
 
@@ -191,7 +191,7 @@ The ``elf2image`` command converts an ELF file (from compiler/linker output) int
 
 ::
 
-    esptool --chip {IDF_TARGET_NAME} elf2image my_app.elf
+    pesptool --chip {IDF_TARGET_NAME} elf2image my_app.elf
 
 This command does not require a serial connection.
 
@@ -208,7 +208,7 @@ By default, ``elf2image`` uses the sections in the ELF file to generate each seg
 
     ::
 
-        esptool --chip {IDF_TARGET_NAME} elf2image --version=2 -o my_app-ota.bin my_app.elf
+        pesptool --chip {IDF_TARGET_NAME} elf2image --version=2 -o my_app-ota.bin my_app.elf
 
 .. only:: not esp8266
 
@@ -216,7 +216,7 @@ By default, ``elf2image`` uses the sections in the ELF file to generate each seg
 
     ::
 
-        esptool --chip {IDF_TARGET_NAME} elf2image my_esp_app.elf
+        pesptool --chip {IDF_TARGET_NAME} elf2image my_esp_app.elf
 
     In the above example, the output image file would be called ``my_esp_app.bin``.
 
@@ -236,7 +236,7 @@ This information corresponds to the headers described in :ref:`image-format`.
 
 ::
 
-    esptool image-info my_esp_app.bin
+    pesptool image-info my_esp_app.bin
 
 .. only:: not esp8266
 
@@ -254,9 +254,9 @@ For example:
 
 ::
 
-    esptool --chip {IDF_TARGET_NAME} merge-bin -o merged-flash.bin --flash-mode dio --flash-size 4MB 0x1000 bootloader.bin 0x8000 partition-table.bin 0x10000 app.bin
+    pesptool --chip {IDF_TARGET_NAME} merge-bin -o merged-flash.bin --flash-mode dio --flash-size 4MB 0x1000 bootloader.bin 0x8000 partition-table.bin 0x10000 app.bin
 
-Will create a file ``merged-flash.bin`` with the contents of the other 3 files. This file can be later written to flash with ``esptool write-flash 0x0 merged-flash.bin``.
+Will create a file ``merged-flash.bin`` with the contents of the other 3 files. This file can be later written to flash with ``pesptool write-flash 0x0 merged-flash.bin``.
 
 
 **Common options:**
@@ -270,7 +270,7 @@ Will create a file ``merged-flash.bin`` with the contents of the other 3 files. 
 .. code:: sh
 
     cd build    # The build directory of an ESP-IDF project
-    esptool --chip {IDF_TARGET_NAME} merge-bin -o merged-flash.bin @flash_args
+    pesptool --chip {IDF_TARGET_NAME} merge-bin -o merged-flash.bin @flash_args
 
 
 HEX Output Format
@@ -293,7 +293,7 @@ The splitting behavior of Intel Hex files offers an additional advantage during 
 
 .. code:: sh
 
-    esptool --chip {IDF_TARGET_NAME} merge-bin --format hex -o merged-flash.hex --flash-mode dio --flash-size 4MB 0x1000 bootloader.bin 0x8000 partition-table.bin 0x10000 app.bin
+    pesptool --chip {IDF_TARGET_NAME} merge-bin --format hex -o merged-flash.hex --flash-mode dio --flash-size 4MB 0x1000 bootloader.bin 0x8000 partition-table.bin 0x10000 app.bin
 
 .. note::
 
@@ -332,7 +332,7 @@ Gaps between the files will be filled with `0x00` bytes.
 
 .. code:: sh
 
-    esptool --chip {IDF_TARGET_NAME} merge-bin --format uf2 -o merged-flash.uf2 --flash-mode dio --flash-size 4MB 0x1000 bootloader.bin 0x8000 partition-table.bin 0x10000 app.bin
+    pesptool --chip {IDF_TARGET_NAME} merge-bin --format uf2 -o merged-flash.uf2 --flash-mode dio --flash-size 4MB 0x1000 bootloader.bin 0x8000 partition-table.bin 0x10000 app.bin
 
 
 .. only:: not esp8266 and not esp32

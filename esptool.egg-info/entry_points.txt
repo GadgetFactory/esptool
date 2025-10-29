@@ -1,0 +1,3 @@
+[console_scripts]
+pesptool = esptool.__init__:_main
+pesptool.py = esptool.__init__:_main

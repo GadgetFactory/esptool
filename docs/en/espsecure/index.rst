@@ -17,7 +17,7 @@ Remote Signing Using an External HSM
 
 An external Hardware Security Module (HSM) can be used for remote signing of images in secure boot v2 scheme.
 
-You must install ``esptool`` package with the ``hsm`` extra using the command ``pip install 'esptool[hsm]'`` to use this feature. ``esp_hsm_sign`` provides a PKCS #11 interface to communicate with the external HSM and is integrated in ``espsecure``.
+You must install ``pesptool`` package with the ``hsm`` extra using the command ``pip install 'pesptool[hsm]'`` to use this feature. ``esp_hsm_sign`` provides a PKCS #11 interface to communicate with the external HSM and is integrated in ``espsecure``.
 
 The following command should be used to get an image signed using an external HSM. ::
 

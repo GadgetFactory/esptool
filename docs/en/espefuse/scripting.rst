@@ -3,16 +3,16 @@
 Embedding into Custom Scripts
 =============================
 
-Similar to :ref:`esptool <scripting>`, ``espefuse`` can be easily integrated into Python applications or called from other Python scripts.
+Similar to :ref:`pesptool <scripting>`, ``espefuse`` can be easily integrated into Python applications or called from other Python scripts.
 
-For details on redirecting the output, see :ref:`esptool logging section <logging>`.
+For details on redirecting the output, see :ref:`pesptool logging section <logging>`.
 
 Using Espefuse as a Python Module
 ---------------------------------
 
 The espefuse module provides a comprehensive Python API for interacting with ESP32 chips programmatically. By leveraging the API, developers can automate tasks such as reading and writing eFuse values, managing secure boot, and more.
 
-The API also provides the benefit of being able to chain commands with ``esptool`` commands and create a custom script. With this approach, you can e.g. flash firmware and set eFuse values in one go.
+The API also provides the benefit of being able to chain commands with ``pesptool`` commands and create a custom script. With this approach, you can e.g. flash firmware and set eFuse values in one go.
 
 Using the Command-Line Interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -60,34 +60,34 @@ This example demonstrates a basic workflow using the espefuse API to read the cu
 
 ------------
 
-This API can be also used to chain commands with esptool commands.
+This API can be also used to chain commands with pesptool commands.
 
 .. code-block:: python
 
     from espefuse import init_commands
-    from esptool import attach_flash, flash_id, reset_chip
+    from pesptool import attach_flash, flash_id, reset_chip
 
     PORT = "/dev/ttyACM0"
 
     with init_commands(port=PORT) as espefuse:
         espefuse.summary()  # Get the current eFuse values
-        # Esptool commands
+        # pesptool commands
         attach_flash(espefuse.esp)  # Attach the flash memory chip, required for flash operations
         flash_id(espefuse.esp)  # Get the flash information
         reset_chip(espefuse.esp, "hard-reset")  # Reset the chip
 
 ------------
 
-If you would like to have a better control over the ESP object from esptool, you can first get the ESP object from esptool as described in :ref:`esptool <scripting>` and then pass it to the espefuse API.
+If you would like to have a better control over the ESP object from pesptool, you can first get the ESP object from pesptool as described in :ref:`pesptool <scripting>` and then pass it to the espefuse API.
 
 .. code-block:: python
 
     from espefuse import init_commands
-    from esptool import detect_chip, run_stub, attach_flash, flash_id, reset_chip
+    from pesptool import detect_chip, run_stub, attach_flash, flash_id, reset_chip
 
     PORT = "/dev/ttyACM0"
 
-    # Get the ESP object from esptool
+    # Get the ESP object from pesptool
     with detect_chip(PORT) as esp:
         # Prepare the ESP object; run stub and attach flash
         esp = run_stub(esp)
@@ -98,7 +98,7 @@ If you would like to have a better control over the ESP object from esptool, you
             espefuse.summary()  # Get the current eFuse values
             # External ESP object was passed, so port won't be closed here
 
-        # Here you can continue with esptool commands if needed
+        # Here you can continue with pesptool commands if needed
         flash_id(esp)  # Get the flash information
 
         reset_chip(esp, "hard-reset")  # Reset the chip
@@ -141,11 +141,11 @@ Here is an example of how to use a batch mode on ESP32:
 
         # Checks written eFuses
         if espefuse.efuses["FLASH_CRYPT_CNT"].get() != 0x7:
-            raise esptool.FatalError("FLASH_CRYPT_CNT was not set")
+            raise pesptool.FatalError("FLASH_CRYPT_CNT was not set")
         if espefuse.efuses["DISABLE_DL_ENCRYPT"].get() != 1:
-            raise esptool.FatalError("DISABLE_DL_ENCRYPT was not set")
+            raise pesptool.FatalError("DISABLE_DL_ENCRYPT was not set")
         if espefuse.efuses["JTAG_DISABLE"].is_readable() or espefuse.efuses["JTAG_DISABLE"].is_writeable():
-            raise esptool.FatalError("JTAG_DISABLE should be read and write protected")
+            raise pesptool.FatalError("JTAG_DISABLE should be read and write protected")
 
 .. note::
 

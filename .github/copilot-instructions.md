@@ -1,11 +1,11 @@
-# Copilot Instructions for esptool
+# Copilot Instructions for pesptool
 
-This document provides essential information for coding agents working on the esptool repository to minimize exploration time and avoid common pitfalls.
+This document provides essential information for coding agents working on the pesptool repository to minimize exploration time and avoid common pitfalls.
 
 ## Repository Overview
 
-**What esptool does:** esptool is a Python-based, open-source, platform-independent serial utility for flashing, provisioning, and interacting with Espressif SoCs (ESP32, ESP8266, and variants). It provides four main command-line tools:
-- `esptool.py` - Main flashing and chip interaction tool
+**What pesptool does:** pesptool is a Python-based, open-source, platform-independent serial utility for flashing, provisioning, and interacting with Espressif SoCs (ESP32, ESP8266, and variants). It provides four main command-line tools:
+- `pesptool.py` - Main flashing and chip interaction tool
 - `espefuse.py` - eFuse (one-time programmable memory) management
 - `espsecure.py` - Security-related operations (signing, encryption)
 - `esp_rfc2217_server.py` - RFC2217 serial-over-TCP server
@@ -34,7 +34,7 @@ This document provides essential information for coding agents working on the es
 
 3. **Verify installation works:**
    ```bash
-   esptool.py --help
+   pesptool.py --help
    espefuse.py --help
    espsecure.py --help
    esp_rfc2217_server.py --help
@@ -60,7 +60,7 @@ pytest test_espefuse.py --chip esp32
 
 **Hardware tests (requires real ESP devices, NOT safe for CI):**
 ```bash
-pytest test_esptool.py --port /dev/ttyUSB0 --chip esp32 --baud 230400
+pytest test_pesptool.py --port /dev/ttyUSB0 --chip esp32 --baud 230400
 ```
 
 ### Code Quality and Pre-commit
@@ -79,13 +79,13 @@ pre-commit run --all-files
 **Individual checks:**
 - `python -m ruff check .` - Linting (replaces flake8)
 - `python -m ruff format .` - Code formatting (replaces black)
-- `python -m mypy esptool/ espefuse/ espsecure/` - Type checking
+- `python -m mypy pesptool/ espefuse/ espsecure/` - Type checking
 
 ## Project Architecture and Layout
 
 ### Key Directories
-- **Root scripts** (`esptool.py`, `espefuse.py`, etc.) - Thin wrapper scripts for backward compatibility
-- **`esptool/`** - Main flashing tool package
+- **Root scripts** (`pesptool.py`, `espefuse.py`, etc.) - Thin wrapper scripts for backward compatibility
+- **`pesptool/`** - Main flashing tool package
   - `targets/` - Chip-specific implementations (ESP32, ESP8266, etc.)
   - `targets/stub_flasher/1/` and `targets/stub_flasher/2/` - Binary flasher stubs for each chip (JSON format)
   - `cmds.py` - Command implementations
@@ -113,8 +113,8 @@ pre-commit run --all-files
 ## Validation and CI/CD
 
 ### GitHub Actions Workflows
-- **`test_esptool.yml`** - Main test suite (Python 3.10-3.13 matrix, host tests, pre-commit)
-- **`build_esptool.yml`** - Build binaries for multiple platforms
+- **`test_pesptool.yml`** - Main test suite (Python 3.10-3.13 matrix, host tests, pre-commit)
+- **`build_pesptool.yml`** - Build binaries for multiple platforms
 - **`dangerjs.yml`** - PR review automation
 
 ### Pre-commit Checks (must pass for PR acceptance)
@@ -147,30 +147,30 @@ pre-commit run --all-files
 - Modify eFuses (one-time programmable, irreversible)
 - Brick devices if interrupted
 
-Only use `test_esptool.py` and `test_esptool_sdm.py` on dedicated test hardware with explicit `--port`, `--chip`, and `--baud` parameters.
+Only use `test_pesptool.py` and `test_pesptool_sdm.py` on dedicated test hardware with explicit `--port`, `--chip`, and `--baud` parameters.
 
 ## Performance Considerations
 
-- **esptool operations:** Can take 10-60 seconds for large flash operations
+- **pesptool operations:** Can take 10-60 seconds for large flash operations
 - **cryptography compilation:** 2-3 minutes during initial pip install
 - **Host tests:** ~2-3 minutes total runtime
 - **Build process:** ~30 seconds for clean build
 
 ## Environment Variables
 
-esptool recognizes these environment variables for default behavior:
-- **`ESPTOOL_CHIP`** - Default chip type (auto, esp32, esp8266, etc.)
-- **`ESPTOOL_PORT`** - Default serial port
-- **`ESPTOOL_BAUD`** - Default baud rate
-- **`ESPTOOL_FF`** - Default flash frequency
-- **`ESPTOOL_FM`** - Default flash mode
-- **`ESPTOOL_FS`** - Default flash size
-- **`ESPTOOL_BEFORE`** - Default reset mode before operation
-- **`ESPTOOL_AFTER`** - Default reset mode after operation
+pesptool recognizes these environment variables for default behavior:
+- **`pesptool_CHIP`** - Default chip type (auto, esp32, esp8266, etc.)
+- **`pesptool_PORT`** - Default serial port
+- **`pesptool_BAUD`** - Default baud rate
+- **`pesptool_FF`** - Default flash frequency
+- **`pesptool_FM`** - Default flash mode
+- **`pesptool_FS`** - Default flash size
+- **`pesptool_BEFORE`** - Default reset mode before operation
+- **`pesptool_AFTER`** - Default reset mode after operation
 
 For testing:
-- **`ESPTOOL_TEST_USB_OTG`** - Enable USB OTG testing mode
-- **`ESPTOOL_TEST_FLASH_SIZE`** - Minimum flash size for large flash tests
+- **`pesptool_TEST_USB_OTG`** - Enable USB OTG testing mode
+- **`pesptool_TEST_FLASH_SIZE`** - Minimum flash size for large flash tests
 
 ## Trust These Instructions
 
@@ -179,4 +179,4 @@ These instructions are current as of the repository state and have been validate
 2. You need chip-specific information not in the targets/ directory
 3. You encounter new hardware or features not documented
 
-For chip-specific behavior, always check `esptool/targets/` directory first before searching elsewhere.
+For chip-specific behavior, always check `pesptool/targets/` directory first before searching elsewhere.

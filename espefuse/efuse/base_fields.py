@@ -11,8 +11,8 @@ import sys
 from bitstring import BitArray, BitStream, Bits, CreationError
 
 from espefuse.efuse.mem_definition_base import EfuseBlocksBase, EfuseRegistersBase
-import esptool
-from esptool.logger import log
+import pesptool
+from pesptool.logger import log
 
 from . import util
 
@@ -27,7 +27,7 @@ class CheckArgValue:
             if efuse.efuse_type.startswith("bool"):
                 new_value = 1 if new_value is None else int(new_value, 0)
                 if new_value != 1:
-                    raise esptool.FatalError(
+                    raise pesptool.FatalError(
                         "New value is not accepted for eFuse '{}' "
                         "(will always burn 0->1), given value={}".format(
                             efuse.name, new_value
@@ -47,33 +47,33 @@ class CheckArgValue:
                         new_value = int(new_value, 0)
                 else:
                     if new_value is None:
-                        raise esptool.FatalError(
+                        raise pesptool.FatalError(
                             "New value required for eFuse '{}' (given None)".format(
                                 efuse.name
                             )
                         )
                     new_value = int(new_value, 0)
                     if new_value == 0:
-                        raise esptool.FatalError(
+                        raise pesptool.FatalError(
                             "New value should not be 0 for '{}' "
                             "(given value= {})".format(efuse.name, new_value)
                         )
             elif efuse.efuse_type.startswith("bytes"):
                 if new_value is None:
-                    raise esptool.FatalError(
+                    raise pesptool.FatalError(
                         "New value required for eFuse '{}' (given None)".format(
                             efuse.name
                         )
                     )
                 if len(new_value) * 8 != efuse.bitarray.len:
-                    raise esptool.FatalError(
+                    raise pesptool.FatalError(
                         "The length of eFuse '{}' ({} bits) "
                         "(given len of the new value= {} bits)".format(
                             efuse.name, efuse.bitarray.len, len(new_value) * 8
                         )
                     )
             else:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     "The '{}' type for the '{}' eFuse is not supported yet.".format(
                         efuse.efuse_type, efuse.name
                     )
@@ -132,9 +132,9 @@ class EfuseProtectBase:
     def disable_read(self):
         num_bit = self.read_disable_bit
         if num_bit is None:
-            raise esptool.FatalError("This eFuse cannot be read-disabled")
+            raise pesptool.FatalError("This eFuse cannot be read-disabled")
         if not self.parent["RD_DIS"].is_writeable():
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "This eFuse cannot be read-disabled due to the RD_DIS field being "
                 "already write-disabled"
             )
@@ -154,7 +154,7 @@ class EfuseProtectBase:
     def disable_write(self):
         num_bit = self.write_disable_bit
         if not self.parent["WR_DIS"].is_writeable():
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "This eFuse cannot be write-disabled due to the WR_DIS field being "
                 "already write-disabled"
             )
@@ -214,7 +214,7 @@ class EfuseBlockBase(EfuseProtectBase):
         elif coding_scheme == self.parent.REGS.CODING_SCHEME_RS:
             return self.len * 4
         else:
-            raise esptool.FatalError(f"Coding scheme ({coding_scheme}) not supported")
+            raise pesptool.FatalError(f"Coding scheme ({coding_scheme}) not supported")
 
     def get_coding_scheme(self):
         if self.id == 0:
@@ -282,7 +282,7 @@ class EfuseBlockBase(EfuseProtectBase):
                 log.print("[{:02}] {:20} nothing to burn".format(self.id, self.name))
             return False
         if len(wr_data.bytes) != len(self.bitarray.bytes):
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"Data does not fit: block{self.id} size "
                 f"{len(self.bitarray.bytes)} bytes, data {len(wr_data.bytes)} bytes"
             )
@@ -355,7 +355,7 @@ class EfuseBlockBase(EfuseProtectBase):
                             )
                             self.parent.print_error_msg(error_msg)
                     else:
-                        raise esptool.FatalError(
+                        raise pesptool.FatalError(
                             f"The coding scheme ({coding_scheme}) is not supported."
                         )
 
@@ -438,7 +438,7 @@ class EfuseBlockBase(EfuseProtectBase):
                 log.print("Read all '0'")
             else:
                 # Should never happen
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     f"The {self.name} is read-protected but not all '0' "
                     f"({self.bitarray.hex})"
                 )
@@ -460,7 +460,7 @@ class EfuseBlockBase(EfuseProtectBase):
                 # Read-protected BLK0 values are reported back as zeros,
                 # raise error only for other blocks
                 if self.id != 0:
-                    raise esptool.FatalError(
+                    raise pesptool.FatalError(
                         f"Burn {self.name} ({self.alias}) was not successful."
                     )
         self.wr_bitarray.set(0)
@@ -471,7 +471,7 @@ class EspEfusesBase:
     Wrapper object to manage the efuse fields in a connected ESP bootloader
     """
 
-    _esp: esptool.ESPLoader
+    _esp: pesptool.ESPLoader
     blocks: list[EfuseBlockBase] = []
     efuses: list = []
     coding_scheme = None
@@ -484,7 +484,7 @@ class EspEfusesBase:
 
     def __init__(
         self,
-        esp: esptool.ESPLoader,
+        esp: pesptool.ESPLoader,
         skip_connect: bool = False,
         debug: bool = False,
         do_not_confirm: bool = False,
@@ -543,7 +543,7 @@ class EspEfusesBase:
         )
         log.print(f"Port: {port}, Baudrate: {baudrate}, Connect mode: {connect_mode}")
         esp._port.close()
-        return esptool.detect_chip(port, baudrate, connect_mode)
+        return pesptool.detect_chip(port, baudrate, connect_mode)
 
     def get_index_block_by_name(self, name):
         for block in self.blocks:
@@ -653,7 +653,7 @@ class EspEfusesBase:
                     log.print("\t2. Then run the cmd to burn all postponed eFuses:")
                     log.print(f"\t   'espefuse burn-efuse {command_string}'")
 
-                raise esptool.FatalError("Error(s) were detected in eFuses")
+                raise pesptool.FatalError("Error(s) were detected in eFuses")
 
         # Burn from BLKn -> BLK0. Because BLK0 can set rd or/and wr protection bits.
         for block in reversed(self.blocks):
@@ -698,7 +698,7 @@ class EspEfusesBase:
         if self.force_write_always:
             log.print(error_msg, "Skipped because '--force-write-always' option.")
         else:
-            raise esptool.FatalError(error_msg)
+            raise pesptool.FatalError(error_msg)
 
     def get_block_errors(self, block_num):
         """Returns (error count, failure boolean flag)"""
@@ -822,7 +822,7 @@ class EfuseFieldBase(EfuseProtectBase):
                         f"New value '{new_value}' is not suitable for "
                         f"{self.name} ({self.efuse_type})"
                     )
-                    raise esptool.FatalError(err)
+                    raise pesptool.FatalError(err)
 
     def check_new_value(self, bitarray_new_value):
         bitarray_old_value = self.get_bitstring() | self.get_bitstring(from_read=False)
@@ -831,7 +831,7 @@ class EfuseFieldBase(EfuseProtectBase):
             return
 
         if bitarray_new_value.len != bitarray_old_value.len:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"For {self.name} eFuse, the length of the new value is wrong, "
                 f"expected {bitarray_old_value.len} bits, "
                 f"was {bitarray_new_value.len} bits."

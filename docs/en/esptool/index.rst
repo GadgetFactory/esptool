@@ -1,11 +1,11 @@
-.. _esptool:
+.. _pesptool:
 
-esptool
+pesptool
 ==========
 
-Use ``esptool -h`` to see a summary of all available commands and command line options.
+Use ``pesptool -h`` to see a summary of all available commands and command line options.
 
-To see all options for a particular command, append ``-h`` to the command name. ie ``esptool write-flash -h``.
+To see all options for a particular command, append ``-h`` to the command name. ie ``pesptool write-flash -h``.
 
 .. toctree::
    :maxdepth: 1
@@ -24,7 +24,7 @@ To see all options for a particular command, append ``-h`` to the command name. 
 
 .. only:: not esp8266
 
-   Instructions for other tools bundled with esptool:
+   Instructions for other tools bundled with pesptool:
 
    * :ref:`espefuse`
    * :ref:`espsecure`

@@ -1,4 +1,4 @@
-# Makefile to compile the helloworld app for esptool tests
+# Makefile to compile the helloworld app for pesptool tests
 
 # Prefix for each cross compiler (can include a directory path)
 # These can be overridden via environment variables or on the make command line

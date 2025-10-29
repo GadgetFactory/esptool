@@ -9,8 +9,8 @@ from typing import BinaryIO
 import rich_click as click
 
 import espsecure
-import esptool
-from esptool.logger import log
+import pesptool
+from pesptool.logger import log
 
 from . import fields
 from .mem_definition import EfuseDefineBlocks
@@ -151,7 +151,7 @@ class ESP32C2Commands(BaseCommands):
         if len(block_name_list) != len(datafile_list) or len(block_name_list) != len(
             keypurpose_list
         ):
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "The number of blocks ({}), datafile ({}) and "
                 "keypurpose ({}) should be the same.".format(
                     len(block_name_list), len(datafile_list), len(keypurpose_list)
@@ -171,7 +171,7 @@ class ESP32C2Commands(BaseCommands):
                 and keypurpose_list[1] not in permitted_purposes
             )
             if incompatible:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     f"These keypurposes are incompatible {list(keypurpose_list)}"
                 )
 
@@ -194,7 +194,7 @@ class ESP32C2Commands(BaseCommands):
                     )
                     data = data[:16]
                 elif len(data) != efuse.bit_len // 8:
-                    raise esptool.FatalError(
+                    raise pesptool.FatalError(
                         "Wrong length of this file for SECURE_BOOT_DIGEST. "
                         f"Got {len(data)} (expected 32 or {efuse.bit_len // 8})"
                     )
@@ -219,7 +219,7 @@ class ESP32C2Commands(BaseCommands):
             if revers_msg:
                 log.print(revers_msg)
             if len(data) != num_bytes:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     f"Incorrect key file size {len(data)}. Key file must be {num_bytes}"
                     f" bytes ({num_bytes * 8} bits) of raw binary key data."
                 )
@@ -277,7 +277,7 @@ class ESP32C2Commands(BaseCommands):
         digest = digest[:16]
         num_bytes = self.efuses["BLOCK_KEY0_HI_128"].bit_len // 8
         if len(digest) != num_bytes:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "Incorrect digest size {}. "
                 "Digest must be {} bytes ({} bits) of raw binary key data.".format(
                     len(digest), num_bytes, num_bytes * 8

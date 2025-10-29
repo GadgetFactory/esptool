@@ -22,7 +22,7 @@ SRC=esp32-too-many-sections.c
 define generate_c_code =
     # Generate the constants, one per section.
     # Is it necessary to align the sections on an 16-byte bounds in order
-    # to prevent esptool to merge them while generating the binary.
+    # to prevent pesptool to merge them while generating the binary.
     # Indeed, by aligning them, there will be padding between them.
     echo "Generating $(SRC) ..."
     echo "// This has file been automatically generated, please check Makefile for\

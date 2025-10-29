@@ -1,10 +1,10 @@
-name: Build esptool
+name: Build pesptool
 
 on: [push, pull_request]
 
 jobs:
-  build-esptool-binaries:
-    name: Build esptool binaries for ${{ matrix.platform }}
+  build-pesptool-binaries:
+    name: Build pesptool binaries for ${{ matrix.platform }}
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
@@ -23,8 +23,8 @@ jobs:
           - platform: linux-aarch64
             runner: ubuntu-24.04-arm
     env:
-      DISTPATH: esptool-${{ matrix.platform }}
-      STUBS_DIR: ./esptool/targets/stub_flasher/
+      DISTPATH: pesptool-${{ matrix.platform }}
+      STUBS_DIR: ./pesptool/targets/stub_flasher/
       EFUSE_DIR: ./espefuse/efuse_defs/
     steps:
       - name: Checkout repository
@@ -39,16 +39,16 @@ jobs:
         if: contains(github.ref_name, 'dev')
         run: |
           echo "Patching version for dev release: ${{ github.ref_name }}"
-          python ci/patch_dev_release.py --version ${{ github.ref_name }} esptool/__init__.py
+          python ci/patch_dev_release.py --version ${{ github.ref_name }} pesptool/__init__.py
           git diff
       - name: Build with PyInstaller
         uses: espressif/python-binary-action@master
         with:
-          scripts: 'esptool.py espefuse.py espsecure.py esp_rfc2217_server.py'
+          scripts: 'pesptool.py espefuse.py espsecure.py esp_rfc2217_server.py'
           output-dir: ./${{ env.DISTPATH }}
           include-data-dirs: |
             {
-              "esptool.py": [
+              "pesptool.py": [
                 "${{ env.STUBS_DIR }}1",
                 "${{ env.STUBS_DIR }}2"
               ],
@@ -75,7 +75,7 @@ jobs:
   create_release:
     name: Create GitHub release
     if: startsWith(github.ref, 'refs/tags/') && !(contains(github.ref_name, 'dev'))
-    needs: [build-esptool-binaries]
+    needs: [build-pesptool-binaries]
     runs-on: ubuntu-latest
     env:
       PIP_EXTRA_INDEX_URL: "https://dl.espressif.com/pypi"
@@ -101,12 +101,12 @@ jobs:
         uses: actions/download-artifact@master
       - name: Compress and rename binaries
         run: |
-          for dir in esptool-*; do
-            if [[ "$dir" == esptool-win* ]]; then
-              zip -r "esptool-v${{ steps.get_version.outputs.VERSION }}-${dir#esptool-}.zip" "$dir"
+          for dir in pesptool-*; do
+            if [[ "$dir" == pesptool-win* ]]; then
+              zip -r "pesptool-v${{ steps.get_version.outputs.VERSION }}-${dir#pesptool-}.zip" "$dir"
             else
               chmod -R u=rwx,g=rx,o=rx "$dir"
-              tar -cvzf "esptool-v${{ steps.get_version.outputs.VERSION }}-${dir#esptool-}.tar.gz" "$dir"
+              tar -cvzf "pesptool-v${{ steps.get_version.outputs.VERSION }}-${dir#pesptool-}.tar.gz" "$dir"
             fi
           done
       - name: Create release
@@ -120,5 +120,5 @@ jobs:
           draft: true
           prerelease: false
           files: |
-            esptool-v${{ steps.get_version.outputs.VERSION }}-*.zip
-            esptool-v${{ steps.get_version.outputs.VERSION }}-*.tar.gz
+            pesptool-v${{ steps.get_version.outputs.VERSION }}-*.zip
+            pesptool-v${{ steps.get_version.outputs.VERSION }}-*.tar.gz

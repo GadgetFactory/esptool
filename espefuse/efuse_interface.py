@@ -8,8 +8,8 @@ from typing import Any
 
 from espefuse.efuse.base_operations import BaseCommands
 from espefuse.efuse.emulate_efuse_controller_base import EmulateEfuseControllerBase
-import esptool
-from esptool.util import strip_chip_name
+import pesptool
+from pesptool.util import strip_chip_name
 
 import espefuse.efuse.esp32 as esp32_efuse
 import espefuse.efuse.esp32c2 as esp32c2_efuse
@@ -28,7 +28,7 @@ import espefuse.efuse.esp32s3 as esp32s3_efuse
 @dataclass
 class DefChip:
     efuse_lib: Any
-    chip_class: type[esptool.ESPLoader]
+    chip_class: type[pesptool.ESPLoader]
 
 
 SUPPORTED_BURN_COMMANDS = [
@@ -58,18 +58,18 @@ SUPPORTED_COMMANDS = (
 )
 
 SUPPORTED_CHIPS = {
-    "esp32": DefChip(esp32_efuse, esptool.targets.ESP32ROM),
-    "esp32c2": DefChip(esp32c2_efuse, esptool.targets.ESP32C2ROM),
-    "esp32c3": DefChip(esp32c3_efuse, esptool.targets.ESP32C3ROM),
-    "esp32c6": DefChip(esp32c6_efuse, esptool.targets.ESP32C6ROM),
-    "esp32c61": DefChip(esp32c61_efuse, esptool.targets.ESP32C61ROM),
-    "esp32c5": DefChip(esp32c5_efuse, esptool.targets.ESP32C5ROM),
-    "esp32h2": DefChip(esp32h2_efuse, esptool.targets.ESP32H2ROM),
-    "esp32h21": DefChip(esp32h21_efuse, esptool.targets.ESP32H21ROM),
-    "esp32h4": DefChip(esp32h4_efuse, esptool.targets.ESP32H4ROM),
-    "esp32p4": DefChip(esp32p4_efuse, esptool.targets.ESP32P4ROM),
-    "esp32s2": DefChip(esp32s2_efuse, esptool.targets.ESP32S2ROM),
-    "esp32s3": DefChip(esp32s3_efuse, esptool.targets.ESP32S3ROM),
+    "esp32": DefChip(esp32_efuse, pesptool.targets.ESP32ROM),
+    "esp32c2": DefChip(esp32c2_efuse, pesptool.targets.ESP32C2ROM),
+    "esp32c3": DefChip(esp32c3_efuse, pesptool.targets.ESP32C3ROM),
+    "esp32c6": DefChip(esp32c6_efuse, pesptool.targets.ESP32C6ROM),
+    "esp32c61": DefChip(esp32c61_efuse, pesptool.targets.ESP32C61ROM),
+    "esp32c5": DefChip(esp32c5_efuse, pesptool.targets.ESP32C5ROM),
+    "esp32h2": DefChip(esp32h2_efuse, pesptool.targets.ESP32H2ROM),
+    "esp32h21": DefChip(esp32h21_efuse, pesptool.targets.ESP32H21ROM),
+    "esp32h4": DefChip(esp32h4_efuse, pesptool.targets.ESP32H4ROM),
+    "esp32p4": DefChip(esp32p4_efuse, pesptool.targets.ESP32P4ROM),
+    "esp32s2": DefChip(esp32s2_efuse, pesptool.targets.ESP32S2ROM),
+    "esp32s3": DefChip(esp32s3_efuse, pesptool.targets.ESP32S3ROM),
 }
 
 
@@ -82,7 +82,7 @@ def init_commands(
     baud: int = 115200,
     before: str = "default-reset",
     chip: str = "auto",
-    esp: esptool.ESPLoader | EmulateEfuseControllerBase | None = None,
+    esp: pesptool.ESPLoader | EmulateEfuseControllerBase | None = None,
     **kwargs: Any,
 ) -> BaseCommands:
     """Get the ESP eFuse commands class for the given chip
@@ -153,9 +153,9 @@ def get_esp(
     virt: bool = False,
     debug: bool = False,
     virt_efuse_file: str | None = None,
-) -> esptool.ESPLoader | EmulateEfuseControllerBase:
+) -> pesptool.ESPLoader | EmulateEfuseControllerBase:
     """Get the ESPLoader object for the given chip.
-    Uses :func:`esptool.cmds.detect_chip` function.
+    Uses :func:`pesptool.cmds.detect_chip` function.
 
     Args:
         port: The port to connect to the chip
@@ -173,7 +173,7 @@ def get_esp(
         The ESPLoader object or EmulateEfuseController object
     """
     if chip not in ["auto"] + list(SUPPORTED_CHIPS.keys()):
-        raise esptool.FatalError(f"get_esp: Unsupported chip ({chip})")
+        raise pesptool.FatalError(f"get_esp: Unsupported chip ({chip})")
 
     if virt:
         efuse = SUPPORTED_CHIPS.get(chip, SUPPORTED_CHIPS["esp32"]).efuse_lib
@@ -181,10 +181,10 @@ def get_esp(
 
     if chip == "auto" and not skip_connect:
         if port is None:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "get_esp: Port is required when chip is 'auto' to detect the chip"
             )
-        return esptool.detect_chip(port, baud, before)
+        return pesptool.detect_chip(port, baud, before)
 
     esp = SUPPORTED_CHIPS.get(chip, SUPPORTED_CHIPS["esp32"]).chip_class(
         port if not skip_connect else StringIO(),  # type: ignore

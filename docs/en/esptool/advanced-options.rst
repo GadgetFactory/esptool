@@ -3,36 +3,36 @@
 Advanced Options
 ================
 
-The following advanced global configuration options can be used for all esptool commands. They are placed before the command name on the command line. For example, the option ``--before no-reset`` has to be placed before ``flash-id``. The command should look like this: ``esptool --before no-reset flash-id``.
+The following advanced global configuration options can be used for all pesptool commands. They are placed before the command name on the command line. For example, the option ``--before no-reset`` has to be placed before ``flash-id``. The command should look like this: ``pesptool --before no-reset flash-id``.
 
 For basic/fundamental global configuration options, see the :ref:`options` page.
 
 Reset Modes
 -----------
 
-By default, esptool tries to hard reset the chip into bootloader mode before it starts and hard resets the chip to run the normal program once it is complete. The ``--before`` and ``--after`` options allow this behavior to be changed:
+By default, pesptool tries to hard reset the chip into bootloader mode before it starts and hard resets the chip to run the normal program once it is complete. The ``--before`` and ``--after`` options allow this behavior to be changed:
 
 Reset Before Operation: ``--before``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``--before`` argument allows you to specify whether the chip needs resetting into bootloader mode before esptool talks to it.
+The ``--before`` argument allows you to specify whether the chip needs resetting into bootloader mode before pesptool talks to it.
 
 .. list::
 
     * ``--before default-reset`` is the default, which uses DTR & RTS serial control lines (see :ref:`entering-the-bootloader`) to try to reset the chip into bootloader mode.
     * ``--before no-reset`` will skip DTR/RTS control signal assignments and just start sending a serial synchronisation command to the chip. This is useful if your chip doesn't have DTR/RTS, or for some serial interfaces (like Arduino board onboard serial) which behave differently when DTR/RTS are toggled.
     * ``--before no-reset-no-sync`` will skip DTR/RTS control signal assignments and skip also the serial synchronization command. This is useful if your chip is already running the :ref:`stub bootloader <stub>` and you want to avoid resetting the chip and uploading the stub again.
-    :esp32c3 or esp32s3 or esp32c6 or esp32h2 or esp32p4 or esp32c5 or esp32c61 or esp32h21 or esp32h4: * ``--before usb-reset`` will use custom reset sequence for USB-JTAG-Serial (used for example for ESP chips connected through the USB-JTAG-Serial peripheral). Usually, this option doesn't have to be used directly. Esptool should be able to detect connection through USB-JTAG-Serial.
+    :esp32c3 or esp32s3 or esp32c6 or esp32h2 or esp32p4 or esp32c5 or esp32c61 or esp32h21 or esp32h4: * ``--before usb-reset`` will use custom reset sequence for USB-JTAG-Serial (used for example for ESP chips connected through the USB-JTAG-Serial peripheral). Usually, this option doesn't have to be used directly. pesptool should be able to detect connection through USB-JTAG-Serial.
 
 Reset After Operation: ``--after``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``--after`` argument allows you to specify whether the chip should be reset after the esptool operation completes:
+The ``--after`` argument allows you to specify whether the chip should be reset after the pesptool operation completes:
 
 .. list::
 
     * ``--after hard-reset`` is the default. The RTS serial control line is used to reset the chip into a normal boot sequence.
-    :esp8266: * ``--after soft-reset`` runs the user firmware, but any subsequent reset will return to the serial bootloader. This was the reset behaviour in esptool v1.x.
+    :esp8266: * ``--after soft-reset`` runs the user firmware, but any subsequent reset will return to the serial bootloader. This was the reset behaviour in pesptool v1.x.
     * ``--after no-reset`` leaves the chip in the serial bootloader, no reset is performed.
     * ``--after no-reset-stub`` leaves the chip in the stub bootloader, no reset is performed.
     :not esp8266 and not esp32 and not esp32h2 and not esp32c6: * ``--after watchdog-reset`` hard-resets the chip by triggering an internal watchdog reset. This is useful when the RTS control line is not available, especially in the USB-OTG and USB-Serial/JTAG modes. Use this if a chip is getting stuck in download mode when using the default reset method in USB-Serial/JTAG mode. Using this may cause the port to re-enumerate on Linux (e.g. ``/dev/ttyACM0`` -> ``/dev/ttyACM1``).
@@ -41,7 +41,7 @@ The ``--after`` argument allows you to specify whether the chip should be reset 
 Connect Loop
 ------------
 
-Esptool supports connection loops, where the user can specify how many times to try to open a port. The delay between retries is 0.1 seconds. This can be useful for example when the chip is in deep sleep or esptool was started before the chip was connected to the PC. A connection loop can be created by setting the ``ESPTOOL_OPEN_PORT_ATTEMPTS`` environment variable.
+pesptool supports connection loops, where the user can specify how many times to try to open a port. The delay between retries is 0.1 seconds. This can be useful for example when the chip is in deep sleep or pesptool was started before the chip was connected to the PC. A connection loop can be created by setting the ``pesptool_OPEN_PORT_ATTEMPTS`` environment variable.
 This feature can also be enabled by using the ``open_port_attempts`` configuration option, for more details regarding config options see :ref:`Configuration file <config>` section.
 There are 3 possible values for this option:
 
@@ -72,9 +72,9 @@ Passing ``--no-stub`` will disable certain options, as not all options are imple
     Overriding SPI Flash Connections: ``--spi-connection``
     ------------------------------------------------------
 
-    The optional ``--spi-connection`` argument overrides the SPI flash connection configuration on {IDF_TARGET_NAME}. This means that the SPI flash can be connected to other pins, or esptool can be used to communicate with a different SPI flash chip to the default.
+    The optional ``--spi-connection`` argument overrides the SPI flash connection configuration on {IDF_TARGET_NAME}. This means that the SPI flash can be connected to other pins, or pesptool can be used to communicate with a different SPI flash chip to the default.
 
-    Supply the ``--spi-connection`` argument after the ``esptool`` command, ie ``esptool flash-id --spi-connection HSPI``.
+    Supply the ``--spi-connection`` argument after the ``pesptool`` command, ie ``pesptool flash-id --spi-connection HSPI``.
 
     .. note::
 
@@ -136,7 +136,7 @@ Specifying Arguments via File
 -----------------------------
 .. _specify_arguments_via_file:
 
-Anywhere on the esptool command line, you can specify a file name as ``@filename.txt`` to read one or more arguments from text file ``filename.txt``. Arguments can be separated by newlines or spaces, quotes can be used to enclose arguments that span multiple words. Arguments read from the text file are expanded exactly as if they had appeared in that order on the esptool command line.
+Anywhere on the pesptool command line, you can specify a file name as ``@filename.txt`` to read one or more arguments from text file ``filename.txt``. Arguments can be separated by newlines or spaces, quotes can be used to enclose arguments that span multiple words. Arguments read from the text file are expanded exactly as if they had appeared in that order on the pesptool command line.
 
 An example of this is available in the :ref:`merge-bin <merge-bin>` command description.
 
@@ -148,7 +148,7 @@ Filtering Serial Ports: ``--port-filter``
 -----------------------------------------
 .. _filtering_serial_ports:
 
-``--port-filter <FilterType>=<FilterValue>`` allows limiting ports that will be considered during chip autodetection. This can be useful when esptool is run on a system
+``--port-filter <FilterType>=<FilterValue>`` allows limiting ports that will be considered during chip autodetection. This can be useful when pesptool is run on a system
 with many serial ports. There are a few different types that can be combined. A port must match all specified FilterTypes, and must match
 at least one FilterValue for each specified FilterType to be considered. Example filter configurations:
 
@@ -176,7 +176,7 @@ The ``--verbose``, ``-v`` flag can be used to show all output without any overwr
 
 .. code-block:: bash
 
-    esptool --verbose flash-id
+    pesptool --verbose flash-id
 
 See :ref:`the trace option <tracing-communications>` if you want to dump all serial interactions to the standard output for debugging purposes.
 
@@ -188,4 +188,4 @@ The ``--silent``, ``-s`` flag can be used to limit the output to errors only:
 
 .. code-block:: bash
 
-    esptool -s write-flash 0x0 image.bin
+    pesptool -s write-flash 0x0 image.bin

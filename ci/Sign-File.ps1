@@ -31,7 +31,7 @@ function FindSignTool {
     Exit 1
 }
 
-function SignEsptool {
+function Signpesptool {
     param(
         [Parameter()]
         [String]
@@ -75,4 +75,4 @@ function SignEsptool {
 
 }
 
-SignEsptool ${Path}
+Signpesptool ${Path}

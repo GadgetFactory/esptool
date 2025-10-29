@@ -1,9 +1,9 @@
 import pytest
 from io import StringIO
 from unittest.mock import patch
-from esptool import __version__
-from esptool.logger import EsptoolLogger, log, TemplateLogger
-from esptool.cmds import version
+from pesptool import __version__
+from pesptool.logger import pesptoolLogger, log, TemplateLogger
+from pesptool.cmds import version
 
 
 # Custom logger that implements all methods
@@ -56,12 +56,12 @@ class CustomLoggerIncomplete:
 class TestLogger:
     @pytest.fixture
     def logger(self):
-        log = EsptoolLogger()
+        log = pesptoolLogger()
         log._set_smart_features(True)
         return log
 
     def test_singleton(self, logger):
-        logger2 = EsptoolLogger()
+        logger2 = pesptoolLogger()
         assert logger is logger2
         assert logger is log
 
@@ -134,7 +134,7 @@ class TestLogger:
     def test_set_incomplete_logger(self, logger):
         with pytest.raises(
             TypeError,
-            match="'CustomLoggerIncomplete' object layout differs from 'EsptoolLogger'",
+            match="'CustomLoggerIncomplete' object layout differs from 'pesptoolLogger'",
         ):
             logger.set_logger(CustomLoggerIncomplete())
 

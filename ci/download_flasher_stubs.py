@@ -10,8 +10,8 @@ import urllib.request
 STUBS = (
     {
         "STUB_SET_VERSION": "1",
-        "DOWNLOAD_URL": "https://github.com/espressif/esptool-legacy-flasher-stub/releases/download",
-        "TAG_URL": "https://github.com/espressif/esptool-legacy-flasher-stub/releases/tag",
+        "DOWNLOAD_URL": "https://github.com/espressif/pesptool-legacy-flasher-stub/releases/download",
+        "TAG_URL": "https://github.com/espressif/pesptool-legacy-flasher-stub/releases/tag",
         "VERSION": "v1.8.0",
         "FILE_LIST": (
             "esp32",
@@ -53,7 +53,7 @@ STUBS = (
     },
 )
 
-DESTINATION_DIR = os.path.join("esptool", "targets", "stub_flasher")
+DESTINATION_DIR = os.path.join("pesptool", "targets", "stub_flasher")
 
 README_TEMPLATE = """# Licensing
 

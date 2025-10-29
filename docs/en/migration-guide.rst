@@ -3,17 +3,17 @@
 ``v5`` Migration Guide
 ======================
 
-This document describes the breaking changes made to esptool.py, espsecure.py and espefuse.py in the major release ``v5``. It provides guidance on adapting existing workflows and scripts to ensure compatibility when updating from ``v4.*``.
+This document describes the breaking changes made to pesptool.py, espsecure.py and espefuse.py in the major release ``v5``. It provides guidance on adapting existing workflows and scripts to ensure compatibility when updating from ``v4.*``.
 
 
 Command-Line Tool Invocation Changes
 ************************************
 
-The preferred way to invoke esptool command-line tools has changed. Instead of running the scripts with `.py` suffix, you should now use the console scripts without the `.py` suffix.
+The preferred way to invoke pesptool command-line tools has changed. Instead of running the scripts with `.py` suffix, you should now use the console scripts without the `.py` suffix.
 
 **Affected Tools:**
 
-- ``esptool.py`` → ``esptool``
+- ``pesptool.py`` → ``pesptool``
 - ``espefuse.py`` → ``espefuse``
 - ``espsecure.py`` → ``espsecure``
 - ``esp_rfc2217_server.py`` → ``esp_rfc2217_server``
@@ -26,7 +26,7 @@ The preferred way to invoke esptool command-line tools has changed. Instead of r
 
    .. code-block:: bash
 
-       esptool.py chip_id
+       pesptool.py chip_id
        espefuse.py summary
        espsecure.py sign_data --keyfile key.pem data.bin
 
@@ -34,7 +34,7 @@ The preferred way to invoke esptool command-line tools has changed. Instead of r
 
    .. code-block:: bash
 
-       esptool chip_id
+       pesptool chip_id
        espefuse summary
        espsecure sign-data --keyfile key.pem data.bin
 
@@ -45,7 +45,7 @@ The preferred way to invoke esptool command-line tools has changed. Instead of r
    Scripts with ``.py`` suffix are still available for backward compatibility, but they will produce deprecation warning and will be removed in the next major release.
 
 
-esptool ``v5`` Migration Guide
+pesptool ``v5`` Migration Guide
 ******************************
 
 ``image-info`` Output Format Change
@@ -67,11 +67,11 @@ The output format of the :ref:`image-info <image-info>` command has been **updat
 Output Logging
 ##############
 
-The esptool ``v5`` release introduces a centralized logging mechanism to improve output management and allow redirection.
+The pesptool ``v5`` release introduces a centralized logging mechanism to improve output management and allow redirection.
 
 **Key Changes:**
 
-- All esptool output is now routed through an ``EsptoolLogger`` class.
+- All pesptool output is now routed through an ``pesptoolLogger`` class.
 - The output can include ANSI color codes for better readability.
 - Custom loggers can be implemented to redirect output to files or other destinations.
 
@@ -132,7 +132,7 @@ Support for the following beta targets has been **removed in v5**:
 1. Update any scripts or workflows not to target these beta chips.
 2. Remove any references to these beta targets from CI/CD pipelines or build scripts.
 
-Use esptool ``v4`` for legacy workflows targeting these beta chips.
+Use pesptool ``v4`` for legacy workflows targeting these beta chips.
 
 ``verify-flash`` ``--diff`` Argument
 ####################################
@@ -143,20 +143,20 @@ The format of the ``--diff`` option of the :ref:`verify-flash <verify-flash>` co
 
 1. Rewrite the ``--diff=yes`` argument to a simple ``--diff`` in any existing ``verify-flash`` commands in scripts/CI pipelines. Delete ``--diff=no`` completely if detailed diff output is not required.
 
-Using esptool as a Python Module
+Using pesptool as a Python Module
 ################################
 
-All command functions (e.g., ``verify-flash``, ``write-flash``) have been refactored to remove their dependency on the ``args`` object from the argparse module. Instead, all arguments are now passed explicitly as individual parameters. This change, combined with enhancements to the public API, provides a cleaner, more modular interface for programmatic use of esptool in custom scripts and applications (see :ref:`scripting <scripting>`).
+All command functions (e.g., ``verify-flash``, ``write-flash``) have been refactored to remove their dependency on the ``args`` object from the argparse module. Instead, all arguments are now passed explicitly as individual parameters. This change, combined with enhancements to the public API, provides a cleaner, more modular interface for programmatic use of pesptool in custom scripts and applications (see :ref:`scripting <scripting>`).
 
 **Key Changes:**
 
 - Refactored Function Signatures: Previously, command functions relied on an ``args`` object (e.g., ``args.addr_filename``, ``args.diff``). Now, they take individual parameters with explicit types and default values, improving clarity and enabling a robust API.
-- Public API Expansion: The public API (exposed via ``esptool.cmds``) has been formalized with high-level functions like ``detect_chip()``, ``attach_flash()``, ``write-flash()``, and ``reset_chip()``, designed for ease of use in Python scripts.
+- Public API Expansion: The public API (exposed via ``pesptool.cmds``) has been formalized with high-level functions like ``detect_chip()``, ``attach_flash()``, ``write-flash()``, and ``reset_chip()``, designed for ease of use in Python scripts.
 
 **Migration Steps:**
 
-1. Update Function Calls: If you are calling esptool functions programmatically, replace ``args`` object usage with individual parameter passing. Refer to the function signatures in ``esptool.cmds`` for the new parameter names, types, and defaults.
-2. Leverage the Public API: Use the new high-level functions in ``esptool.cmds`` for common operations like chip detection, flash attachment, flashing, resetting, or image generation.
+1. Update Function Calls: If you are calling pesptool functions programmatically, replace ``args`` object usage with individual parameter passing. Refer to the function signatures in ``pesptool.cmds`` for the new parameter names, types, and defaults.
+2. Leverage the Public API: Use the new high-level functions in ``pesptool.cmds`` for common operations like chip detection, flash attachment, flashing, resetting, or image generation.
 3. Test your updated scripts to ensure compatibility with the new API.
 
 For detailed examples and API reference, see the :ref:`scripting <scripting>` section.
@@ -165,7 +165,7 @@ For detailed examples and API reference, see the :ref:`scripting <scripting>` se
 Flash Operations from Non-flash Related Commands
 ################################################
 
-When esptool is used as a CLI tool, the following commands no longer automatically attach the flash by default, since flash access is not required for their core functionality:
+When pesptool is used as a CLI tool, the following commands no longer automatically attach the flash by default, since flash access is not required for their core functionality:
 
 - ``load-ram``
 - ``read-mem``
@@ -189,7 +189,7 @@ The ``--spi-connection`` CLI argument has been **removed** from non-flash relate
 Shell Completion
 ################
 
-The esptool ``v5`` has switched to using `Click <https://click.palletsprojects.com/>`_ for command line argument parsing, which changes how shell completion works.
+The pesptool ``v5`` has switched to using `Click <https://click.palletsprojects.com/>`_ for command line argument parsing, which changes how shell completion works.
 
 **Migration Steps:**
 
@@ -199,7 +199,7 @@ The esptool ``v5`` has switched to using `Click <https://click.palletsprojects.c
 ``merge-bin`` ``--fill-flash-size`` Argument
 ############################################
 
-The ``--fill-flash-size`` option of the :ref:`merge-bin <merge-bin>` command has been renamed to ``--pad-to-size``. This change provides a more intuitive and descriptive name for the argument and is consistent with the naming scheme in other esptool image manipulation commands.
+The ``--fill-flash-size`` option of the :ref:`merge-bin <merge-bin>` command has been renamed to ``--pad-to-size``. This change provides a more intuitive and descriptive name for the argument and is consistent with the naming scheme in other pesptool image manipulation commands.
 
 **Migration Steps:**
 
@@ -208,7 +208,7 @@ The ``--fill-flash-size`` option of the :ref:`merge-bin <merge-bin>` command has
 ``write-flash`` ``--ignore-flash-encryption-efuse-setting`` Argument
 ####################################################################
 
-The ``--ignore-flash-encryption-efuse-setting`` option of the :ref:`write-flash <write-flash>` command has been renamed to ``--ignore-flash-enc-efuse``. This change shortens the argument name to improve readability and consistency with other esptool options.
+The ``--ignore-flash-encryption-efuse-setting`` option of the :ref:`write-flash <write-flash>` command has been renamed to ``--ignore-flash-enc-efuse``. This change shortens the argument name to improve readability and consistency with other pesptool options.
 
 **Migration Steps:**
 
@@ -226,7 +226,7 @@ The ``make_image`` command for the ESP8266 has been **removed in v5**. This comm
 Using Binary from GitHub Releases on Linux
 ##########################################
 
-The ``esptool`` binary from GitHub Releases on Linux is now using Ubuntu 22.04 as the base image. That means the image is using ``glibc`` 2.35, which is not fully compatible with the ``glibc`` 2.28 from Ubuntu 20.04 (the base image for ``v4.*``).
+The ``pesptool`` binary from GitHub Releases on Linux is now using Ubuntu 22.04 as the base image. That means the image is using ``glibc`` 2.35, which is not fully compatible with the ``glibc`` 2.28 from Ubuntu 20.04 (the base image for ``v4.*``).
 
 **Migration Steps:**
 
@@ -252,7 +252,7 @@ A significant amount of changes have been made to the log styling and formatting
 
 **Migration Steps:**
 
-1. Make sure to adjust any of your scripts, asserts, CI workflows, or others to accommodate the new/changed format of messages. If you are parsing the log output (not recommended), consider importing esptool as a module and using the public API (see :ref:`here <scripting>`) to get the information you need.
+1. Make sure to adjust any of your scripts, asserts, CI workflows, or others to accommodate the new/changed format of messages. If you are parsing the log output (not recommended), consider importing pesptool as a module and using the public API (see :ref:`here <scripting>`) to get the information you need.
 
 
 Reset Mode Renaming
@@ -304,7 +304,7 @@ Choices for the ``--before`` and ``--after`` options have been renamed to use ``
         - ``generate_flash_encryption_key``
         - ``decrypt_flash_data``
         - ``encrypt_flash_data``
-    - The ``main`` function parameter ``custom_commandline`` has been renamed to ``argv`` to unify the naming convention with esptool.
+    - The ``main`` function parameter ``custom_commandline`` has been renamed to ``argv`` to unify the naming convention with pesptool.
 
     **Migration Steps:**
 

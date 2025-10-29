@@ -9,8 +9,8 @@ import rich_click as click
 
 import espsecure
 
-import esptool
-from esptool.logger import log
+import pesptool
+from pesptool.logger import log
 
 from .mem_definition import EfuseDefineBlocks
 from .. import util
@@ -115,12 +115,12 @@ class ESP32Commands(BaseCommands):
 
         # check efuses aren't burned in a way which makes this impossible
         if voltage == "OFF" and sdio_reg.get() != 0:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "Can't set flash regulator to OFF as XPD_SDIO_REG eFuse is already burned."
             )
 
         if voltage == "1.8V" and sdio_tieh.get() != 0:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "Can't set regulator to 1.8V is XPD_SDIO_TIEH eFuse is already burned."
             )
 
@@ -206,7 +206,7 @@ class ESP32Commands(BaseCommands):
 
         util.check_duplicate_name_in_list(block_name_list)
         if len(block_name_list) != len(datafile_list):
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"The number of blocks ({len(block_name_list)}) "
                 f"and datafile ({len(datafile_list)}) should be the same."
             )
@@ -218,7 +218,7 @@ class ESP32Commands(BaseCommands):
                 if block_name == blk.name or block_name in blk.alias:
                     efuse = self.efuses[blk.name]
             if efuse is None:
-                raise esptool.FatalError(f"Unknown block name - {block_name}.")
+                raise pesptool.FatalError(f"Unknown block name - {block_name}.")
             num_bytes = efuse.bit_len // 8
             data = datafile.read()
             datafile.close()
@@ -237,7 +237,7 @@ class ESP32Commands(BaseCommands):
             if revers_msg:
                 log.print(revers_msg)
             if len(data) != num_bytes:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     f"Incorrect key file size {len(data)}. Key file must be {num_bytes}"
                     f" bytes ({num_bytes * 8} bits) of raw binary key data."
                 )
@@ -287,13 +287,13 @@ class ESP32Commands(BaseCommands):
             show_sensitive_info: If True, the sensitive information will be shown.
         """
         if self.efuses.coding_scheme == self.efuses.REGS.CODING_SCHEME_34:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "burn-key-digest only works with 'None' coding scheme"
             )
 
         chip_revision = self.esp.get_chip_revision()
         if chip_revision < 300:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "Incorrect chip revision for Secure boot v2. "
                 "Detected: v{}.{}. Expected: >= v3.0".format(
                     chip_revision // 100, chip_revision % 100
@@ -304,7 +304,7 @@ class ESP32Commands(BaseCommands):
         efuse = self.efuses["BLOCK2"]
         num_bytes = efuse.bit_len // 8
         if len(digest) != num_bytes:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 f"Incorrect digest size {len(digest)}. "
                 f"Digest must be {num_bytes} bytes "
                 f"({num_bytes * 8} bits) of raw binary key data."

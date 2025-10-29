@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import patch
-import esptool
+import pesptool
 
-# Espressif VID constant (same as in esptool/__init__.py)
+# Espressif VID constant (same as in pesptool/__init__.py)
 ESPRESSIF_VID = 0x303A
 
 
@@ -34,11 +34,11 @@ class TestPortSorting:
 
         with (
             patch("sys.platform", "linux"),
-            patch("esptool.list_ports") as mock_list_ports,
+            patch("pesptool.list_ports") as mock_list_ports,
         ):
             mock_list_ports.comports.return_value = mock_ports
 
-            result = esptool.get_port_list()
+            result = pesptool.get_port_list()
 
             # Expected sorting order (alphabetically within each group):
             # 1. Other devices (priority 1)
@@ -71,11 +71,11 @@ class TestPortSorting:
 
         with (
             patch("sys.platform", "darwin"),
-            patch("esptool.list_ports") as mock_list_ports,
+            patch("pesptool.list_ports") as mock_list_ports,
         ):
             mock_list_ports.comports.return_value = mock_ports
 
-            result = esptool.get_port_list()
+            result = pesptool.get_port_list()
 
             # Expected sorting order (alphabetically within each group):
             # 1. Other devices (priority 1)
@@ -103,11 +103,11 @@ class TestPortSorting:
 
         with (
             patch("sys.platform", "win32"),
-            patch("esptool.list_ports") as mock_list_ports,
+            patch("pesptool.list_ports") as mock_list_ports,
         ):
             mock_list_ports.comports.return_value = mock_ports
 
-            result = esptool.get_port_list()
+            result = pesptool.get_port_list()
 
             # Expected sorting order (alphabetically within each group):
             # 1. All other COM ports (priority 1)
@@ -150,26 +150,26 @@ class TestPortSorting:
 
         with (
             patch("sys.platform", "linux"),
-            patch("esptool.list_ports") as mock_list_ports,
+            patch("pesptool.list_ports") as mock_list_ports,
         ):
             mock_list_ports.comports.return_value = mock_ports
 
             # Test VID filtering - Espressif devices appear last
-            result = esptool.get_port_list(vids=[ESPRESSIF_VID])
+            result = pesptool.get_port_list(vids=[ESPRESSIF_VID])
             expected = ["/dev/ttyUSB1", "/dev/ttyUSB2"]
             assert result == expected
 
             # Test PID filtering
-            result = esptool.get_port_list(pids=[0x1001])
+            result = pesptool.get_port_list(pids=[0x1001])
             expected = ["/dev/ttyUSB1"]
             assert result == expected
 
             # Test name filtering
-            result = esptool.get_port_list(names=["ESP32"])
+            result = pesptool.get_port_list(names=["ESP32"])
             expected = ["/dev/ttyUSB1", "/dev/ttyUSB2"]
             assert result == expected
 
             # Test serial filtering
-            result = esptool.get_port_list(serials=["ESP"])
+            result = pesptool.get_port_list(serials=["ESP"])
             expected = ["/dev/ttyUSB1", "/dev/ttyUSB2"]
             assert result == expected

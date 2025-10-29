@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-from esptool.logger import log
+from pesptool.logger import log
 
 from pkcs11.exceptions import (
     AnotherUserAlreadyLoggedIn,

@@ -6,12 +6,12 @@
 
 import io
 from typing import BinaryIO
-from esptool.logger import log
+from pesptool.logger import log
 
 import rich_click as click
 
 import espsecure
-import esptool
+import pesptool
 
 from . import fields
 from .mem_definition import EfuseDefineBlocks
@@ -119,12 +119,12 @@ class ESP32S2Commands(BaseCommands):
 
         # check efuses aren't burned in a way which makes this impossible
         if voltage == "OFF" and sdio_reg.get() != 0:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "Can't set flash regulator to OFF as VDD_SPI_XPD eFuse is already burned"
             )
 
         if voltage == "1.8V" and sdio_tieh.get() != 0:
-            raise esptool.FatalError(
+            raise pesptool.FatalError(
                 "Can't set regulator to 1.8V is VDD_SPI_TIEH eFuse is already burned"
             )
 
@@ -240,7 +240,7 @@ class ESP32S2Commands(BaseCommands):
                 if block_name == block.name or block_name in block.alias:
                     efuse = self.efuses[block.name]
             if efuse is None:
-                raise esptool.FatalError(f"Unknown block name - {block_name}.")
+                raise pesptool.FatalError(f"Unknown block name - {block_name}.")
             num_bytes = efuse.bit_len // 8
 
             block_num = self.efuses.get_index_block_by_name(block_name)
@@ -267,7 +267,7 @@ class ESP32S2Commands(BaseCommands):
             if revers_msg:
                 log.print(revers_msg)
             if len(data) != num_bytes:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     f"Incorrect key file size {len(data)}. Key file must be {num_bytes} "
                     f"bytes ({num_bytes * 8} bits) of raw binary key data."
                 )
@@ -291,7 +291,7 @@ class ESP32S2Commands(BaseCommands):
                     self.efuses[block.key_purpose_name].save(keypurpose)
                     disable_wr_protect_key_purpose = True
                 else:
-                    raise esptool.FatalError(
+                    raise pesptool.FatalError(
                         f"It is not possible to change '{block.key_purpose_name}' "
                         f"to '{keypurpose}' because write protection bit is set."
                     )
@@ -353,11 +353,11 @@ class ESP32S2Commands(BaseCommands):
                 if block_name == block.name or block_name in block.alias:
                     efuse = self.efuses[block.name]
             if efuse is None:
-                raise esptool.FatalError(f"Unknown block name - {block_name}.")
+                raise pesptool.FatalError(f"Unknown block name - {block_name}.")
             num_bytes = efuse.bit_len // 8
             digest = espsecure._digest_sbv2_public_key(datafile)
             if len(digest) != num_bytes:
-                raise esptool.FatalError(
+                raise pesptool.FatalError(
                     f"Incorrect digest size {len(digest)}. Digest must be {num_bytes} "
                     f"bytes ({num_bytes * 8} bits) of raw binary key data."
                 )

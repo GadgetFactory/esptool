@@ -3,30 +3,30 @@
 Embedding into Custom Scripts
 =============================
 
-``esptool`` can be easily integrated into Python applications or called from other Python scripts.
+``pesptool`` can be easily integrated into Python applications or called from other Python scripts.
 
-Using Esptool as a Python Module
+Using pesptool as a Python Module
 --------------------------------
 
-The esptool module provides a comprehensive Python API for interacting with ESP chips programmatically. By leveraging the API, developers can automate tasks such as flashing firmware, reading device information, managing flash memory, or preparing and analyzing binary images. The API supports both high-level abstractions and low-level control.
+The pesptool module provides a comprehensive Python API for interacting with ESP chips programmatically. By leveraging the API, developers can automate tasks such as flashing firmware, reading device information, managing flash memory, or preparing and analyzing binary images. The API supports both high-level abstractions and low-level control.
 
 Using the Command-Line Interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The most straightforward and basic integration option is to pass arguments to ``esptool.main()``. This workaround allows you to pass exactly the same arguments as you would on the CLI:
+The most straightforward and basic integration option is to pass arguments to ``pesptool.main()``. This workaround allows you to pass exactly the same arguments as you would on the CLI:
 
 .. code-block:: python
 
-    import esptool
+    import pesptool
 
     command = ['--baud', '460800', 'read-flash', '0', '0x200000', 'flash_contents.bin']
     print("Using command ", " ".join(command))
-    esptool.main(command)
+    pesptool.main(command)
 
 Public API Reference
 ^^^^^^^^^^^^^^^^^^^^
 
-For more control and custom integration, esptool exposes a public API - a set of high-level functions that encapsulate common operations and simplify the interaction with the ESP chip. These functions are designed to be user-friendly and provide an intuitive way to work with the chip. The public API is the recommended way to interact with the chip programmatically.
+For more control and custom integration, pesptool exposes a public API - a set of high-level functions that encapsulate common operations and simplify the interaction with the ESP chip. These functions are designed to be user-friendly and provide an intuitive way to work with the chip. The public API is the recommended way to interact with the chip programmatically.
 
 Basic Workflow:
 
@@ -41,7 +41,7 @@ This example demonstrates writing two binary files using high-level commands:
 
 .. code-block:: python
 
-    from esptool.cmds import detect_chip, attach_flash, reset_chip, run_stub, write_flash
+    from pesptool.cmds import detect_chip, attach_flash, reset_chip, run_stub, write_flash
 
     PORT = "/dev/ttyACM0"
     BOOTLOADER = "bootloader.bin"
@@ -64,7 +64,7 @@ The following example demonstrates running a series of flash memory operations i
 
 .. code-block:: python
 
-    from esptool.cmds import (
+    from pesptool.cmds import (
     erase_flash,
     attach_flash,
     flash_id,
@@ -74,7 +74,7 @@ The following example demonstrates running a series of flash memory operations i
     verify_flash,
     write_flash,
     )
-    from esptool.targets import ESP32ROM  # Import the target class, e.g. ESP8266ROM, ESP32S3ROM, etc.
+    from pesptool.targets import ESP32ROM  # Import the target class, e.g. ESP8266ROM, ESP32S3ROM, etc.
 
     PORT = "/dev/ttyACM0"
     BOOTLOADER = "bootloader.bin"
@@ -136,62 +136,62 @@ The following example converts an ELF file to a flashable binary, prints the ima
 Chip Control Operations
 """""""""""""""""""""""
 
-.. autofunction:: esptool.cmds.detect_chip
+.. autofunction:: pesptool.cmds.detect_chip
 
-.. autofunction:: esptool.cmds.run_stub
+.. autofunction:: pesptool.cmds.run_stub
 
-.. autofunction:: esptool.cmds.load_ram
+.. autofunction:: pesptool.cmds.load_ram
 
-.. autofunction:: esptool.cmds.run
+.. autofunction:: pesptool.cmds.run
 
-.. autofunction:: esptool.cmds.reset_chip
+.. autofunction:: pesptool.cmds.reset_chip
 
 ------------
 
 Chip Information Operations
 """""""""""""""""""""""""""
 
-.. autofunction:: esptool.cmds.chip_id
+.. autofunction:: pesptool.cmds.chip_id
 
-.. autofunction:: esptool.cmds.get_security_info
+.. autofunction:: pesptool.cmds.get_security_info
 
-.. autofunction:: esptool.cmds.read_mac
+.. autofunction:: pesptool.cmds.read_mac
 
 ------------
 
 Flash Memory Manipulation Operations
 """"""""""""""""""""""""""""""""""""
 
-.. autofunction:: esptool.cmds.attach_flash
+.. autofunction:: pesptool.cmds.attach_flash
 
-.. autofunction:: esptool.cmds.flash_id
+.. autofunction:: pesptool.cmds.flash_id
 
-.. autofunction:: esptool.cmds.read_flash
+.. autofunction:: pesptool.cmds.read_flash
 
-.. autofunction:: esptool.cmds.write_flash
+.. autofunction:: pesptool.cmds.write_flash
 
-.. autofunction:: esptool.cmds.erase_flash
+.. autofunction:: pesptool.cmds.erase_flash
 
-.. autofunction:: esptool.cmds.erase_region
+.. autofunction:: pesptool.cmds.erase_region
 
-.. autofunction:: esptool.cmds.verify_flash
+.. autofunction:: pesptool.cmds.verify_flash
 
-.. autofunction:: esptool.cmds.read_flash_status
+.. autofunction:: pesptool.cmds.read_flash_status
 
-.. autofunction:: esptool.cmds.write_flash_status
+.. autofunction:: pesptool.cmds.write_flash_status
 
-.. autofunction:: esptool.cmds.read_flash_sfdp
+.. autofunction:: pesptool.cmds.read_flash_sfdp
 
 ------------
 
 Memory Operations
 """""""""""""""""
 
-.. autofunction:: esptool.cmds.read_mem
+.. autofunction:: pesptool.cmds.read_mem
 
-.. autofunction:: esptool.cmds.write_mem
+.. autofunction:: pesptool.cmds.write_mem
 
-.. autofunction:: esptool.cmds.dump_mem
+.. autofunction:: pesptool.cmds.dump_mem
 
 ------------
 
@@ -200,22 +200,22 @@ Binary Image Manipulation Operations
 
 The following commands can run without the need for a connected chip:
 
-.. autofunction:: esptool.cmds.elf2image
+.. autofunction:: pesptool.cmds.elf2image
 
-.. autofunction:: esptool.cmds.merge_bin
+.. autofunction:: pesptool.cmds.merge_bin
 
-.. autofunction:: esptool.cmds.image_info
+.. autofunction:: pesptool.cmds.image_info
 
 ------------
 
 Utility Functions
 """""""""""""""""
 
-.. autofunction:: esptool.cmds.version
+.. autofunction:: pesptool.cmds.version
 
 ------------
 
-For more information, refer to the command implementations in `esptool/cmds.py <https://github.com/espressif/esptool/blob/master/esptool/cmds.py>`_.
+For more information, refer to the command implementations in `pesptool/cmds.py <https://github.com/espressif/pesptool/blob/master/pesptool/cmds.py>`_.
 
 
 Low-Level API Reference
@@ -223,7 +223,7 @@ Low-Level API Reference
 
 .. warning::
 
-    The low-level API provides more control but requires a deeper understanding of the ESP chip, the esptool internals, and the :ref:`serial protocol <serial-protocol>`. It is recommended to use the public API functions for most use cases.
+    The low-level API provides more control but requires a deeper understanding of the ESP chip, the pesptool internals, and the :ref:`serial protocol <serial-protocol>`. It is recommended to use the public API functions for most use cases.
 
     Also, the low-level internals are not a part of the public API, so they may change in between releases.
 
@@ -233,11 +233,11 @@ For granular control and more configuration freedom, you can directly access the
 
 .. note::
 
-    This example code is a very basic implementation of ``esptool -p /dev/ttyACM0 write-flash 0x10000 firmware.bin``
+    This example code is a very basic implementation of ``pesptool -p /dev/ttyACM0 write-flash 0x10000 firmware.bin``
 
 .. code-block:: python
 
-    from esptool.cmds import detect_chip
+    from pesptool.cmds import detect_chip
 
     # The port of the connected ESP
     PORT = "/dev/ttyACM0"
@@ -277,23 +277,23 @@ For granular control and more configuration freedom, you can directly access the
 
 ------------
 
-For more information, refer to the methods of the ``ESPLoader`` class  in `esptool/loader.py <https://github.com/espressif/esptool/blob/master/esptool/loader.py>`_.
+For more information, refer to the methods of the ``ESPLoader`` class  in `pesptool/loader.py <https://github.com/espressif/pesptool/blob/master/pesptool/loader.py>`_.
 
 .. _logging:
 
 Redirecting Output with a Custom Logger
 ---------------------------------------
 
-Esptool allows redirecting output by implementing a custom logger class. This can be useful when integrating esptool with graphical user interfaces or other systems where the default console output is not appropriate. Below is an example demonstrating how to create and use a custom logger:
+pesptool allows redirecting output by implementing a custom logger class. This can be useful when integrating pesptool with graphical user interfaces or other systems where the default console output is not appropriate. Below is an example demonstrating how to create and use a custom logger:
 
 .. code-block:: python
 
-    from esptool.logger import log, TemplateLogger
+    from pesptool.logger import log, TemplateLogger
     import sys
 
     class CustomLogger(TemplateLogger):
         log_to_file = True
-        log_file = "esptool.log"
+        log_file = "pesptool.log"
 
         def print(self, message="", *args, **kwargs):
             # Print to console
@@ -335,12 +335,12 @@ Esptool allows redirecting output by implementing a custom logger class. This ca
     # Replace the default logger with the custom logger
     log.set_logger(CustomLogger())
 
-    # From now on, all esptool output will be redirected through the custom logger
+    # From now on, all pesptool output will be redirected through the custom logger
     # Your code here ...
 
-In this example, the ``CustomLogger`` class provides additional functionality such as logging messages to a file, which the original ``EsptoolLogger`` (imported from ``esptool.logger`` as an initiated object ``log``) doesn't. The ``EsptoolLogger.set_logger()`` method is used to replace the default logger with the custom logger.
+In this example, the ``CustomLogger`` class provides additional functionality such as logging messages to a file, which the original ``pesptoolLogger`` (imported from ``pesptool.logger`` as an initiated object ``log``) doesn't. The ``pesptoolLogger.set_logger()`` method is used to replace the default logger with the custom logger.
 
-To ensure compatibility with esptool, the custom logger should re-implement (or inherit) the following methods from the original ``EsptoolLogger`` class (see the reference implementation `here <https://github.com/espressif/esptool/blob/master/esptool/logger.py>`__), this is enforced by the ``TemplateLogger`` abstract class:
+To ensure compatibility with pesptool, the custom logger should re-implement (or inherit) the following methods from the original ``pesptoolLogger`` class (see the reference implementation `here <https://github.com/espressif/pesptool/blob/master/pesptool/logger.py>`__), this is enforced by the ``TemplateLogger`` abstract class:
 
 - ``print``: Handles plain message logging.
 - ``note``: Logs informational messages.
@@ -350,8 +350,8 @@ To ensure compatibility with esptool, the custom logger should re-implement (or 
 - ``progress_bar``: Displays a progress bar.
 - ``set_verbosity``: Sets the verbosity level for logging.
 
-.. autoclass:: esptool.logger.EsptoolLogger
+.. autoclass:: pesptool.logger.pesptoolLogger
    :members: print, note, warning, error, stage, progress_bar, set_verbosity
    :member-order: bysource
 
-These methods are essential for maintaining proper integration and behavior with esptool. Additionally, all output printing should be made using ``log.print()`` (or the respective method, such as ``log.note()`` or ``log.warning()``) instead of the standard ``print()`` function to ensure the output is routed through the custom logger. This ensures consistency and allows the custom logger to handle all output appropriately. You can further customize this logger to fit your application's needs, such as integrating with GUI components or advanced logging frameworks.
+These methods are essential for maintaining proper integration and behavior with pesptool. Additionally, all output printing should be made using ``log.print()`` (or the respective method, such as ``log.note()`` or ``log.warning()``) instead of the standard ``print()`` function to ensure the output is routed through the custom logger. This ensures consistency and allows the custom logger to handle all output appropriately. You can further customize this logger to fit your application's needs, such as integrating with GUI components or advanced logging frameworks.

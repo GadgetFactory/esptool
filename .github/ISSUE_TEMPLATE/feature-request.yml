@@ -6,8 +6,8 @@ body:
     attributes:
       value: |
         * We welcome any ideas or feature requests! It’s helpful if you can explain exactly why the feature would be useful.
-        * There are usually some outstanding feature requests in the [existing issues list](https://github.com/espressif/esptool/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement), feel free to add comments to them.
-        * If you would like to contribute, please read the [contributions guide](https://docs.espressif.com/projects/esptool/en/latest/contributing.html).
+        * There are usually some outstanding feature requests in the [existing issues list](https://github.com/espressif/pesptool/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement), feel free to add comments to them.
+        * If you would like to contribute, please read the [contributions guide](https://docs.espressif.com/projects/pesptool/en/latest/contributing.html).
   - type: textarea
     id: problem-related
     attributes:

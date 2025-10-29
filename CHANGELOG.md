@@ -90,7 +90,7 @@
 ### 🚨 Breaking changes
 
 - - The .py suffix is deprecated for the following scripts:
-  - esptool
+  - pesptool
   - espefuse
   - espsecure
   - esp_rfc2217_server *(Peter Dragun - 635cde1)*
@@ -98,7 +98,7 @@
 
 ### ✨ New Features
 
-- **espefuse**: Use the esptool logger, more concise messages *(Radim Karniš - 983338f)*
+- **espefuse**: Use the pesptool logger, more concise messages *(Radim Karniš - 983338f)*
 - **espefuse**: Replace execute-scripts with public API *(Peter Dragun - ff72b26)*
 - **espefuse**: Add public API for espefuse *(Peter Dragun - d7da0f8)*
 - **espefuse**: Rename all commands to use dashes and add tests for deprecated commands *(Peter Dragun - ade3088)*
@@ -109,7 +109,7 @@
 - **verbosity**: Allow setting silent or verbose output levels *(Radim Karniš - 90e3770)*
 - **efuse**: Adds efuses for ESP32-C61 ECO3 *(Konstantin Kondrashov - 6146410)*
 - **espefuse**: Support efuse for ESP32-C5 ECO2 (v1.0) *(Konstantin Kondrashov - 3726726)*
-- **espsecure**: Use esptool logger, unify output format of messages *(Radim Karniš - 905249c)*
+- **espsecure**: Use pesptool logger, unify output format of messages *(Radim Karniš - 905249c)*
 - **stub_flasher**: Support for >16MB flash on P4 and >16MB encrypted writes on S3 *(Radim Karniš - 4e6803e)*
 - **espsecure**: Drop ecdsa module, use cryptography instead *(Radim Karniš - e132f6f)*
 - **espsecure**: Unify all commands and options to use dash instead of underscore *(Peter Dragun - 36325fd)*
@@ -128,7 +128,7 @@
 - **flash_attach**: Encapsulate logic for flash attaching and configuration *(Radim Karniš - 6e959ef)*
 - **esp32h4**: update the ESP32H4StubLoader *(Chen Jichang - f7c78f8)*
 - **espefuse**: Updates esp32h4 efuse table and fixes tests *(Konstantin Kondrashov - 3da8c57)*
-- **esp32h4**: add ESP32H4 esptool support *(Chen Jichang - bcf5c6e)*
+- **esp32h4**: add ESP32H4 pesptool support *(Chen Jichang - bcf5c6e)*
 - **esp32h21**: Add Microsoft UF2 family ID *(Radim Karniš - cb0d334)*
 - **errors**: Print errors to STDERR, catch KeyboardInterrupt *(Radim Karniš - 0864e17)*
 - **write_flash**: Remove the superfluous --verify option *(Radim Karniš - dbf3d1c)*
@@ -155,7 +155,7 @@
 - **esp32h4**: fix h4 chip feature *(Chen Jichang - 955943a)*
 - **image_info**: Sanitize app and bootloader info of null bytes *(Radim Karniš - 8016455)*
 - **lint**: Correct type annotations issues reported by mypy *(Radim Karniš - 0bca550)*
-- **esptool**: Fix efuse base address for esp32h21 *(Konstantin Kondrashov - c3d28ee)*
+- **pesptool**: Fix efuse base address for esp32h21 *(Konstantin Kondrashov - c3d28ee)*
 - **elf2image**: support --flash-mmu-page-config for all chips *(Jaroslav Burian - 8be617c)*
 - **elf2image**: Try to correct MMU page size if not specified *(Jaroslav Burian - f4fabc5)*
 - **elf2image**: Print correct MMU page size in error message *(Jaroslav Burian - 9da4948)*
@@ -201,14 +201,14 @@
 - **espefuse**: Support efuse for ESP32-C5 ECO2 (v1.0) *(Konstantin Kondrashov - ce16054)*
 - **stub_flasher**: Support for >16MB flash on P4 and >16MB encrypted writes on S3 *(Radim Karniš - 0110514)*
 - **espefuse**: Updates esp32h4 efuse table and fixes tests *(Konstantin Kondrashov - 777c505)*
-- **esp32h4**: add ESP32H4 esptool support *(Chen Jichang - edb99bd)*
+- **esp32h4**: add ESP32H4 pesptool support *(Chen Jichang - edb99bd)*
 - **esp32h21**: Add Microsoft UF2 family ID *(Radim Karniš - 74d27ae)*
 - **watchdog_reset**: Add a new watchdog_reset option working even in USB modes *(Radim Karniš - d37c38a)*
 - **espsecure**: Improves an error message for encrypt_flash_data and decrypt_flash_data *(Konstantin Kondrashov - ef407ed)*
 - **espefuse**: Clean up efuse code for ESP32H2 *(Konstantin Kondrashov - 4e922fe)*
 - **espefuse**: Support different efuse table versions for ESP32H2 *(Konstantin Kondrashov - d51ecbe)*
 - **espefuse**: Adds efuses for esp32h2 eco5 *(Konstantin Kondrashov - 9b74df6)*
-- **esp32h21**: add ESP32H21 esptool support *(gaoxu - 92ceff2)*
+- **esp32h21**: add ESP32H21 pesptool support *(gaoxu - 92ceff2)*
 - **esp32-p4**: add support for flasher stub in USB OTG mode *(Peter Dragun - 804f2db)*
 - **esp32-c5**: Add ECO1 magic number *(Radim Karniš - 6cc002c)*
 - **esp_rfc2217**: Improved the logger message format *(Jakub Kocka - 39a12a4)*
@@ -255,7 +255,7 @@
 
 ### 📖 Documentation
 
-- **esptool**: Fix reset sequences in documentation *(Jan Beran - 92160eb)*
+- **pesptool**: Fix reset sequences in documentation *(Jan Beran - 92160eb)*
 - **flash_modes**: Correct QIO GPIO pins for all chips *(Radim Karniš - 23f11f0)*
 - **espefuse**: Fixed JTAG strapping pin for ESP32-S3 in the help and documentation *(Roland Dobai - de1d1ce)*
 - **scripting**: Add example of usage as a Python module *(Radim Karniš - d54e59f)*
@@ -273,16 +273,16 @@
 ### ✨ New Features
 
 - **espefuse**: Supports wafer efuse versions for esp32c61 *(Konstantin Kondrashov - 0472846)*
-- **esptool**: add new command SFDP read *(Xiao Xufeng - 92143ed)*
-- **esptool**: Add option to retry connection in a loop *(Alfonso Acosta - 04045d6)*
+- **pesptool**: add new command SFDP read *(Xiao Xufeng - 92143ed)*
+- **pesptool**: Add option to retry connection in a loop *(Alfonso Acosta - 04045d6)*
 - **efuse**: Updates efuse table for esp32c5 *(Konstantin Kondrashov - b3022fa)*
 - **efuse**: Updates efuse table for esp32p4 *(Konstantin Kondrashov - 669a69f)*
 - **esp32c61**: Added stub flasher support *(Jakub Kocka - e8b3911)*
 - **cli**: add autocompletions *(Dmitriy Astapov - 7cc35e4)*
-- **esptool**: allow picking UART by VID/PID/Name *(Richard Allen - 5dd3dcc)*
+- **pesptool**: allow picking UART by VID/PID/Name *(Richard Allen - 5dd3dcc)*
 - **esp32c5**: Add USB-serial/JTAG stub support *(Jaroslav Burian - e170bcc)*
 - **esp32c5**: Add UART stub support *(Konstantin Kondrashov - b199534)*
-- **esptool**: Print key_purpose name for get_security_info cmd *(Konstantin Kondrashov - ccd8c72)*
+- **pesptool**: Print key_purpose name for get_security_info cmd *(Konstantin Kondrashov - ccd8c72)*
 - **espefuse**: Adds support extend efuse table by user CSV file *(Konstantin Kondrashov - 6bb2b92)*
 - **espefuse**: Adds efuse dump formats: separated(default) and united(new) *(Konstantin Kondrashov - fc2856a)*
 - **espefuse**: Adds incompatible eFuse settings check for S3 *(Konstantin Kondrashov - c244843)*
@@ -302,7 +302,7 @@
 - **esp32c5**: skipped the stub check for esp32c5 mp *(laokaiyao - a773e6b)*
 - **esp32c5**: base support of esp32c5 mp (no stub) *(laokaiyao - e414cef)*
 - **cmds/write_flash**: Recalculated SHA digest for image binary *(Jakub Kocka - 3b0939c)*
-- **esptool**: Adds wafer and pkg versions *(Konstantin Kondrashov - 6c5cfd6)*
+- **pesptool**: Adds wafer and pkg versions *(Konstantin Kondrashov - 6c5cfd6)*
 - **espefuse**: Update adc_info commands for all chips *(Konstantin Kondrashov - 31eb15b)*
 - **espefuse**: Adds new efuses for esp32p4 *(Konstantin Kondrashov - 31477fb)*
 - **espefuse**: Allow the espefuse.py to work when coding scheme == 3 *(Francisco Blas (klondike) Izquierdo Riera - 1e79f25)*
@@ -322,28 +322,28 @@
 
 - **esp32c2**: Add esp32c2 eco4 rom magic value *(Jiang Guang Ming - 3434433)*
 - **packaging**: Correctly exclude the unwanted sub/modules *(Karolina Surma - 908d0b5)*
-- **esptool**: Fix esp32c61 flash frequency config *(C.S.M - 6edafea)*
-- **esptool**: Fix incorrect chip version for esp32c5 *(Konstantin Kondrashov - 138660b)*
+- **pesptool**: Fix esp32c61 flash frequency config *(C.S.M - 6edafea)*
+- **pesptool**: Fix incorrect chip version for esp32c5 *(Konstantin Kondrashov - 138660b)*
 - **write_flash**: Verify if files will fit against the real flash size when possible *(Radim Karniš - 1693449)*
 - **remote_ports**: Disable reset sequence when a socket is used *(Radim Karniš - 28556fb)*
 - **bitstring**: Restricted bitstring dependency to fix 32-bit compatibility *(Jakub Kocka - 4f7e223)*
 - **esp32_d0wdr2_v3**: Print correct chip name *(Radim Karniš - dfd61e2)*
 - **bin_image**: add check for ELF file segment when saving RAM segments *(Peter Dragun - 6e8632d)*
 - **docs**: Add a note about entering manual bootloader mode *(Roland Dobai - 4d0c7d9)*
-- **esp32c5**: Fix MAC reading for esptool *(Konstantin Kondrashov - 2b0ec7a)*
+- **esp32c5**: Fix MAC reading for pesptool *(Konstantin Kondrashov - 2b0ec7a)*
 - **esp32-c5**: Use a longer reset delay with usb-serial/jtag to stabilize boot-up *(C.S.M - 1059ec7)*
 - **espefuse**: Use stub class if stub flasher is running *(Radim Karniš - 67d66a0)*
 - **elf2image**: add ELF flags to merge condition *(Marek Matej - e87cc3e)*
 - **espefuse**: Fix efuse base addr for esp32c5 MP *(Konstantin Kondrashov - 248dc9a)*
 - **espefuse**: Fix burn_key for ECDSA_KEY, it can read pem file *(Konstantin Kondrashov - 450db24)*
 - **secure_download_mode**: Disable secure boot detection and print more info *(Radim Karniš - 1dc3c8b)*
-- **esptool**: clear boot control register on ESP32-S3 *(Peter Dragun - 0215786)*
+- **pesptool**: clear boot control register on ESP32-S3 *(Peter Dragun - 0215786)*
 - **intelhex**: catch unicode decode errors when converting hex to binary *(Peter Dragun - a2bdaa2)*
 - **merge_bin**: treat files starting with colon as raw files *(Peter Dragun - 2c0a5da)*
 - **read_flash**: add flash size arg to enable reading past 2MB without stub *(Peter Dragun - f1eb65f)*
 - **read_flash**: flush transmit buffer less often to inrease throughput *(Peter Dragun - 8ce5ed3)*
-- **esptool**: Proper alignment for SoCs with offset load *(Marek Matej - 17866a5)*
-- **esptool**: Remove the shebang from uf2_writer.py *(Karolina Surma - 45fbcdd)*
+- **pesptool**: Proper alignment for SoCs with offset load *(Marek Matej - 17866a5)*
+- **pesptool**: Remove the shebang from uf2_writer.py *(Karolina Surma - 45fbcdd)*
 - pass error message to exception in OTG mode *(Peter Dragun - c266fdd)*
 - Erase non-aligned bytes with --no-stub *(Jaroslav Burian - c984aa9)*
 - Do not append SHA256 when `--ram-only-header` *(Tiago Medicci Serrano - 5d9d5be)*
@@ -361,11 +361,11 @@
 - **troubleshooting**: Add info about debugging in USB-Serial/JTAG and USB-OTG modes *(Radim Karniš - 3a74f62)*
 - **troubleshooting**: Mention needed permissions to the serial port on Linux *(Radim Karniš - 8e39ef6)*
 - **troubleshooting**: Mention the ESP Hardware Design Guidelines docs *(Radim Karniš - 74ce286)*
-- **flashing**: Fixed a typo in /docs/en/esptool/flashing-firmware.rst *(Green - 9f46568)*
+- **flashing**: Fixed a typo in /docs/en/pesptool/flashing-firmware.rst *(Green - 9f46568)*
 - **sphinx-lint**: Add previous commit to .git-blame-ignore-revs *(Jan Beran - c750549)*
 - **sphinx-lint**: Fix issues reported by sphinx-lint before adding it to pre-commit *(Jan Beran - 6282f98)*
 - **sphinx-lint**: Add sphinx-lint to pre-commit, GH and GL pipelines *(Jan Beran - 1de1a26)*
-- **esptool**: Reflect change from flake8 and black to ruff *(Jan Beran - 9f1bde4)*
+- **pesptool**: Reflect change from flake8 and black to ruff *(Jan Beran - 9f1bde4)*
 - add note about Intel Hex merging limitations *(Peter Dragun - d83dd3b)*
 - Updated documentation to reflect changes of SHA256 digest recomputation *(Jakub Kocka - 6c28df3)*
 - add esp32p4 target to docs *(Peter Dragun - 4a6ad55)*
@@ -374,7 +374,7 @@
 
 ### 🔧 Code Refactoring
 
-- **test/esptool**: Updated tests according to SHA recomputation for binary *(Jakub Kocka - 598b703)*
+- **test/pesptool**: Updated tests according to SHA recomputation for binary *(Jakub Kocka - 598b703)*
 - **style**: Comply with black>=24.0.0 *(radim.karnis - 5ad3c48)*
 - Migrated esp_rfc2217_server into standalone subpackage *(Jakub Kocka - 9b24215)*
 
@@ -384,7 +384,7 @@
 
 ### ✨ New Features
 
-- **test_esptool**: Added test for embedded and detected flash size match *(Jakub Kocka - c0ea74a)*
+- **test_pesptool**: Added test for embedded and detected flash size match *(Jakub Kocka - c0ea74a)*
 - **spi_connection**: Support --spi-connection on all chips *(radim.karnis - 1a38293)*
 - **espefuse**: Support XTS_AES_256_KEY key_purpose for ESP32P4 *(KonstantinKondrashov - a91eee1)*
 - **xip_psram**: support xip psram feature on esp32p4 *(Armando - 1b350ce)*
@@ -400,11 +400,11 @@
 - **efuse**: Update key purpose table and tests *(KonstantinKondrashov - cb5e850)*
 - **efuse**: ESP32P4 adds ecdsa_key support *(KonstantinKondrashov - 3654267)*
 - **espefuse**: Add support for esp32p4 chip *(KonstantinKondrashov - 8273916)*
-- **esptool**: added target to esp32p4 *(Armando - 654e626)*
+- **pesptool**: added target to esp32p4 *(Armando - 654e626)*
 - **espsecure**: Allow prompting for HSM PIN in read_hsm_config *(Richard Retanubun - ab25fc1)*
-- **esptool**: Add new packages for ESP32C3 and flash efuses *(KonstantinKondrashov - 8f37762)*
-- **esptool**: Add tests for get_chip_features *(KonstantinKondrashov - d5bb1ee)*
-- **esptool**: Add PICO package for ESP32S3 and flash/psram efuses *(KonstantinKondrashov - b70ead2)*
+- **pesptool**: Add new packages for ESP32C3 and flash efuses *(KonstantinKondrashov - 8f37762)*
+- **pesptool**: Add tests for get_chip_features *(KonstantinKondrashov - d5bb1ee)*
+- **pesptool**: Add PICO package for ESP32S3 and flash/psram efuses *(KonstantinKondrashov - b70ead2)*
 - **get_security_info**: Improved the output format and added more details *(Aditya Patwardhan - 9b95de8)*
 - add support for intel hex format *(Peter Dragun - 7074bed)*
 - add support for get_security_info on esp32c3 ECO7 *(Peter Dragun - 20565a0)*
@@ -415,8 +415,8 @@
 - **esp32c2**: Added get_flash_cap and get_flash_vendor *(Jakub Kocka - b8dd74d)*
 - **testloadram**: Windows assertion error *(Jakub Kocka - cd51bbc)*
 - **esp32c2**: Recommend using higher baud rate if connection fails *(Jakub Kocka - ef0c91f)*
-- **test_esptool**: Fixed connection issue on Windows *(Jakub Kocka - 4622bb2)*
-- **esptool**: Rephrase the --ram-only-header command message *(Marek Matej - da4a486)*
+- **test_pesptool**: Fixed connection issue on Windows *(Jakub Kocka - 4622bb2)*
+- **pesptool**: Rephrase the --ram-only-header command message *(Marek Matej - da4a486)*
 - **load_ram**: check for overlaps in bss section *(Peter Dragun - 3a82d7a)*
 - **tests/intelhex**: make sure file is closed on Windows *(Peter Dragun - 900d385)*
 - **spi_connection**: Unattach previously attached SPI flash *(radim.karnis - afaa7d2)*
@@ -468,7 +468,7 @@
 
 ### ✨ New Features
 
-- **esptool**: add option to dump whole flash based on detected size *(Peter Dragun - 049baaa)*
+- **pesptool**: add option to dump whole flash based on detected size *(Peter Dragun - 049baaa)*
 
 ### 🐛 Bug Fixes
 

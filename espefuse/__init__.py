@@ -6,9 +6,9 @@ import sys
 
 import rich_click as click
 
-import esptool
-from esptool.cli_util import ChipType, ResetModeType
-from esptool.logger import log
+import pesptool
+from pesptool.cli_util import ChipType, ResetModeType
+from pesptool.logger import log
 
 from espefuse.cli_util import Group
 from espefuse.efuse.base_operations import BaseCommands
@@ -21,7 +21,7 @@ from espefuse.efuse_interface import (
     SUPPORTED_READ_COMMANDS,
     SUPPORTED_CHIPS,
 )
-from esptool.util import check_deprecated_py_suffix
+from pesptool.util import check_deprecated_py_suffix
 
 __all__ = [
     "get_esp",
@@ -39,7 +39,7 @@ __all__ = [
     chain=True,  # allow using multiple commands in a single run
     no_args_is_help=True,
     context_settings=dict(help_option_names=["-h", "--help"], max_content_width=120),
-    help=f"espefuse v{esptool.__version__} - "
+    help=f"espefuse v{pesptool.__version__} - "
     "Utility for eFuse configuration in Espressif SoCs.",
 )
 @click.option(
@@ -47,21 +47,21 @@ __all__ = [
     "-c",
     type=ChipType(choices=["auto"] + list(SUPPORTED_CHIPS.keys())),
     default="auto",
-    envvar="ESPTOOL_CHIP",
+    envvar="pesptool_CHIP",
     help="Target chip type.",
 )
 @click.option(
     "--baud",
     "-b",
     type=int,
-    default=esptool.ESPLoader.ESP_ROM_BAUD,
-    envvar="ESPTOOL_BAUD",
+    default=pesptool.ESPLoader.ESP_ROM_BAUD,
+    envvar="pesptool_BAUD",
     help="Serial port baud rate used when flashing/reading.",
 )
 @click.option(
     "--port",
     "-p",
-    envvar="ESPTOOL_PORT",
+    envvar="pesptool_PORT",
     type=click.Path(),
     help="Serial port device.",
 )
@@ -116,7 +116,7 @@ def cli(
     postpone,
     extend_efuse_table,
 ):
-    log.print(f"espefuse v{esptool.__version__}")
+    log.print(f"espefuse v{pesptool.__version__}")
 
     ctx.ensure_object(dict)
     esp = ctx.obj.get("esp", None)
@@ -137,8 +137,8 @@ def cli(
             esp = get_esp(
                 port, baud, before, chip, is_help, virt, debug, path_efuse_file
             )
-        except esptool.FatalError as e:
-            raise esptool.FatalError(
+        except pesptool.FatalError as e:
+            raise pesptool.FatalError(
                 f"{e}\nPlease make sure you specified the right port with --port."
             )
 
@@ -183,7 +183,7 @@ def cli(
     def process_result(result, *args, **kwargs):
         if multiple_burn_commands:
             if not commands.burn_all(check_batch_mode=True):
-                raise esptool.FatalError("BURN was not done.")
+                raise pesptool.FatalError("BURN was not done.")
             log.print("Successful.")
 
 
@@ -196,12 +196,12 @@ def execute_scripts_cli(scripts, index, configfiles):
     log.error(
         "REMOVED: `execute_scripts` was replaced with the public API in v5. "
         "Please see Migration Guide in documentation for details: "
-        "https://docs.espressif.com/projects/esptool/en/latest/migration-guide.html#espefuse-py-v5-migration-guide"
+        "https://docs.espressif.com/projects/pesptool/en/latest/migration-guide.html#espefuse-py-v5-migration-guide"
     )
     sys.exit(2)
 
 
-def main(argv: list[str] | None = None, esp: esptool.ESPLoader | None = None):
+def main(argv: list[str] | None = None, esp: pesptool.ESPLoader | None = None):
     """
     Main function for espefuse
 
@@ -211,9 +211,9 @@ def main(argv: list[str] | None = None, esp: esptool.ESPLoader | None = None):
     e.g. "--port /dev/ttyUSB1" thus becomes ['--port', '/dev/ttyUSB1'].
 
     esp - Optional override of the connected device previously
-    returned by esptool.get_default_connected_device()
+    returned by pesptool.get_default_connected_device()
     """
-    args = esptool.expand_file_arguments(argv or sys.argv[1:])
+    args = pesptool.expand_file_arguments(argv or sys.argv[1:])
     try:
         cli(args=args, esp=esp)
     except SystemExit as e:
@@ -225,7 +225,7 @@ def _main():
     check_deprecated_py_suffix(__name__)
     try:
         main()
-    except esptool.FatalError as e:
+    except pesptool.FatalError as e:
         log.error(f"\nA fatal error occurred: {e}")
         sys.exit(2)
     except KeyboardInterrupt:

@@ -16,7 +16,7 @@ import pytest
 TEST_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "elf2image")
 
 try:
-    import esptool
+    import pesptool
 except ImportError:
     need_to_install_package_err()
 
@@ -29,7 +29,7 @@ def try_delete(path):
 
 
 def segment_matches_section(segment, section):
-    """segment is an ImageSegment from an esptool binary.
+    """segment is an ImageSegment from an pesptool binary.
     section is an elftools ELF section
 
     Returns True if they match
@@ -64,7 +64,7 @@ class BaseTestCase:
 
     def assertImageDoesNotContainSection(self, image, elf, section_name):
         """
-        Assert an esptool binary image object does not
+        Assert an pesptool binary image object does not
         contain the data for a particular ELF section.
         """
         with open(elf, "rb") as f:
@@ -84,7 +84,7 @@ class BaseTestCase:
 
     def assertImageContainsSection(self, image, elf, section_name):
         """
-        Assert an esptool binary image object contains
+        Assert an pesptool binary image object contains
         the data for a particular ELF section.
         """
         with open(elf, "rb") as f:
@@ -117,10 +117,10 @@ class BaseTestCase:
 
     def assertImageInfo(self, binpath, chip="esp8266", assert_sha=False):
         """
-        Run esptool image-info on a binary file,
+        Run pesptool image-info on a binary file,
         assert no red flags about contents.
         """
-        cmd = [sys.executable, "-m", "esptool", "--chip", chip, "image-info", binpath]
+        cmd = [sys.executable, "-m", "pesptool", "--chip", chip, "image-info", binpath]
         try:
             output = subprocess.check_output(cmd)
             output = output.decode("utf-8")
@@ -143,7 +143,7 @@ class BaseTestCase:
         self, chip, elf_path, version=None, extra_args=[], allow_warnings=False
     ):
         """Run elf2image on elf_path"""
-        cmd = [sys.executable, "-m", "esptool", "--chip", chip, "elf2image"]
+        cmd = [sys.executable, "-m", "pesptool", "--chip", chip, "elf2image"]
         if version is not None:
             cmd += ["--version", str(version)]
         cmd += [elf_path] + extra_args
@@ -193,7 +193,7 @@ class TestESP8266V1Image(BaseTestCase):
             )
 
     def test_loaded_sections(self):
-        image = esptool.bin_image.LoadFirmwareImage("esp8266", self.BIN_LOAD)
+        image = pesptool.bin_image.LoadFirmwareImage("esp8266", self.BIN_LOAD)
         # Adjacent sections are now merged, len(image.segments) should
         # equal 2 (instead of 3).
         assert len(image.segments) == 2
@@ -205,7 +205,7 @@ class TestESP8266V1Image(BaseTestCase):
 
 
 class TestESP8266V12SectionHeaderNotAtEnd(BaseTestCase):
-    """Ref https://github.com/espressif/esptool/issues/197 -
+    """Ref https://github.com/espressif/pesptool/issues/197 -
     this ELF image has the section header not at the end of the file"""
 
     ELF = "esp8266-nonossdkv12-example.elf"
@@ -219,7 +219,7 @@ class TestESP8266V12SectionHeaderNotAtEnd(BaseTestCase):
 
     def test_elf_section_header_not_at_end(self):
         self.run_elf2image("esp8266", self.ELF)
-        image = esptool.bin_image.LoadFirmwareImage("esp8266", self.BIN_LOAD)
+        image = pesptool.bin_image.LoadFirmwareImage("esp8266", self.BIN_LOAD)
         assert len(image.segments) == 3
         self.assertImageContainsSection(image, self.ELF, ".data")
         self.assertImageContainsSection(image, self.ELF, ".text")
@@ -230,7 +230,7 @@ class TestESP8266V2Image(BaseTestCase):
     def _test_elf2image(self, elfpath, binpath, mergedsections=[]):
         try:
             self.run_elf2image("esp8266", elfpath, 2)
-            image = esptool.bin_image.LoadFirmwareImage("esp8266", binpath)
+            image = pesptool.bin_image.LoadFirmwareImage("esp8266", binpath)
             print("In test_elf2image", len(image.segments))
             assert 4 - len(mergedsections) == len(image.segments)
             sections = [".data", ".text", ".rodata"]
@@ -259,7 +259,7 @@ class TestESP8266V2Image(BaseTestCase):
                 image_len = f.tell()
                 crc_stored = struct.unpack("<I", f.read(4))[0]
                 f.seek(0)
-                crc_calc = esptool.bin_image.esp8266_crc32(f.read(image_len))
+                crc_calc = pesptool.bin_image.esp8266_crc32(f.read(image_len))
                 assert crc_stored == crc_calc
 
             # test imageinfo doesn't fail
@@ -284,7 +284,7 @@ class TestESP32Image(BaseTestCase):
     def _test_elf2image(self, elfpath, binpath, extra_args=[]):
         try:
             self.run_elf2image("esp32", elfpath, extra_args=extra_args)
-            image = esptool.bin_image.LoadFirmwareImage("esp32", binpath)
+            image = pesptool.bin_image.LoadFirmwareImage("esp32", binpath)
             self.assertImageInfo(
                 binpath,
                 "esp32",
@@ -407,7 +407,7 @@ class TestESP32Image(BaseTestCase):
         ELF = "esp32-bootloader.elf"
         BIN = "esp32-bootloader.bin"
 
-        expected_bytes = esptool.util.flash_size_bytes(size)
+        expected_bytes = pesptool.util.flash_size_bytes(size)
         try:
             # Generate the padded binary
             self.run_elf2image("esp32", ELF, extra_args=["--pad-to-size", size])
@@ -537,7 +537,7 @@ class TestELFSHA256(BaseTestCase):
     """
 
     def verify_sha256(self, elf_path, bin_path):
-        image = esptool.bin_image.LoadFirmwareImage("esp32c6", bin_path)
+        image = pesptool.bin_image.LoadFirmwareImage("esp32c6", bin_path)
         rodata_segment = image.segments[0]
         bin_sha256 = rodata_segment.data[
             self.SHA_OFFS - 0x20 : self.SHA_OFFS - 0x20 + 32

@@ -1,31 +1,31 @@
 Contributions Guide
 ===================
 
-We welcome contributions to the ``esptool`` project!
+We welcome contributions to the ``pesptool`` project!
 
 How to Contribute
 -----------------
 
-Contributions to ``esptool`` - fixing bugs, adding features, adding documentation - are welcome. We accept contributions via `Github Pull Requests <https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests>`_.
+Contributions to ``pesptool`` - fixing bugs, adding features, adding documentation - are welcome. We accept contributions via `Github Pull Requests <https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests>`_.
 
 .. _development-setup:
 
 Development Setup
 -----------------
 
-Development mode allows you to run the latest development version from the `esptool repository on GitHub <https://github.com/espressif/esptool>`_.
+Development mode allows you to run the latest development version from the `pesptool repository on GitHub <https://github.com/espressif/pesptool>`_.
 
 .. code-block:: sh
 
-   $ git clone https://github.com/espressif/esptool.git
-   $ cd esptool
+   $ git clone https://github.com/espressif/pesptool.git
+   $ cd pesptool
    $ pip install --user -e .
 
-This will install ``esptool``'s dependencies and create some executable script wrappers in the user's ``bin`` directory. The wrappers will run the scripts found in the git working directory directly, so any time the working directory contents change it will pick up the new versions.
+This will install ``pesptool``'s dependencies and create some executable script wrappers in the user's ``bin`` directory. The wrappers will run the scripts found in the git working directory directly, so any time the working directory contents change it will pick up the new versions.
 
 It's also possible to run the scripts directly from the working directory with this Development Mode installation.
 
-To also install additional tools needed for actually developing and testing ``esptool``, run this command to install a development copy of ``esptool`` *plus* packages useful for development:
+To also install additional tools needed for actually developing and testing ``pesptool``, run this command to install a development copy of ``pesptool`` *plus* packages useful for development:
 
 ::
 
@@ -36,13 +36,13 @@ To also install additional tools needed for actually developing and testing ``es
 Reporting Issues
 ----------------
 
-Please report bugs in ``esptool`` if you find them. However, before reporting a bug please check through the following:
+Please report bugs in ``pesptool`` if you find them. However, before reporting a bug please check through the following:
 
-*  `Troubleshooting Guide <https://docs.espressif.com/projects/esptool/en/latest/troubleshooting.html>`_ - common problems and known issues.
+*  `Troubleshooting Guide <https://docs.espressif.com/projects/pesptool/en/latest/troubleshooting.html>`_ - common problems and known issues.
 
-*  `Existing Open Issues <https://github.com/espressif/esptool/issues>`_ - someone might have already encountered this.
+*  `Existing Open Issues <https://github.com/espressif/pesptool/issues>`_ - someone might have already encountered this.
 
-If you don’t find anything, please `open a new issue <https://github.com/espressif/esptool/issues/new/choose>`_.
+If you don’t find anything, please `open a new issue <https://github.com/espressif/pesptool/issues/new/choose>`_.
 
 .. _feature-requests:
 
@@ -51,14 +51,14 @@ Sending Feature Requests
 
 Feel free to post feature requests. It’s helpful if you can explain exactly why the feature would be useful.
 
-There are usually some outstanding feature requests in the `existing issues list <https://github.com/espressif/esptool/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement>`_, feel free to add comments to them.
+There are usually some outstanding feature requests in the `existing issues list <https://github.com/espressif/pesptool/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement>`_, feel free to add comments to them.
 
 Before Contributing
 -------------------
 
 Before sending us a Pull Request, please consider this list of points:
 
-* Have you tried running ``esptool`` test suite locally?
+* Have you tried running ``pesptool`` test suite locally?
 
 * Is the code adequately commented for people to understand how it is structured?
 
@@ -73,7 +73,7 @@ Before sending us a Pull Request, please consider this list of points:
 Code Style & Static Analysis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Please follow these coding standards when writing code for ``esptool``:
+Please follow these coding standards when writing code for ``pesptool``:
 
 Pre-Commit Checks
 """""""""""""""""
@@ -92,13 +92,13 @@ On the first commit ``pre-commit`` will install the hooks, subsequent checks wil
 Conventional Commits
 """"""""""""""""""""
 
-``esptool`` complies with the `Conventional Commits standard <https://www.conventionalcommits.org/en/v1.0.0/#specification>`_. Every commit message is checked with `Conventional Precommit Linter <https://github.com/espressif/conventional-precommit-linter>`_, ensuring it adheres to the standard.
+``pesptool`` complies with the `Conventional Commits standard <https://www.conventionalcommits.org/en/v1.0.0/#specification>`_. Every commit message is checked with `Conventional Precommit Linter <https://github.com/espressif/conventional-precommit-linter>`_, ensuring it adheres to the standard.
 
 
 Ruff
 """"
 
-``esptool`` is `PEP8 <https://peps.python.org/pep-0008/>`_ compliant and enforces this style guide. For compliance checking, we use `ruff <https://docs.astral.sh/ruff/>`_.
+``pesptool`` is `PEP8 <https://peps.python.org/pep-0008/>`_ compliant and enforces this style guide. For compliance checking, we use `ruff <https://docs.astral.sh/ruff/>`_.
 ``Ruff`` also auto-format files in the same style as previously used ``black``.
 
 
@@ -122,39 +122,39 @@ In the event of false positives, you can adjust the configuration in the `.codes
 Automated Integration Tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The test directory contains a `pytest <https://docs.pytest.org/>`_ integration suite with some integration tests for ``esptool``, ``espefuse``, and ``espsecure``.
+The test directory contains a `pytest <https://docs.pytest.org/>`_ integration suite with some integration tests for ``pesptool``, ``espefuse``, and ``espsecure``.
 
-It is necessary to have ``esptool`` installed (see `Development Setup`_) in your environment in order to run these tests.
+It is necessary to have ``pesptool`` installed (see `Development Setup`_) in your environment in order to run these tests.
 
 The following tests run automatically by GitHub Actions for each Pull Request. You can run them locally to check for regressions in the respective functionality:
 
 *  ``test_imagegen.py`` tests the ``elf2image`` command
 *  ``test_image_info.py`` tests the ``image-info`` command
 *  ``test_mergebin.py`` tests the ``merge-bin`` command
-*  ``test_port_sorting.py`` tests the port sorting algorithm of ``esptool``
-*  ``test_modules.py`` tests the modules used by ``esptool`` for regressions
+*  ``test_port_sorting.py`` tests the port sorting algorithm of ``pesptool``
+*  ``test_modules.py`` tests the modules used by ``pesptool`` for regressions
 *  ``test_espsecure.py`` tests ``espsecure`` functionality
-*  ``test_espsecure_hsm.py`` tests support of external HSM signing in ``espsecure``. These tests require additional prerequisites, see ``SoftHSM2 setup`` in the `tests workflow definition <https://github.com/espressif/esptool/blob/master/.github/workflows/test_esptool.yml>`_ for more information.
+*  ``test_espsecure_hsm.py`` tests support of external HSM signing in ``espsecure``. These tests require additional prerequisites, see ``SoftHSM2 setup`` in the `tests workflow definition <https://github.com/espressif/pesptool/blob/master/.github/workflows/test_pesptool.yml>`_ for more information.
 
 The following tests are not run automatically by GitHub Actions, because they need real connected hardware. Therefore, they need to be run locally in a command line:
 
-*  ``test_esptool.py`` contains integration tests for ``esptool`` and needs to be run against real Espressif hardware with the following format:
+*  ``test_pesptool.py`` contains integration tests for ``pesptool`` and needs to be run against real Espressif hardware with the following format:
 
-   ``pytest test_esptool.py --port <serial port> --chip <name of chip> --baud <baud rate>``
+   ``pytest test_pesptool.py --port <serial port> --chip <name of chip> --baud <baud rate>``
 
    For example, to run all tests on an ESP32 board connected to /dev/ttyUSB0, at 230400bps:
 
-   ``pytest test_esptool.py --port /dev/ttyUSB0 --chip esp32 --baud 230400``
+   ``pytest test_pesptool.py --port /dev/ttyUSB0 --chip esp32 --baud 230400``
 
    Or to run the ``TestFlashing`` suite only (using the pytest ``-k`` option to select tests based on their name) on an ESP8266 board connected to /dev/ttyUSB2, at 460800bps:
 
-   ``pytest test_esptool.py --port /dev/ttyUSB2 --chip esp8266 --baud 460800 -k TestFlashing``
+   ``pytest test_pesptool.py --port /dev/ttyUSB2 --chip esp8266 --baud 460800 -k TestFlashing``
 
    .. note::
 
       Some tests might fail at higher baud rates on some hardware.
 
-*  ``test_esptool_sdm.py`` contains integration tests for ``esptool`` with chips in secure download mode. It needs to be run against real Espressif hardware (with active SDM). The command line format is the same as for ``test_esptool.py``.
+*  ``test_pesptool_sdm.py`` contains integration tests for ``pesptool`` with chips in secure download mode. It needs to be run against real Espressif hardware (with active SDM). The command line format is the same as for ``test_pesptool.py``.
 
 The following tests are not run automatically by GitHub Actions, but can be run locally in a command line:
 
@@ -168,13 +168,13 @@ The following tests are not run automatically by GitHub Actions, but can be run 
 
       Do not attempt to run these tests on real hardware! You risk damaging or destroying the ESP chip!
 
-The whole test suite (without the tests needing an actual hardware or installation of additional prerequisites) can be easily run with the following command in the esptool root folder: ``pytest -m host_test``
+The whole test suite (without the tests needing an actual hardware or installation of additional prerequisites) can be easily run with the following command in the pesptool root folder: ``pytest -m host_test``
 
 
 Pull Request Process
 --------------------
 
-If you would like to contribute to the flasher stub, please see the `Flasher stub repository <https://github.com/espressif/esptool-legacy-flasher-stub>`_.
+If you would like to contribute to the flasher stub, please see the `Flasher stub repository <https://github.com/espressif/pesptool-legacy-flasher-stub>`_.
 
 After you open the Pull Request, there will probably be some discussion in the comments field of the request itself.
 

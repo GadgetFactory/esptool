@@ -6,7 +6,7 @@ import binascii
 import configparser
 import os
 import sys
-from esptool.logger import log
+from pesptool.logger import log
 from getpass import getpass
 from typing import IO
 
@@ -17,7 +17,7 @@ except ImportError:
     raise ImportError(
         "python-pkcs11 package is not installed. "
         "Please install it using the required packages with command: "
-        "pip install 'esptool[hsm]'"
+        "pip install 'pesptool[hsm]'"
     )
 
 import cryptography.hazmat.primitives.asymmetric.ec as EC

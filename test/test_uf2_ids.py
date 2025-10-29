@@ -7,7 +7,7 @@ import pytest
 import requests
 
 try:
-    from esptool.targets import CHIP_DEFS
+    from pesptool.targets import CHIP_DEFS
 except ImportError:
     need_to_install_package_err()
 
@@ -40,22 +40,22 @@ def test_check_uf2family_ids(uf2_json):
 
 
 def test_check_uf2(uf2_json):
-    """Check if all non-beta chip definition has UF2 family id in esptool
+    """Check if all non-beta chip definition has UF2 family id in pesptool
     and also in Microsoft repo
     """
     # remove beta chip definitions
-    esptool_chips = set(
+    pesptool_chips = set(
         [chip.upper() for chip in CHIP_DEFS.keys() if "beta" not in chip]
     )
     microsoft_repo_chips = set([chip["short_name"] for chip in uf2_json])
-    diff = esptool_chips.symmetric_difference(microsoft_repo_chips)
+    diff = pesptool_chips.symmetric_difference(microsoft_repo_chips)
     if diff:
         out = []
         # there was a difference between the chip support
         for chip in diff:
-            if chip not in esptool_chips:
+            if chip not in pesptool_chips:
                 out.append(
-                    f"Missing chip definition for '{chip}' in esptool "
+                    f"Missing chip definition for '{chip}' in pesptool "
                     "which was defined in Microsoft UF2 Github repo."
                 )
             else:
