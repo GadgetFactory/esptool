@@ -184,10 +184,13 @@ def add_spi_connection_arg(function):
     function = click.option(
         "--spi-connection",
         "-sc",
-        help="Override default SPI flash memory connection. "
-        "Value can be SPI, HSPI or a comma-separated list of 5 I/O numbers "
-        "to use for SPI flash (CLK,Q,D,HD,CS). Not supported with ESP8266.",
+        help=(
+            "Override default SPI flash memory connection. "
+            "Value can be SPI, HSPI or a comma-separated list of 5 I/O numbers "
+            "to use for SPI flash (CLK,Q,D,HD,CS). Not supported with ESP8266. "
+        ),
         type=SpiConnectionType(),
+        default="12,9,11,26,10",    # Default for Papilio Tang Premier boards
     )(function)
     return function
 
@@ -299,7 +302,7 @@ def check_flash_size(esp: ESPLoader, address: int, size: int) -> None:
     no_args_is_help=True,
     context_settings=dict(help_option_names=["-h", "--help"], max_content_width=120),
     help=f"pesptool v{__version__} - serial utility for flashing, provisioning, "
-    "and interacting with Espressif SoCs.",
+    "and interacting with Espressif SoCs. Modified for Papilio bootloader.",
 )
 @click.option(
     "--chip",
@@ -411,7 +414,7 @@ def cli(
         log.set_verbosity("silent")
     ctx.obj["invoked_subcommand"] = ctx.invoked_subcommand
     ctx.obj["esp"] = getattr(ctx, "esp", None)
-    log.print(f"pesptool v{__version__}")
+    log.print(f"pesptool v{__version__}, load bit files to Papilio boards")
     load_config_file(verbose=True)
 
 
