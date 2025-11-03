@@ -632,6 +632,15 @@ def write_mem_cli(ctx, address, value, mask):
     is_flag=True,
     help="Erase all regions of flash (not just write areas) before programming.",
 )
+@click.option(
+    "--bootloader-overwrite",
+    is_flag=True,
+    help=(
+        "Allow writing to low flash addresses (0x00000-0xFFFFF). "
+        "This is dangerous and may brick the device; pass this flag only if you "
+        "really intend to overwrite boot/partition data in the low flash region."
+    ),
+)
 @click.option("--no-progress", "-p", is_flag=True, help="Suppress progress output.")
 @click.option(
     "--encrypt",
@@ -687,6 +696,21 @@ def write_flash_cli(ctx, addr_filename, **kwargs):
             "Options --encrypt and --encrypt-files "
             "must not be specified at the same time."
         )
+    # Prevent accidental overwrite of bootloader at address 0x0 unless user
+    # explicitly passes --bootloader-overwrite
+    bootloader_overwrite = kwargs.pop("bootloader_overwrite", False)
+    for addr, _ in addr_filename:
+        try:
+            # Protect the low flash region 0x00000..0xFFFFF (first 1MB)
+            if isinstance(addr, int) and 0 <= addr < 0x100000 and not bootloader_overwrite:
+                raise FatalError(
+                    "Refusing to write to low flash region 0x00000-0xFFFFF. Writing to this region can overwrite the bootloader and brick the device. "
+                    "If you really intend to overwrite data in this region, pass --bootloader-overwrite."
+                )
+        except TypeError:
+            # If addr isn't an int for some reason, skip the check (other validation
+            # will catch invalid types later)
+            continue
     prepare_esp_object(ctx)
     attach_flash(ctx.obj["esp"], kwargs.pop("spi_connection", None))
     write_flash(ctx.obj["esp"], addr_filename, **kwargs)
