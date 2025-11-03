@@ -11,6 +11,9 @@ from pesptool.util import FatalError, flash_size_bytes, strip_chip_name
 from pesptool.logger import log
 from typing import IO, Any
 
+# Default flash address used when user supplies a filename without an address
+DEFAULT_FLASH_ADDRESS = 0x100000
+
 ################################ Custom types #################################
 
 
@@ -166,10 +169,17 @@ class AddrFilenamePairType(click.Path):
         param: click.Parameter | None,
         ctx: click.Context,
     ):
+        # Allow a single filename to be provided without an address - in that
+        # case use DEFAULT_FLASH_ADDRESS as the target address. For any other
+        # odd count of values, raise an error (must be address/filename pairs).
         if len(value) % 2 != 0:
-            raise click.BadParameter(
-                "Must be pairs of an address and the binary filename to write there.",
-            )
+            if len(value) == 1:
+                # Single filename provided - treat as (DEFAULT_FLASH_ADDRESS, filename)
+                value = [str(DEFAULT_FLASH_ADDRESS), value[0]]
+            else:
+                raise click.BadParameter(
+                    "Must be pairs of an address and the binary filename to write there.",
+                )
         if len(value) == 0:
             return value
 

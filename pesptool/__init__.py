@@ -1031,6 +1031,18 @@ def main(argv: list[str] | None = None, esp: ESPLoader | None = None):
     returned by get_default_connected_device()
     """
     args = expand_file_arguments(argv or sys.argv[1:])
+    # If user invoked pesptool with a single filename argument (no subcommand),
+    # assume they meant to run `write-flash <filename>` and inject that command.
+    try:
+        if (
+            len(args) == 1
+            and not args[0].startswith("-")
+            and os.path.exists(args[0])
+        ):
+            args = ["write-flash", args[0]]
+    except Exception:
+        # Be conservative: if anything goes wrong checking the filesystem, do nothing
+        pass
     try:
         cli(args=args, esp=esp)
     except SystemExit as e:
